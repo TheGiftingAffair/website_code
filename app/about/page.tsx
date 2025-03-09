@@ -13,7 +13,7 @@ const AboutUs = () => {
             About The Gifting Affair
           </h1>
 
-          <div className="bg-white p-8 rounded-lg shadow-lg font-mont font-semibold">
+          <div className="bg-white p-9 rounded-lg shadow-lg font-mont font-semibold">
             <p className="text-gray-700 leading-relaxed">
               Monika's journey from a finance professional to a creative curator
               of unique hampers is a testament to her passion and dedication. As
