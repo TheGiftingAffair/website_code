@@ -88,7 +88,7 @@ const Personalized = () => {
       // }}
     >
       {/* <div className="absolute inset-0 bg-white" /> */}
-      <div className="absolute -left-2 bottom-2 md:bottom-12 md:-left-4 w-24 md:w-60 h-20 md:h-44 z-20 drop-shadow-lg opacity-85 sm:block">
+      {/* <div className="absolute -left-2 bottom-2 md:bottom-12 md:-left-4 w-24 md:w-60 h-20 md:h-44 z-20 drop-shadow-lg opacity-85 sm:block">
         <Image
           src="/images/hampers/custom1.png"
           alt="Footer decoration 1"
@@ -103,7 +103,7 @@ const Personalized = () => {
           fill
           className="object-contain"
         />
-      </div>
+      </div> */}
       {/* Content Overlay */}
       <h2 className="text-3xl md:text-5xl font-alegreya text-headline font-bold mb-4 md:mb-6 relative mt-2 md:mt-4 z-10 drop-shadow-lg text-center px-4">
         Want Personalized Hampers?

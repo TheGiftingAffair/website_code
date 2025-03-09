@@ -21,7 +21,7 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b overflow-clip from-bg3/40 to-white text-gray-700 w-full relative">
       {/* Footer Images */}
-      <div className="absolute -bottom-5 -left-4 w-60 h-36 z-20 drop-shadow-lg opacity-85">
+      {/* <div className="absolute -bottom-5 -left-4 w-60 h-36 z-20 drop-shadow-lg opacity-85">
         <Image
           src="/images/hampers/footer1.png"
           alt="Footer decoration 1"
@@ -36,10 +36,10 @@ const Footer = () => {
           fill
           className="object-contain"
         />
-      </div>
+      </div> */}
 
       {/* Main Content with higher z-index */}
-      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-40 md:pb-6 font-semibold">
+      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-4 md:pb-6 font-semibold">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 ">
           {/* Brand Section */}
