@@ -105,7 +105,7 @@ const HomePrice = () => {
             >
               <div className="aspect-square md:aspect-[7/11.5] rounded-md overflow-hidden mb-1">
                 <img
-                  src={rangeImages[range.id] || "/images/hampers/hero2.jpg"}
+                  src={rangeImages[range.id] || "/images/temp.jpg"}
                   alt={range.label}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />

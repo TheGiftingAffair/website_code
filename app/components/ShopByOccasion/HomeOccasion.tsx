@@ -119,7 +119,7 @@ const HomeOccasion = () => {
             >
               <div className="aspect-square md:aspect-[7/5] rounded-md overflow-hidden mb-1">
                 <img
-                  src={occasionImages[occasion] || "/images/hampers/hero2.jpg"}
+                  src={occasionImages[occasion] || "/images/temp.jpg"}
                   alt={occasion}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />

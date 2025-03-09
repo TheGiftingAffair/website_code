@@ -132,7 +132,7 @@ const HomeCategories = () => {
               <div className="aspect-square md:aspect-[10/9] rounded-md   overflow-hidden mb-1">
                 {/* <div className="aspect-square rounded-lg overflow-hidden mb-2"> */}
                 <img
-                  src={categoryImages[category] || "/images/hampers/hero2.jpg"}
+                  src={categoryImages[category] || "/images/temp.jpg"}
                   alt={category}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
