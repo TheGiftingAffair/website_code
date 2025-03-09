@@ -1,0 +1,114 @@
+import { db } from '@/firebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
+
+export interface OrderEmailData {
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  total: number;
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
+  shippingAddress: {
+    address: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+}
+
+export async function sendOrderConfirmationEmail(data: OrderEmailData) {
+  try {
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #333; text-align: center;">Order Confirmation</h1>
+        <p>Dear ${data.customerName},</p>
+        <p>Thank you for your order! We have received your order and it is currently pending payment verification.</p>
+        
+        <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
+          <h2 style="color: #333; margin-top: 0;">Order Details</h2>
+          <p><strong>Order Number:</strong> ${data.orderNumber}</p>
+          <p><strong>Total Amount:</strong> $${data.total.toFixed(2)}</p>
+        </div>
+
+        <h3 style="color: #333;">Items Ordered</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr style="background-color: #f5f5f5;">
+            <th style="padding: 8px; text-align: left;">Item</th>
+            <th style="padding: 8px; text-align: right;">Quantity</th>
+            <th style="padding: 8px; text-align: right;">Price</th>
+          </tr>
+          ${data.items.map(item => `
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">${item.quantity}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${item.price.toFixed(2)}</td>
+            </tr>
+          `).join('')}
+        </table>
+
+        <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
+          <h3 style="color: #333; margin-top: 0;">Shipping Address</h3>
+          <p style="margin: 0;">${data.shippingAddress.address}</p>
+          <p style="margin: 0;">${data.shippingAddress.city}, ${data.shippingAddress.state}</p>
+          <p style="margin: 0;">${data.shippingAddress.pincode}</p>
+        </div>
+
+        <p style="color: #666;">Please note that your order is pending payment verification. We will process your order once the payment is confirmed.</p>
+        
+        <p style="color: #666;">If you have any questions, please contact our customer support.</p>
+        
+        <div style="text-align: center; margin-top: 30px; color: #666;">
+          <p>Thank you for shopping with us!</p>
+        </div>
+      </div>
+    `;
+
+    await addDoc(collection(db, 'mail'), {
+      to: data.customerEmail,
+      message: {
+        subject: `Order Confirmation #${data.orderNumber} - Payment Pending`,
+        html: emailHtml,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
+}
+
+export async function sendAdminNotification(data: {
+  orderId: string;
+  total: number;
+  customerName: string;
+  customerEmail: string;
+}) {
+  try {
+    const adminEmailHtml = `
+      <h1>New Order Received</h1>
+      <p>Order ID: ${data.orderId}</p>
+      <p>Customer: ${data.customerName}</p>
+      <p>Email: ${data.customerEmail}</p>
+      <p>Total Amount: $${data.total.toFixed(2)}</p>
+      <p>Please verify the payment for this order.</p>
+      <p>Access your admin dashboard to process this order.</p>
+    `;
+
+    await addDoc(collection(db, 'mail'), {
+      to: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+      message: {
+        subject: `New Order Received - ${data.orderId}`,
+        html: adminEmailHtml,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error('Error sending admin notification:', error);
+    return false;
+  }
+}

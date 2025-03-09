@@ -1,0 +1,211 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { FaStar } from "react-icons/fa";
+import Image from "next/image";
+import "./testimonials.css";
+import AnimatedCubesBackground from "./testimonialsBg";
+
+const testimonials = [
+  {
+    id: 1,
+    name: "Marcus Tan",
+    role: "Corporate Executive",
+    location: "Tampines",
+    image: "/images/user1.png",
+    quote:
+      "The GiftBox was perfect for our company's D&D event. The local-inspired gifts were a huge hit with our international colleagues!",
+    rating: 5,
+  },
+  {
+    id: 2,
+    name: "Sarah Lee",
+    role: "Interior Designer",
+    location: "Holland Village",
+    image: "/images/user2.png",
+    quote:
+      "Such a wonderful way to celebrate local artisans! The packaging was beautiful and delivery was prompt to my office.",
+    rating: 5,
+  },
+  {
+    id: 3,
+    name: "Raj Kumar",
+    role: "Tech Lead",
+    location: "Jurong East",
+    image: "/images/user3.png",
+    quote:
+      "Ordered a customized gift box for my parents' anniversary. The mix of traditional and modern items was perfect!",
+    rating: 4,
+  },
+  {
+    id: 4,
+    name: "Michelle Chen",
+    role: "Healthcare Professional",
+    location: "Novena",
+    image: "/images/user4.png",
+    quote:
+      "The local snacks and crafts in the gift box brought back so many memories. It's the perfect Singapore gift!",
+    rating: 5,
+  },
+  {
+    id: 5,
+    name: "Ahmad Bin Hassan",
+    role: "Restaurant Owner",
+    location: "Geylang",
+    image: "/images/user5.png",
+    quote:
+      "Used these gift boxes for my restaurant's VIP customers during Hari Raya. Everyone loved the personal touch!",
+    rating: 4,
+  },
+  {
+    id: 6,
+    name: "Linda Wong",
+    role: "Bank Manager",
+    location: "Marina Bay",
+    image: "/images/user6.png",
+    quote:
+      "The quality and curation of items is outstanding. Perfect for both local and overseas friends to experience Singapore's finest.",
+    rating: 5,
+  },
+];
+
+const communityPhotos = [
+  { id: 1, src: "/images/customers/family.jpg", alt: "customer review" },
+  { id: 2, src: "/images/customers/family2.jpg", alt: "customer review" },
+  { id: 3, src: "/images/customers/family3.jpg", alt: "customer review" },
+  { id: 4, src: "/images/customers/family4.jpg", alt: "customer review" },
+  { id: 5, src: "/images/customers/family5.jpg", alt: "customer review" },
+];
+
+export default function Testimonials() {
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsVisible(false);
+      setTimeout(() => {
+        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+        setIsVisible(true);
+      }, 500);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="w-full py-8 sm:py-12 relative bg-gradient-to-r to-bg3/10 from-bg1/40 overflow-hidden">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-3xl sm:text-5xl text-headline font-alegreya font-bold mb-2">
+            What Our Community Says
+          </h2>
+          <p className="text-base sm:text-lg font-bold font-mont text-bg4">
+            Real stories from real customers
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mx-auto lg:mr-6">
+          {/* Testimonials Section */}
+          <div className="relative min-h-[300px] flex items-center justify-center px-2 sm:px-0">
+            <div
+              className={`transition-opacity duration-500 w-full ${
+                isVisible ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <div className="bg-[#f9f9f9] bg-opacity-90 rounded-lg p-6 sm:p-10 shadow-xl">
+                <div className="flex justify-center mb-4">
+                  {[...Array(testimonials[currentTestimonial].rating)].map(
+                    (_, i) => (
+                      <FaStar key={i} className="text-bg2 text-xl mb-2" />
+                    )
+                  )}
+                </div>
+                <p className="text-headline font-alegreya font-semibold text-lg sm:text-xl mb-6 leading-relaxed">
+                  "{testimonials[currentTestimonial].quote}"
+                </p>
+                <div className="text-center">
+                  <p className="font-mont font-bold text-bg4 text-base sm:text-lg">
+                    {testimonials[currentTestimonial].name}
+                  </p>
+                  <p className="font-mont text-bg3 italic font-semibold text-xs sm:text-sm">
+                    {testimonials[currentTestimonial].role} •{" "}
+                    {testimonials[currentTestimonial].location}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center mt-4 gap-2 absolute bottom-4">
+              {testimonials.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setIsVisible(false);
+                    setTimeout(() => {
+                      setCurrentTestimonial(idx);
+                      setIsVisible(true);
+                    }, 500);
+                  }}
+                  className={`w-2 h-2 rounded-full ${
+                    currentTestimonial === idx ? "bg-bg2" : "bg-bg1"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Updated Photo Collage Section */}
+          <div className="grid mt-8 mb-14 grid-cols-[minmax(90px,120px)_minmax(90px,120px)_minmax(90px,120px)] md:grid-cols-[minmax(120px,180px)_minmax(120px,180px)_minmax(120px,180px)] grid-rows-[110px_60px] gap-2 sm:gap-4 relative mx-auto lg:ml-6">
+            {/* Large yellow section - top left */}
+            <div className="relative row-start-1 col-start-1 col-span-2 row-span-2 h-48 overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={communityPhotos[0].src}
+                alt={communityPhotos[0].alt}
+                fill
+                className="object-cover rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+
+            {/* Pink section - top right */}
+            <div className="relative col-span-1 row-span-1 row-start-1 col-start-3 h-48 overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={communityPhotos[1].src}
+                alt={communityPhotos[1].alt}
+                fill
+                className="object-cover rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+
+            {/* Light blue section - bottom left */}
+            <div className="relative col-span-1 row-span-1 row-start-3 col-start-1 h-36 overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={communityPhotos[2].src}
+                alt={communityPhotos[2].alt}
+                fill
+                className="object-cover my-3 md:my-0 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+
+            {/* Green section - bottom right */}
+            <div className="relative col-span-1 row-span-1 col-start-2 row-start-3 h-36 overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={communityPhotos[3].src}
+                alt={communityPhotos[3].alt}
+                fill
+                className="object-cover my-3 md:my-0 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+            <div className="relative col-span-1 row-span-1 col-start-3 row-start-3 h-36 overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={communityPhotos[4].src}
+                alt={communityPhotos[4].alt}
+                fill
+                className="object-cover my-3 md:my-0 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

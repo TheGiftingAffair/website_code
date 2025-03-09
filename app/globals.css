@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+VN:wght@100..400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Macondo&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Acme&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap");
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
+}
+
+.slide-transition {
+  transition: transform 0.5s ease-in-out;
+}
+
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  animation: carousel 20s linear infinite;
+  width: fit-content;
+}
+
+.carousel-item {
+  flex-shrink: 0;
+}
+
+@keyframes carousel {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pause animation on hover */
+.carousel-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0);
+  }
+  33% {
+    transform: translateY(-100px) translateX(100px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(-50px) translateX(-50px) rotate(240deg);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(360deg);
+  }
+}
+
+.animate-float {
+  animation: float var(--duration, 15s) infinite linear;
+}
+
+.font-playwrite {
+  font-family: "Playwrite VN", cursive;
+}
+
+.font-macondo {
+  font-family: "Macondo", cursive;
+}
+
+.font-mont {
+  font-family: "Montserrat", sans-serif;
+}
+
+.font-outfit {
+  font-family: "Outfit", sans-serif;
+}
+
+.font-domine {
+  font-family: "Domine", serif;
+}
+
+.font-acme {
+  font-family: "Acme", sans-serif;
+}
+
+.font-alegreya {
+  font-family: "Alegreya", serif;
+}

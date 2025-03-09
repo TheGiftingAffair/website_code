@@ -1,0 +1,83 @@
+.testimonials-slider .slick-track {
+  display: flex !important;
+}
+
+.testimonials-slider .slick-slide {
+  height: inherit !important;
+  display: flex !important;
+}
+
+.testimonials-slider .slick-slide > div {
+  flex: 1;
+  display: flex;
+}
+
+/* Remove any existing slider-specific styles */
+
+/* .testimonials-container {
+  background: linear-gradient(to bottom, #fef3e2, #fab12f);
+} */
+
+/* Add smooth transitions for testimonial changes */
+/* .testimonial-card {
+  transition: all 0.5s ease-in-out;
+} */
+
+/* Photo collage hover effects */
+/* .photo-item {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.photo-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+} */
+
+/* Photo grid styles */
+/* .grid > div {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.grid > div::before {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.grid img {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: transform;
+}
+
+.grid > div:hover img {
+  transform: scale(1.1);
+} */
+
+/* Add image hover overlay */
+/* .grid > div::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.grid > div:hover::after {
+  opacity: 1;
+} */
+
+/* Responsive adjustments */
+/* @media (max-width: 1024px) {
+  .testimonial-section {
+    grid-template-columns: 1fr;
+  }
+  .grid {
+    height: 200px !important;
+  }
+} */

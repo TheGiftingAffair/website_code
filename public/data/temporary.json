@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "name": "Hearty Love",
+    "price": 108,
+    "components": [
+      "Premium round gift box in wine red",
+      "25cm stuffed heart bear",
+      "Hershey's Bar *2",
+      "Lindt Lindor milk chocolate bar 100gm",
+      "Lindt Lindor chocolate in heart shape tin",
+      "Ferrero Rocher 5pcs",
+      "Premium quality artificial Flower Deco",
+      "Fairy Light & Decoartions"
+    ],
+    "specialFeature": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "stock": "",
+    "validity": "",
+    "image": "/images/hampers/temporary/heartyLove.png"
+  },
+  {
+    "id": 2,
+    "name": "Moments",
+    "price": 158,
+    "components": [
+      "Premium round gift box in wine red",
+      "Champagne Mini Moet & chandor moet imperial brut 200ml",
+      "Premium Champagne glasses *2",
+      "Lindt Lindor milk chocolate 100gm",
+      "Lindt Lindor Chocolates 8pcs",
+      "Royce Baton Cookies (hazelnut& cacaonibs)",
+      "Merci assorted chocolate 250gm",
+      "Two red roses  & baby breath",
+      "Fairy Light & Decoartions"
+    ],
+    "specialFeature": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "stock": "",
+    "validity": "",
+    "image": "/images/hampers/temporary/moments.png"
+  }
+]

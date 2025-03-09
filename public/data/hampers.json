@@ -1,0 +1,117 @@
+[
+  {
+    "id": "o1",
+    "name": "Fruit Treats",
+    "price": 68,
+    "rating": 0,
+    "description": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "components": [
+      "Bamboo wooded box",
+      "Grapes Box",
+      "Blue berry box",
+      "Orange 1pc",
+      "Apple 1pc",
+      "Guava 1pc",
+      "Coconut water",
+      "Banana bunch of 4pcs",
+      "Fairy Light & Decorations"
+    ],
+    "stock": "In Stock",
+    "image": "/images/hampers/fruitTreats.png",
+    "category": ["Fruits", "Wellness"],
+    "occasion": ["Birthday", "Get Well Soon", "Special Day"]
+  },
+  {
+    "id": "o2",
+    "name": "Fruit Treats",
+    "price": 68,
+    "rating": 0,
+    "description": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "components": [
+      "Woven Basket",
+      "Grapes Box",
+      "Blue bery box",
+      "Apple 1pc",
+      "Guava 1pc",
+      "Banana bunch of 4pcs",
+      "Fairy Light & Decorations"
+    ],
+    "stock": "In Stock",
+    "image": "/images/hampers/fruitBasket.png",
+    "category": ["Fruits", "Wellness"],
+    "occasion": ["Birthday", "Get Well Soon", "Special Day"]
+  },
+  {
+    "id": "h1",
+    "name": "Charmer",
+    "price": 168,
+    "rating": 0,
+    "description": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "components": [
+      "Premium Blue & gold gift box",
+      "Chivas Regal Blend Scotch Whisky 12years 700ml",
+      "Famos Amos Cookies in Tin 200gm",
+      "Royce Pure chocolate",
+      "Truffle pops",
+      "Swiss Extra Fine chocolate",
+      "Beryls Tiramisu 100gm",
+      "Fairy Light & Decorations"
+    ],
+    "stock": "In Stock",
+    "image": "/images/hampers/Charmer.png",
+    "category": ["Wine & Whiskey", "Birthday", "For Him/Her"],
+    "occasion": ["Birthday", "Anniversary", "Special Day"]
+  },
+  {
+    "id": "h2",
+    "name": "Perfecto",
+    "price": 178,
+    "rating": 0,
+    "description": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "components": [
+      "Premium Orange & blue gift box",
+      "Papale primitivo di manduria red wine 700ml",
+      "Royce Baton Cookies (hazelnut& cacaonibs)",
+      "Ferrero Rocher Pack of 4pcs",
+      "M&S Cheese Puffs",
+      "Swiss Extra Fine chocolate",
+      "Fairy Light & Decorations"
+    ],
+    "stock": "In Stock",
+    "image": "/images/hampers/Perfecto.png",
+    "category": ["Wine & Whiskey", "Birthday", "For Him/Her"],
+    "occasion": ["Birthday", "Anniversary", "Special Day"]
+  },
+  {
+    "id": "h3",
+    "name": "Adore",
+    "price": 178,
+    "rating": 0,
+    "description": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "components": [],
+    "stock": "In Stock",
+    "image": "/images/hampers/Adore.png",
+    "category": ["Beauty", "Birthday", "For Him/Her"],
+    "occasion": ["Birthday", "Anniversary", "Special Day"]
+  },
+  {
+    "id": "h4",
+    "name": "Enchanter",
+    "price": 188,
+    "rating": 0,
+    "description": "Options available for customisation. We reserve the right to replace any item with another equal valued item.",
+    "components": [
+      "Premium Red & gold gift box",
+      "Papale Primitivo Di Manduria red wine 700ml",
+      "Famos Amos Cookies in Tin 200gm",
+      "Royce Pure chocolate",
+      "M&S Cheese Puffs",
+      "Swiss Extra Fine chocolate",
+      "Fairy Light & Decorations"
+    ],
+    "stock": "In Stock",
+    "image": "/images/hampers/Enchanter.png",
+    "category": ["Wine & Whiskey", "Birthday", "For Him/Her"],
+    "occasion": ["Birthday", "Anniversary", "Special Day"]
+  }
+]

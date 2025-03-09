@@ -1,0 +1,7 @@
+.decorative-bg {
+  background-color: #fffbf3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='transform: translate(-3rem, -3rem) scale(.4,.4); transform-origin: 50% 50%; border: 3rem solid transparent; border-image: repeating-linear-gradient%28 to left top, transparent 19%25, currentColor 20%25, currentColor 29%25, transparent 30%25, transparent 39%25%29 42%25 fill; color:FFE6C2;' %3E%3C/svg%3E");
+  /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='transform: translate(-3rem, -3rem) scale(.4,.4); transform-origin: 50% 50%; border: 3rem solid transparent; border-image: repeating-linear-gradient%28 to left top, transparent 19%25, currentColor 20%25, currentColor 29%25, transparent 30%25, transparent 39%25%29 42%25 fill; color:FFCECA;' %3E%3C/svg%3E"); */
+  background-size: 3rem 3rem;
+  background-position: 50% 50%;
+}
