@@ -60,7 +60,7 @@ const HomeOccasion = () => {
               (doc) => doc.data() as Hamper
             );
 
-            let selectedImage = "/images/hampers/hero2.jpg";
+            let selectedImage = "/images/temp.jpg";
             for (const hamper of occasionHampers) {
               if (!usedImages.has(hamper.image)) {
                 selectedImage = hamper.image;
@@ -71,11 +71,11 @@ const HomeOccasion = () => {
 
             images[occasion] = selectedImage;
           } else {
-            images[occasion] = "/images/hampers/hero2.jpg";
+            images[occasion] = "/images/temp.jpg";
           }
         } catch (error) {
           console.error(`Error fetching image for ${occasion}:`, error);
-          images[occasion] = "/images/hampers/hero2.jpg";
+          images[occasion] = "/images/temp.jpg";
         }
       }
 

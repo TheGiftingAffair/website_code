@@ -51,7 +51,7 @@ const HomePrice = () => {
               (doc) => doc.data() as Hamper
             );
 
-            let selectedImage = "/images/hampers/hero2.jpg";
+            let selectedImage = "/images/temp.jpg";
             for (const hamper of rangeHampers) {
               if (!usedImages.has(hamper.image)) {
                 selectedImage = hamper.image;
@@ -62,11 +62,11 @@ const HomePrice = () => {
 
             images[id] = selectedImage;
           } else {
-            images[id] = "/images/hampers/hero2.jpg";
+            images[id] = "/images/temp.jpg";
           }
         } catch (error) {
           console.error(`Error fetching image for price range ${id}:`, error);
-          images[id] = "/images/hampers/hero2.jpg";
+          images[id] = "/images/temp.jpg";
         }
       }
 

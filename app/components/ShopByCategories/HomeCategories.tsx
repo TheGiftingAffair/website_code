@@ -66,7 +66,7 @@ const HomeCategories = () => {
             );
 
             // Find first non-duplicate image
-            let selectedImage = "/images/hampers/hero2.jpg";
+            let selectedImage = "/images/temp.jpg";
             for (const hamper of categoryHampers) {
               if (!usedImages.has(hamper.image)) {
                 selectedImage = hamper.image;
@@ -77,11 +77,11 @@ const HomeCategories = () => {
 
             images[category] = selectedImage;
           } else {
-            images[category] = "/images/hampers/hero2.jpg";
+            images[category] = "/images/temp.jpg";
           }
         } catch (error) {
           console.error(`Error fetching image for ${category}:`, error);
-          images[category] = "/images/hampers/hero2.jpg";
+          images[category] = "/images/temp.jpg";
         }
       }
 
