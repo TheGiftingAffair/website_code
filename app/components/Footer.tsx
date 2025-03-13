@@ -59,7 +59,7 @@ const Footer = () => {
               </div>
               <div>
                 <p className="text-sm mt-8 md:mt-4 font-mont font-semibold text-bg4">
-                  Unwrapping Joy,
+                  Unwrapping Happiness,
                 </p>
                 <p className="text-sm font-mont font-semibold text-bg4">
                   One Gift at a Time!
