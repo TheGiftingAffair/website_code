@@ -3,7 +3,7 @@
 const offers = [
   "🎉 Free Delivery on all Orders!",
   "🎁 Exclusive Festive Hampers available",
-  "⚡ Limited Time: Premium Hampers at Special Prices",
+  "⚡ Limited Time: Bulk Orders at Special Prices",
 ];
 
 const OfferSlider = () => {
