@@ -272,40 +272,43 @@ const Navbar = () => {
           isScrolled ? "shadow-md" : ""
         } bg-[#f9f9f9]`}
       >
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 font-semibold font-mont">
-          <div className="flex items-center justify-between h-14">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 2xl:px-16 font-semibold font-mont">
+          <div className="flex items-center justify-between h-14 2xl:h-20">
             {/* Logo and Brand Name */}
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 2xl:space-x-5"
+            >
+              <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-full overflow-hidden">
                 <Image
                   src="/images/logo.jpg"
                   alt="Logo"
-                  width={40}
-                  height={40}
+                  width={64}
+                  height={64}
                   className="object-cover"
                 />
               </div>
-              <span className="font-macondo font-bold text-xl text-bg3 hover:text-bg4 transition-colors">
+              <span className="font-macondo font-bold text-xl 2xl:text-3xl text-bg3 hover:text-bg4 transition-colors">
                 The Gifting Affair
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8 text-sm">
-              <div className="flex flex-row gap-8">
+            <div className="hidden md:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg">
+              <div className="flex flex-row gap-8 2xl:gap-12">
                 {/* Special Dropdown - Only show if there are festive hampers */}
                 {festiveHampers.length > 0 && (
                   <div className="relative group">
                     <button
-                      className="flex items-center space-x-1 hover:text-bg3 transition-colors"
+                      className="flex items-center space-x-1 2xl:space-x-2 hover:text-bg3 transition-colors"
                       onMouseEnter={() => setActiveDropdown("special")}
                       onMouseLeave={() => setActiveDropdown(null)}
                     >
                       <span>{specialNav}</span>
-                      <ChevronDown size={16} />
+                      <ChevronDown size={16} className="2xl:w-6 2xl:h-6" />
                     </button>
                     <div
-                      className={`absolute top-full left-0 w-48 bg-white shadow-lg rounded-md py-2 transition-all duration-200 ${
+                      className={`absolute top-full left-0 w-48 2xl:w-56 bg-white shadow-lg rounded-md py-2 2xl:py-3 transition-all duration-200 ${
                         activeDropdown === "special"
                           ? "opacity-100 visible"
                           : "opacity-0 invisible"
@@ -440,15 +443,15 @@ const Navbar = () => {
                 href="/profile"
                 className="hover:text-bg3 transition-colors"
               >
-                <User size={24} />
+                <User size={24} className="2xl:w-8 2xl:h-8" />
               </Link>
 
               <button
                 className="hover:text-bg3 transition-colors relative"
                 onClick={() => setIsCartOpen(!isCartOpen)}
               >
-                <ShoppingCart size={24} />
-                <span className="absolute -top-2 -right-2 bg-bg3 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <ShoppingCart size={24} className="2xl:w-8 2xl:h-8" />
+                <span className="absolute -top-2 -right-2 bg-bg3 text-white text-xs 2xl:text-sm rounded-full w-5 h-5 2xl:w-6 2xl:h-6 flex items-center justify-center">
                   {cartCount}
                 </span>
               </button>
@@ -461,19 +464,23 @@ const Navbar = () => {
                   href="/profile"
                   className="hover:text-bg3 transition-colors"
                 >
-                  <User size={24} />
+                  <User size={24} className="2xl:w-8 2xl:h-8" />
                 </Link>
                 <button
                   className="hover:text-bg3 transition-colors relative"
                   onClick={() => setIsCartOpen(!isCartOpen)}
                 >
-                  <ShoppingCart size={24} />
-                  <span className="absolute -top-2 -right-2 bg-bg3 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <ShoppingCart size={24} className="2xl:w-8 2xl:h-8" />
+                  <span className="absolute -top-2 -right-2 bg-bg3 text-white text-xs 2xl:text-sm rounded-full w-5 h-5 2xl:w-6 2xl:h-6 flex items-center justify-center">
                     {cartCount}
                   </span>
                 </button>
                 <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                  {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                  {isMenuOpen ? (
+                    <X size={24} className="2xl:w-8 2xl:h-8" />
+                  ) : (
+                    <Menu size={24} className="2xl:w-8 2xl:h-8" />
+                  )}
                 </button>
               </div>
             </div>
@@ -644,7 +651,7 @@ const Navbar = () => {
         onHide={() => setShowToast(false)}
       />
 
-      <div className="mt-14">
+      <div className="mt-14 2xl:mt-20 ">
         <OfferSlider />
       </div>
     </>

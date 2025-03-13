@@ -102,10 +102,7 @@ export default function Hero() {
   }, [images]);
 
   return (
-    <section
-      className="relative w-full overflow-hidden"
-      style={{ height: "calc(100vh - 100px)" }}
-    >
+    <section className="relative w-full overflow-hidden h-[calc(100vh-100px)] 2xl:h-[calc(100vh-135px)]">
       <div className="absolute inset-0">
         <ConfettiBackground />
       </div>
@@ -137,13 +134,15 @@ export default function Hero() {
       {/* Content */}
 
       <div className="relative flex h-full flex-col items-center justify-center px-4 text-center z-20 text-white">
-        <h1 className="mb-4 font-lora text-4xl font-bold md:text-6xl font-alegreya">
+        <h1 className="mb-4 font-lora text-4xl font-bold md:text-6xl 2xl:text-8xl font-alegreya">
           {mainTitle}
           <br />
-          <span className="text-bg2 text-3xl md:text-5xl">{subTitle}</span>
+          <span className="text-bg2 text-3xl md:text-5xl 2xl:text-7xl">
+            {subTitle}
+          </span>
         </h1>
 
-        <p className="mb-8 mt-4 font-poppins text-md font-mont font-semibold text-bg1 min-h-[3rem]">
+        <p className="mb-8 mt-4 font-poppins text-md 2xl:text-2xl font-mont font-semibold text-bg1 min-h-[3rem]">
           {showFirstLine && (
             <TypeWriter
               text={bodyText1}
@@ -157,7 +156,7 @@ export default function Hero() {
         <div className="flex flex-col gap-4 md:flex-row font-mont">
           <Link
             href="/products"
-            className="rounded-full bg-bg1 text-bg4 px-8 py-3 font-bold transition-all hover:scale-105"
+            className="rounded-full 2xl:text-2xl bg-bg1 text-bg4 px-8 py-3 2xl:py-5 font-bold transition-all hover:scale-105"
           >
             Shop Now
           </Link>
@@ -168,7 +167,7 @@ export default function Hero() {
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full border border-bg1 px-8 py-3 font-bold transition-all hover:scale-105"
+            className="rounded-full 2xl:text-2xl border border-bg1 px-8 py-3 2xl:py-5 font-bold transition-all hover:scale-105"
           >
             Personalized Hampers
           </a>

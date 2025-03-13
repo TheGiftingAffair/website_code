@@ -16,9 +16,9 @@ const WhatsappRedirect = () => {
   return (
     <button
       onClick={handleClick}
-      className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50"
+      className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-3 2xl:p-5 rounded-full shadow-lg transition-all duration-300 z-50"
     >
-      <BsWhatsapp className="text-2xl" />
+      <BsWhatsapp className="text-2xl 2xl:text-4xl" />
     </button>
   );
 };
