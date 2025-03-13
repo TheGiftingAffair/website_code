@@ -119,7 +119,7 @@ const Footer = () => {
                 },
                 {
                   name: "Privacy Policy",
-                  href: "/terms-and-conditions",
+                  href: "/privacy-policy",
                 },
               ].map((link) => (
                 <Link
