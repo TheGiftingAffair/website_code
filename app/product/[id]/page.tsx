@@ -35,6 +35,7 @@ interface Product {
   category: string[];
   occasion: string[];
   carousel: string[]; // Add this new property for multiple images
+  visibility: boolean; // Add this new property
 }
 
 const DRAG_SENSITIVITY = 1.5; // Increased for smoother dragging
@@ -112,9 +113,17 @@ export default function ProductPage({
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
+          const productData = docSnap.data();
+          // Check if product is visible
+          if (!productData.visibility) {
+            alert("This product is not available!");
+            router.push("/products");
+            return;
+          }
+
           const currentProduct = {
             id: docSnap.id,
-            ...docSnap.data(),
+            ...productData,
           } as Product;
           setProduct(currentProduct);
           // Fetch similar products after getting the current product
@@ -141,6 +150,7 @@ export default function ProductPage({
       const q = query(
         productsRef,
         where("occasion", "array-contains-any", currentProduct.occasion),
+        where("visibility", "==", true), // Add this condition
         limit(4)
       );
       const querySnapshot = await getDocs(q);
@@ -158,6 +168,7 @@ export default function ProductPage({
         const categoryQuery = query(
           productsRef,
           where("category", "array-contains-any", currentProduct.category),
+          where("visibility", "==", true), // Add this condition
           limit(4)
         );
         const categorySnapshot = await getDocs(categoryQuery);

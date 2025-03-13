@@ -25,6 +25,7 @@ interface Hamper {
   stock: boolean;
   image: string;
   occasion: string[];
+  visibility: boolean;
 }
 
 const ShopByOccasion = () => {
@@ -96,7 +97,8 @@ const ShopByOccasion = () => {
       try {
         const q = query(
           collection(db, "Products"),
-          where("occasion", "array-contains", selectedOccasion)
+          where("occasion", "array-contains", selectedOccasion),
+          where("visibility", "==", true)
         );
 
         const querySnapshot = await getDocs(q);

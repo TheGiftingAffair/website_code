@@ -212,7 +212,8 @@ const Navbar = () => {
       try {
         const q = query(
           collection(db, "Products"),
-          where("festive", "==", true)
+          where("festive", "==", true),
+          where("visibility", "==", true)
         );
         const querySnapshot = await getDocs(q);
         const hampers = querySnapshot.docs.map((doc) => ({

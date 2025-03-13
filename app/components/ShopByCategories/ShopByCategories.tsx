@@ -24,9 +24,10 @@ interface Hamper {
   rating: number;
   description: string;
   components: string[];
-  stock: bool;
+  stock: boolean;
   image: string;
   category: string[];
+  visibility: boolean;
 }
 
 const ShopByCategories = () => {
@@ -147,7 +148,8 @@ const ShopByCategories = () => {
       try {
         const q = query(
           collection(db, "Products"),
-          where("category", "array-contains", selectedCategory)
+          where("category", "array-contains", selectedCategory),
+          where("visibility", "==", true)
         );
 
         const querySnapshot = await getDocs(q);

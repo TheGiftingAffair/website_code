@@ -1,5 +1,5 @@
-import { CachedImage } from './CachedImage';
-import Link from 'next/link';
+import { CachedImage } from "./CachedImage";
+import Link from "next/link";
 
 interface ProductCardProps {
   id: string;
@@ -9,7 +9,13 @@ interface ProductCardProps {
   description?: string;
 }
 
-export const ProductCard = ({ id, name, price, image, description }: ProductCardProps) => {
+export const ProductCard = ({
+  id,
+  name,
+  price,
+  image,
+  description,
+}: ProductCardProps) => {
   return (
     <div className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
       <Link href={`/product/${id}`}>

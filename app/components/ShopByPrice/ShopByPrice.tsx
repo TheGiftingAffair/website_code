@@ -16,6 +16,7 @@ interface Hamper {
   components: string[];
   stock: boolean;
   image: string;
+  visibility: boolean; // Add visibility field
 }
 
 const ShopByPrice = () => {
@@ -77,44 +78,51 @@ const ShopByPrice = () => {
   useEffect(() => {
     const fetchHampers = async () => {
       try {
-        let q;
+        // First get all visible products
+        const q = query(
+          collection(db, "Products"),
+          where("visibility", "==", true)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const allHampers: Hamper[] = querySnapshot.docs
+          .map(
+            (doc) =>
+              ({
+                id: doc.id,
+                ...doc.data(),
+              } as Hamper)
+          )
+          .filter((hamper) => hamper.visibility === true); // Double check visibility
+
+        // Then filter by price range in memory
+        let filteredHampers: Hamper[] = [];
         switch (selectedPriceRange) {
           case "below100":
-            q = query(collection(db, "Products"), where("price", "<", 100));
+            filteredHampers = allHampers.filter(
+              (h) => h.price < 100 && h.visibility === true
+            );
             break;
           case "100to150":
-            q = query(
-              collection(db, "Products"),
-
-              where("price", ">=", 100),
-              where("price", "<", 150)
+            filteredHampers = allHampers.filter(
+              (h) => h.price >= 100 && h.price < 150 && h.visibility === true
             );
             break;
           case "150to200":
-            q = query(
-              collection(db, "Products"),
-
-              where("price", ">=", 150),
-              where("price", "<", 200)
+            filteredHampers = allHampers.filter(
+              (h) => h.price >= 150 && h.price < 200 && h.visibility === true
             );
             break;
           case "above200":
-            q = query(collection(db, "Products"), where("price", ">=", 200));
+            filteredHampers = allHampers.filter(
+              (h) => h.price >= 200 && h.visibility === true
+            );
             break;
           default:
-            q = query(collection(db, "Products"));
+            filteredHampers = allHampers.filter((h) => h.visibility === true);
         }
 
-        const querySnapshot = await getDocs(q);
-        const hampers: Hamper[] = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Hamper)
-        );
-
-        setHampersData(hampers);
+        setHampersData(filteredHampers);
       } catch (error) {
         console.error("Error fetching hampers from Firestore:", error);
       }
