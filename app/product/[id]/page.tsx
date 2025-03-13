@@ -19,7 +19,11 @@ import { useCart } from "@/contexts/CartContext";
 import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
 import LoadingHamper from "@/app/components/ui/LoadingHamper";
 import WhatsappRedirect from "@/app/components/WhatsappRedirect";
-import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
+import {
+  IoChevronBackOutline,
+  IoChevronForwardOutline,
+  IoInformationCircleOutline,
+} from "react-icons/io5";
 import { CachedImage } from "@/components/CachedImage";
 import AgeVerificationModal from "@/app/components/ui/AgeVerificationModal";
 
@@ -608,117 +612,141 @@ export default function ProductPage({
         <div className="max-w-[1536px] mx-auto px-4 py-8 min-h-screen">
           <div className="grid md:grid-cols-2 gap-8 2xl:gap-12">
             {/* Product Image */}
-            <div
-              ref={containerRef}
-              className={`rounded-lg flex items-center justify-center mx-auto w-[320px] h-[320px] md:w-[500px] md:h-[500px] 2xl:w-[600px] 2xl:h-[600px] overflow-hidden relative touch-none ${
-                window?.innerWidth > 768 ? "cursor-pointer" : ""
-              }`}
-              onClick={handleImageClick}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onWheel={handleWheel} // Add this line
-            >
-              {product.carousel && product.carousel.length > 0 ? (
-                <>
-                  {/* Updated zoom controls */}
-                  <div className="absolute left-4 top-4 z-20 md:flex flex-col items-center gap-2 bg-white/90 p-2 rounded-lg shadow-md hidden">
-                    <button
-                      onClick={handleZoomIn}
-                      className="w-8 h-8 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center shadow-sm transition-all"
-                      title="Zoom in (or click image)"
-                    >
-                      <span className="text-xl font-bold text-gray-700">+</span>
-                    </button>
-                    <div className="text-xs font-medium text-gray-700">
-                      {Math.round(zoomLevel * 100)}%
-                    </div>
-                    <button
-                      onClick={handleZoomOut}
-                      className="w-8 h-8 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center shadow-sm transition-all"
-                      title="Zoom out (or Shift+click image)"
-                    >
-                      <span className="text-xl font-bold text-gray-700">−</span>
-                    </button>
-                  </div>
-
-                  {/* Mobile zoom indicator - Only show when actively zooming */}
-                  <div className="absolute top-4 left-0 right-0 z-20 md:hidden">
-                    {zoomLevel > 1 && (
-                      <div className="mx-auto w-fit bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                        Use one finger to drag
+            <div>
+              <div
+                ref={containerRef}
+                className={`rounded-lg flex items-center justify-center mx-auto w-[320px] h-[320px] md:w-[500px] md:h-[500px] 2xl:w-[600px] 2xl:h-[600px] overflow-hidden relative touch-none ${
+                  window?.innerWidth > 768 ? "cursor-pointer" : ""
+                }`}
+                onClick={handleImageClick}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onWheel={handleWheel} // Add this line
+              >
+                {product.carousel && product.carousel.length > 0 ? (
+                  <>
+                    {/* Updated zoom controls */}
+                    <div className="absolute left-4 top-4 z-20 md:flex flex-col items-center gap-2 bg-white/90 p-2 rounded-lg shadow-md hidden">
+                      <button
+                        onClick={handleZoomIn}
+                        className="w-8 h-8 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center shadow-sm transition-all"
+                        title="Zoom in (or click image)"
+                      >
+                        <span className="text-xl font-bold text-gray-700">
+                          +
+                        </span>
+                      </button>
+                      <div className="text-xs font-medium text-gray-700">
+                        {Math.round(zoomLevel * 100)}%
                       </div>
-                    )}
-                  </div>
-
-                  <div
-                    ref={imageRef}
-                    className={`relative w-full h-full ${
-                      zoomLevel > 1 ? "cursor-move" : "cursor-zoom-in"
-                    }`}
-                    onDoubleClick={handleDoubleClick}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
-                  >
-                    <div
-                      style={{
-                        transform: `scale(${zoomLevel}) translate(${imagePosition.x}px, ${imagePosition.y}px)`,
-                        transition: isDragging
-                          ? "none"
-                          : "transform 0.2s ease-out",
-                        transformOrigin: "center",
-                        willChange: "transform",
-                      }}
-                    >
-                      <CachedImage
-                        src={product.carousel[currentImageIndex]}
-                        alt={`${product.name} - Image ${currentImageIndex + 1}`}
-                        className="w-full h-full object-contain rounded-lg select-none"
-                        draggable={false}
-                      />
+                      <button
+                        onClick={handleZoomOut}
+                        className="w-8 h-8 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center shadow-sm transition-all"
+                        title="Zoom out (or Shift+click image)"
+                      >
+                        <span className="text-xl font-bold text-gray-700">
+                          −
+                        </span>
+                      </button>
                     </div>
-                  </div>
 
-                  {/* Navigation Arrows */}
-                  {product.carousel.length > 1 && (
-                    <>
-                      <button
-                        onClick={handlePrevClick}
-                        className="absolute left-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition-all"
-                      >
-                        <IoChevronBackOutline className="h-6 w-6 text-gray-800" />
-                      </button>
-                      <button
-                        onClick={handleNextClick}
-                        className="absolute right-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition-all"
-                      >
-                        <IoChevronForwardOutline className="h-6 w-6 text-gray-800" />
-                      </button>
-                    </>
-                  )}
+                    {/* Mobile zoom indicator - Only show when actively zooming */}
+                    <div className="absolute top-4 left-0 right-0 z-20 md:hidden">
+                      {zoomLevel > 1 && (
+                        <div className="mx-auto w-fit bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                          Use one finger to drag
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Thumbnail Navigation */}
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-                    {product.carousel.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          currentImageIndex === index
-                            ? "bg-white w-4"
-                            : "bg-white/50"
-                        }`}
-                      />
-                    ))}
+                    <div
+                      ref={imageRef}
+                      className={`relative w-full h-full ${
+                        zoomLevel > 1 ? "cursor-move" : "cursor-zoom-in"
+                      }`}
+                      onDoubleClick={handleDoubleClick}
+                      onMouseDown={handleMouseDown}
+                      onMouseMove={handleMouseMove}
+                      onMouseUp={handleMouseUp}
+                      onMouseLeave={handleMouseUp}
+                    >
+                      <div
+                        style={{
+                          transform: `scale(${zoomLevel}) translate(${imagePosition.x}px, ${imagePosition.y}px)`,
+                          transition: isDragging
+                            ? "none"
+                            : "transform 0.2s ease-out",
+                          transformOrigin: "center",
+                          willChange: "transform",
+                        }}
+                      >
+                        <CachedImage
+                          src={product.carousel[currentImageIndex]}
+                          alt={`${product.name} - Image ${
+                            currentImageIndex + 1
+                          }`}
+                          className="w-full h-full object-contain rounded-lg select-none"
+                          draggable={false}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Navigation Arrows */}
+                    {product.carousel.length > 1 && (
+                      <>
+                        <button
+                          onClick={handlePrevClick}
+                          className="absolute left-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition-all"
+                        >
+                          <IoChevronBackOutline className="h-6 w-6 text-gray-800" />
+                        </button>
+                        <button
+                          onClick={handleNextClick}
+                          className="absolute right-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition-all"
+                        >
+                          <IoChevronForwardOutline className="h-6 w-6 text-gray-800" />
+                        </button>
+                      </>
+                    )}
+
+                    {/* Thumbnail Navigation */}
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                      {product.carousel.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            currentImageIndex === index
+                              ? "bg-white w-4"
+                              : "bg-white/50"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center w-full h-full bg-gray-100">
+                    <p className="text-gray-500">No images available</p>
                   </div>
-                </>
-              ) : (
-                <div className="flex items-center justify-center w-full h-full bg-gray-100">
-                  <p className="text-gray-500">No images available</p>
+                )}
+              </div>
+
+              {/* Payment and Delivery Disclaimers */}
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-4">
+                <div className="bg-white shadow-sm py-2 px-4 rounded-full border border-gray-100 flex items-center gap-2">
+                  <IoInformationCircleOutline className="text-gray-600 text-xl" />
+                  <p className="text-gray-700 font-mont text-xs 2xl:text-base">
+                    100% secure payment
+                  </p>
                 </div>
-              )}
+                <div className="bg-white shadow-sm py-2 px-4 rounded-full border border-gray-100 flex items-center gap-2">
+                  <IoInformationCircleOutline className="text-gray-600 text-xl" />
+                  <p className="text-gray-700 font-mont text-xs 2xl:text-base">
+                    On time delivery
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Product Details */}
