@@ -106,7 +106,7 @@ export default function Categories() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 md:gap-4 space-y-2 gap-2 md:space-y-0 md:mx-24 h-[calc(100%-260px)] md:h-[calc(100%-220px)]">
+        <div className="grid grid-cols-2 lg:grid-cols-3 md:gap-4 space-y-2 gap-2 md:space-y-0 md:mx-24 h-[calc(100%-260px)] md:h-[calc(100%-220px)] 2xl:h-[calc(100%-300px)]">
           {categories.map((category, index) => (
             <CategoryCard
               key={category.title}

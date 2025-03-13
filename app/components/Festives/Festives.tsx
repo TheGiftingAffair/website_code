@@ -64,10 +64,10 @@ const Festives = () => {
       className="pt-8 relative bg-gradient-to-r from-bg1/40 to-bg3/10"
     >
       <div className="container mx-auto px-4 z-10">
-        <h2 className="text-3xl md:text-5xl font-alegreya font-bold text-center mb-2 text-headline">
+        <h2 className="text-3xl md:text-5xl 2xl:text-6xl font-alegreya font-bold text-center mb-2 text-headline">
           Exclusive Festive Hampers
         </h2>
-        <p className="text-center text-bg4 font-mont font-semibold text-md mb-6 max-w-2xl mx-auto">
+        <p className="text-center text-bg4 font-mont font-semibold text-md 2xl:text-lg mb-6 max-w-2xl mx-auto">
           Celebrate the season with these specially curated hampers!
         </p>
 
@@ -111,13 +111,13 @@ const Festives = () => {
                     index % 2 === 0 ? "text-left" : "text-left flex flex-col"
                   }`}
                 >
-                  <h3 className="text-3xl font-bold mb-3 font-domine text-headline">
+                  <h3 className="text-3xl 2xl:text-4xl font-bold mb-3 font-domine text-headline">
                     {hamper.name}
                   </h3>
-                  <p className="text-2xl text-primary mb-2 md:mb-4 font-mont text-bg4 font-semibold">
+                  <p className="text-2xl 2xl:text-3xl text-primary mb-2 md:mb-4 font-mont text-bg4 font-semibold">
                     ${hamper.price}
                   </p>
-                  <ul className="mb-2 md:mb-4 space-y-1 text-sm md:text-md font-semibold text-headline/90">
+                  <ul className="mb-2 md:mb-4 space-y-1 text-sm md:text-md 2xl:text-lg font-semibold text-headline/90">
                     {hamper.components.slice(0, 100).map((component, i) => (
                       <li key={i} className="flex items-center">
                         <span className="mr-2">•</span> {component}

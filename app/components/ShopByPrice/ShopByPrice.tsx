@@ -139,21 +139,22 @@ const ShopByPrice = () => {
       className="relative py-8 px-4 md:px-8 bg-gradient-to-r from-bg3/10 to-bg1/40 overflow-hidden"
       style={{ minHeight: "calc(100vh - 50px)" }}
     >
-      <div className="relative z-10 max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-alegreya text-headline font-bold text-center mb-2">
+      <div className="relative z-10 max-w-8xl mx-auto">
+        {" "}
+        {/* increased max width */}
+        <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-alegreya text-headline font-bold text-center mb-2">
           Shop By Price Range
         </h2>
-        <p className="text-bg4 text-center font-mont font-semibold text-md mb-4">
+        <p className="text-bg4 text-center font-mont font-semibold text-md 2xl:text-xl mb-4">
           Find the Perfect Gift Within Your Budget
         </p>
-
         {/* Price Range Buttons */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 mt-4">
           {priceRanges.map((range) => (
             <button
               key={range.id}
               onClick={() => handlePriceRangeChange(range.id as PriceRange)}
-              className={`px-4 py-2 rounded-full text-md transition-all font-alegreya font-semibold ${
+              className={`px-4 py-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
                 selectedPriceRange === range.id
                   ? "bg-bg4/90 text-white shadow-md hover:scale-105"
                   : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"
@@ -163,9 +164,8 @@ const ShopByPrice = () => {
             </button>
           ))}
         </div>
-
         {/* Hamper Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:mt-4 hover:cursor-pointer">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 lg:mt-4 hover:cursor-pointer">
           <AnimatePresence mode="wait">
             {filteredHampers.length > 0 ? (
               filteredHampers.map((hamper) => (
@@ -186,11 +186,11 @@ const ShopByPrice = () => {
                     />
                   </div>
                   <div className="p-1.5 px-2 md:p-3 flex flex-row text-[#f9f9f9]">
-                    <h3 className="text-lg md:text-xl font-alegreya font-semibold">
+                    <h3 className="text-lg md:text-xl 2xl:text-2xl font-alegreya font-semibold">
                       {hamper.name}
                     </h3>
                     <div className="flex items-center ml-auto">
-                      <span className="text-lg md:text-xl font-semibold text-[#f9f9f9]">
+                      <span className="text-lg md:text-xl 2xl:text-2xl font-semibold text-[#f9f9f9]">
                         ${hamper.price}
                       </span>
                     </div>

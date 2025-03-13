@@ -38,10 +38,10 @@ export default function WhyChooseUs() {
         </div> */}
       <div className="container mx-auto px-4 max-w-7xl relative z-20">
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold text-headline mb-2 font-alegreya">
+          <h2 className="text-3xl md:text-5xl 2xl:text-6xl font-bold text-headline mb-2 font-alegreya">
             Why Choose The Gifting Affair?
           </h2>
-          <p className="text-base md:text-lg text-bg4 font-mont font-bold px-4">
+          <p className="text-base md:text-lg 2xl:text-xl text-bg4 font-mont font-bold px-4">
             Delivering joy, one beautifully curated box at a time
           </p>
         </div>
@@ -56,10 +56,10 @@ export default function WhyChooseUs() {
               <div className="text-[#FA812F] mb-3 md:mb-4 flex justify-center">
                 {benefit.icon}
               </div>
-              <h3 className="text-lg md:text-xl font-bold font-alegreya text-[#A82A21] mb-2 text-center">
+              <h3 className="text-lg md:text-xl 2xl:text-2xl font-bold font-alegreya text-[#A82A21] mb-2 text-center">
                 {benefit.title}
               </h3>
-              <p className="text-xs md:text-sm text-[#FA4032]/80 font-mont font-semibold text-center">
+              <p className="text-xs md:text-sm 2xl:text-base text-[#FA4032]/80 font-mont font-semibold text-center">
                 {benefit.description}
               </p>
             </div>

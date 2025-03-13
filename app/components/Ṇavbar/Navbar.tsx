@@ -651,7 +651,7 @@ const Navbar = () => {
         onHide={() => setShowToast(false)}
       />
 
-      <div className="mt-14 2xl:mt-20 ">
+      <div className="mt-14 2xl:mt-20">
         <OfferSlider />
       </div>
     </>

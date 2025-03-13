@@ -85,32 +85,32 @@ const HomePrice = () => {
   return (
     <section
       id="shop-by-price"
-      className="relative py-8 px-4 md:px-8 bg-gradient-to-r from-bg3/10 to-bg1/40 overflow-hidden"
+      className="relative py-8 2xl:py-12 px-4 md:px-8 2xl:px-12 bg-gradient-to-r from-bg3/10 to-bg1/40 overflow-hidden"
       style={{ minHeight: "calc(100vh - 300px)" }}
     >
-      <div className="relative z-10 max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-alegreya text-headline font-bold text-center mb-2">
+      <div className="relative z-10 max-w-7xl 2xl:max-w-[1536px] mx-auto">
+        <h2 className="text-3xl md:text-5xl 2xl:text-6xl font-alegreya text-headline font-bold text-center mb-2">
           Shop By Price
         </h2>
-        <p className="text-bg4 text-center font-mont font-semibold text-md mb-8">
+        <p className="text-bg4 text-center font-mont font-semibold text-md 2xl:text-lg mb-8 2xl:mb-12">
           Find the Perfect Gift Within Your Budget
         </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 2xl:gap-6 px-4">
           {priceRanges.map((range) => (
             <div
               key={range.id}
               onClick={() => handlePriceClick(range.id)}
               className="bg-white border-headline border border-opacity-30 rounded-md shadow-md p-1.5 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
-              <div className="aspect-square md:aspect-[7/11.5] rounded-md overflow-hidden mb-1">
+              <div className="aspect-square md:aspect-[7/11.5] rounded-md overflow-hidden mb-1 2xl:mb-2">
                 <img
                   src={rangeImages[range.id] || "/images/temp.jpg"}
                   alt={range.label}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
               </div>
-              <h3 className="text-center text-2xl font-alegreya text-headline font-semibold">
+              <h3 className="text-center text-2xl 2xl:text-3xl font-alegreya text-headline font-semibold">
                 {range.label}
               </h3>
             </div>

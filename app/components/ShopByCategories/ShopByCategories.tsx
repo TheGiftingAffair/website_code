@@ -182,11 +182,11 @@ const ShopByCategories = () => {
       className="relative py-8 px-4 md:px-8 bg-gradient-to-r from-bg3/10 to-bg1/40 overflow-hidden "
       style={{ minHeight: "calc(100vh - 100px)" }}
     >
-      <div className="relative z-10 max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-alegreya text-headline font-bold text-center mb-2">
+      <div className="relative z-10 max-w-8xl mx-auto">
+        <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-alegreya text-headline font-bold text-center mb-2">
           Shop By Categories
         </h2>
-        <p className="text-bg4 text-center font-mont font-semibold text-md mb-4">
+        <p className="text-bg4 text-center font-mont font-semibold text-md 2xl:text-xl mb-4">
           Our Categories - Handpicked for You!
         </p>
 
@@ -196,7 +196,7 @@ const ShopByCategories = () => {
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className={`px-4 py-2 mt-2 rounded-full text-md transition-all font-alegreya font-semibold ${
+              className={`px-4 py-2 mt-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
                 selectedCategory === category
                   ? "bg-bg4/90 text-white shadow-md hover:scale-105"
                   : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"
@@ -208,7 +208,7 @@ const ShopByCategories = () => {
         </div>
 
         {/* Hamper Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:mt-4 hover:cursor-pointer">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 lg:mt-4 hover:cursor-pointer">
           <AnimatePresence mode="wait">
             {filteredHampers.length > 0 ? (
               filteredHampers.map((hamper) => (
@@ -229,11 +229,11 @@ const ShopByCategories = () => {
                     />
                   </div>
                   <div className="p-1.5 px-2 md:p-3 flex flex-row text-[#f9f9f9]">
-                    <h3 className="text-lg md:text-xl font-alegreya font-semibold">
+                    <h3 className="text-lg md:text-xl 2xl:text-2xl font-alegreya font-semibold">
                       {hamper.name}
                     </h3>
                     <div className="flex items-center ml-auto">
-                      <span className="text-lg md:text-xl font-semibold text-[#f9f9f9]">
+                      <span className="text-lg md:text-xl 2xl:text-2xl font-semibold text-[#f9f9f9]">
                         ${hamper.price}
                       </span>
                     </div>
@@ -243,10 +243,10 @@ const ShopByCategories = () => {
             ) : (
               <div className="col-span-full py-12">
                 <div className="text-center flex flex-col items-center justify-center bg-white/80 rounded-xl shadow-md p-8">
-                  <p className="text-xl font-alegreya text-gray-600 mb-2">
+                  <p className="text-xl 2xl:text-2xl font-alegreya text-gray-600 mb-2">
                     No hampers found in {selectedCategory} Category
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm 2xl:text-base text-gray-500">
                     Please try another category or check back later
                   </p>
                 </div>

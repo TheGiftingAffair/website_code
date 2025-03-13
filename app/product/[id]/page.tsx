@@ -605,13 +605,12 @@ export default function ProductPage({
     <>
       <div>
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
-          <div className="grid md:grid-cols-2 gap-8">
+        <div className="max-w-[1536px] mx-auto px-4 py-8 min-h-screen">
+          <div className="grid md:grid-cols-2 gap-8 2xl:gap-12">
             {/* Product Image */}
-            {/* <div className="rounded-lg flex h-[500px] overflow-hidden relative"> */}
             <div
               ref={containerRef}
-              className={`rounded-lg flex items-center justify-center mx-auto w-[320px] h-[320px] md:w-[500px] md:h-[500px] overflow-hidden relative touch-none ${
+              className={`rounded-lg flex items-center justify-center mx-auto w-[320px] h-[320px] md:w-[500px] md:h-[500px] 2xl:w-[600px] 2xl:h-[600px] overflow-hidden relative touch-none ${
                 window?.innerWidth > 768 ? "cursor-pointer" : ""
               }`}
               onClick={handleImageClick}
@@ -723,13 +722,13 @@ export default function ProductPage({
             </div>
 
             {/* Product Details */}
-            <div className="space-y-3">
-              <div className="flex flex-row">
-                <h1 className="text-4xl font-alegreya font-bold text-headline">
+            <div className="space-y-4 2xl:space-y-6">
+              <div className="flex flex-row items-center">
+                <h1 className="text-4xl 2xl:text-5xl font-alegreya font-bold text-headline">
                   {product.name}
                 </h1>
                 <div
-                  className={`flex justify-center items-center text-sm ml-6 px-4 my-1 rounded-lg ${getStockStatus(
+                  className={`flex justify-center items-center text-sm 2xl:text-base ml-6 px-4 my-1 rounded-lg ${getStockStatus(
                     product.stock
                   )}`}
                 >
@@ -738,30 +737,30 @@ export default function ProductPage({
                   </span>
                 </div>
               </div>
-              <p className="text-3xl font-mont font-semibold text-bg4">
+              <p className="text-3xl 2xl:text-4xl font-mont font-semibold text-bg4">
                 ${product.price}
               </p>
 
               {/* Gift Options */}
-              <div className="space-y-2 pt-">
-                <div className="border border-gray-400 p-2 rounded-lg">
-                  <label className="block text-md font-medium text-gray-700">
+              <div className="space-y-3 2xl:space-y-4">
+                <div className="border border-gray-400 p-3 2xl:p-4 rounded-lg">
+                  <label className="block text-md 2xl:text-lg font-medium text-gray-700">
                     Gift Message
                   </label>
                   <textarea
-                    className="mt-1 block w-full rounded-md text-sm border-gray-300 shadow-sm focus:border-bg4 focus:ring-bg4"
+                    className="mt-2 block w-full rounded-md text-sm 2xl:text-base border-gray-300 shadow-sm focus:border-bg4 focus:ring-bg4"
                     rows={3}
                     value={giftMessage}
                     onChange={(e) => setGiftMessage(e.target.value)}
                     placeholder="Enter your gift message here..."
                   />
                 </div>
-                <div className="border border-gray-400 p-2 rounded-lg">
-                  <label className="block text-md font-medium text-gray-700">
+                <div className="border border-gray-400 p-3 2xl:p-4 rounded-lg">
+                  <label className="block text-md 2xl:text-lg font-medium text-gray-700">
                     Special Requests
                   </label>
                   <textarea
-                    className="mt-1 block w-full rounded-md text-sm border-gray-300 shadow-sm focus:border-bg4 focus:ring-bg4"
+                    className="mt-2 block w-full rounded-md text-sm 2xl:text-base border-gray-300 shadow-sm focus:border-bg4 focus:ring-bg4"
                     rows={3}
                     value={specialRequest}
                     onChange={(e) => setSpecialRequest(e.target.value)}
@@ -771,22 +770,24 @@ export default function ProductPage({
               </div>
 
               {/* Quantity and Purchase Options */}
-              <div className="space-y-4 py-4">
+              <div className="space-y-4 2xl:space-y-6 py-4 2xl:py-6">
                 <div className="flex items-center space-x-4">
-                  <label className="text-md font-medium text-gray-700">
+                  <label className="text-md 2xl:text-lg font-medium text-gray-700">
                     Quantity:
                   </label>
                   <div className="flex items-center border rounded-md">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3 py-1 border-r hover:bg-gray-100"
+                      className="px-4 py-2 2xl:px-5 2xl:py-3 border-r hover:bg-gray-100 text-lg 2xl:text-xl"
                     >
                       -
                     </button>
-                    <span className="px-4 py-1">{quantity}</span>
+                    <span className="px-6 py-2 2xl:px-8 2xl:py-3 text-lg 2xl:text-xl">
+                      {quantity}
+                    </span>
                     <button
                       onClick={() => setQuantity(Math.min(5, quantity + 1))}
-                      className="px-3 py-1 border-l hover:bg-gray-100"
+                      className="px-4 py-2 2xl:px-5 2xl:py-3 border-l hover:bg-gray-100 text-lg 2xl:text-xl"
                     >
                       +
                     </button>
@@ -797,7 +798,7 @@ export default function ProductPage({
                   <button
                     onClick={initiateAddToCart}
                     disabled={wouldExceedLimit() || !product.stock}
-                    className={`flex-1 font-semibold font-sans text-lg px-6 py-2 rounded-lg transition-colors ${
+                    className={`flex-1 font-semibold font-sans text-lg 2xl:text-xl px-6 py-3 2xl:py-4 rounded-lg transition-colors ${
                       wouldExceedLimit() || !product.stock
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : "bg-white text-bg4 border border-bg4/80 hover:bg-gray-50"
@@ -808,7 +809,7 @@ export default function ProductPage({
                   <button
                     onClick={initiateBuyNow}
                     disabled={!product.stock}
-                    className={`flex-1 font-semibold font-sans text-lg px-6 py-3 rounded-lg transition-colors ${
+                    className={`flex-1 font-semibold font-sans text-lg 2xl:text-xl px-6 py-3 2xl:py-4 rounded-lg transition-colors ${
                       product.stock
                         ? "bg-emerald-600 text-white hover:bg-emerald-700"
                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -834,27 +835,27 @@ export default function ProductPage({
               </div>
 
               {/* Components Section with Disclaimers */}
-              <div className="pb-4">
+              <div className="pb-4 2xl:pb-6">
                 {product.components &&
                   product.components.filter(
                     (component) => component.trim() !== ""
                   ).length > 0 && (
                     <>
-                      <h2 className="text-2xl font-sans font-semibold mb-3 pt-3">
+                      <h2 className="text-2xl 2xl:text-3xl font-sans font-semibold mb-3 pt-3">
                         Includes:
                       </h2>
-                      <ul className="list-disc list-inside space-y-1 font-mont">
+                      <ul className="list-disc list-inside space-y-2 font-mont">
                         {product.components
                           .filter((component) => component.trim() !== "")
                           .map((component, index) => (
                             <li
                               key={index}
-                              className="text-gray-600 text-md font-semibold"
+                              className="text-gray-600 text-md 2xl:text-lg font-semibold"
                             >
                               {component}
                             </li>
                           ))}
-                        <li className="text-gray-600 text-md font-semibold text-md font-mont">
+                        <li className="text-gray-600 text-md 2xl:text-lg font-semibold text-md font-mont">
                           Options available for customization*
                         </li>
                       </ul>
@@ -866,7 +867,7 @@ export default function ProductPage({
                   product.components.filter(
                     (component) => component.trim() !== ""
                   ).length === 0) && (
-                  <h2 className="text-2xl font-sans font-semibold mb-3 pt-3">
+                  <h2 className="text-2xl 2xl:text-3xl font-sans font-semibold mb-3 pt-3">
                     Includes:
                   </h2>
                 )}
@@ -893,12 +894,12 @@ export default function ProductPage({
               </div>
 
               {/* Categories and Occasions */}
-              <div className="space-y-4 pt-4">
+              <div className="space-y-4 2xl:space-y-6 pt-4 2xl:pt-6">
                 {product.category &&
                   product.category.filter((cat) => cat.trim() !== "").length >
                     0 && (
                     <div>
-                      <h3 className="text-md font-semibold mb-2">
+                      <h3 className="text-md 2xl:text-lg font-semibold mb-2">
                         Categories:
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -907,7 +908,7 @@ export default function ProductPage({
                           .map((cat) => (
                             <span
                               key={cat}
-                              className="bg-purple-100 font-semibold text-sm font-mont text-purple-800 px-3 py-1.5 rounded-full"
+                              className="bg-purple-100 font-semibold text-sm 2xl:text-base font-mont text-purple-800 px-4 py-2 rounded-full"
                             >
                               {cat}
                             </span>
@@ -920,7 +921,7 @@ export default function ProductPage({
                   product.occasion.filter((occ) => occ.trim() !== "").length >
                     0 && (
                     <div>
-                      <h3 className="text-md font-semibold mb-2">
+                      <h3 className="text-md 2xl:text-lg font-semibold mb-2">
                         Perfect for:
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -929,7 +930,7 @@ export default function ProductPage({
                           .map((occ) => (
                             <span
                               key={occ}
-                              className="bg-pink-100 font-semibold text-sm font-mont text-pink-800 px-3 py-1.5 rounded-full"
+                              className="bg-pink-100 font-semibold text-sm 2xl:text-base font-mont text-pink-800 px-4 py-2 rounded-full"
                             >
                               {occ}
                             </span>
@@ -942,8 +943,8 @@ export default function ProductPage({
           </div>
         </div>
         {/* Similar Hampers Section */}
-        <div className="py-10 bg-gradient-to-l from-bg1/20 to-bg4/5 px-4">
-          <h2 className="text-4xl font-alegreya font-bold text-headline mb-6 text-center">
+        <div className="py-12 2xl:py-16 bg-gradient-to-l from-bg1/20 to-bg4/5 px-4">
+          <h2 className="text-4xl 2xl:text-5xl font-alegreya font-bold text-headline mb-8 text-center">
             You May Also Like
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -984,16 +985,16 @@ export default function ProductPage({
         </div>
 
         {/* Shop More Section */}
-        <div className="bg-gradient-to-r from-bg1/20 to-bg4/5 pt-8 pb-8 text-center flex items-center flex-col">
-          <h2 className="text-3xl font-alegreya font-bold text-headline mb-6">
+        <div className="bg-gradient-to-r from-bg1/20 to-bg4/5 pt-10 pb-10 2xl:py-16 text-center flex items-center flex-col">
+          <h2 className="text-3xl 2xl:text-4xl font-alegreya font-bold text-headline mb-6">
             Looking for More Options?
           </h2>
           <button
             onClick={() => router.push("/products")}
-            className="bg-bg4/90 text-white flex flex-row items-center gap-x-2 font-semibold font-mont text-md px-8 py-3 rounded-lg hover:bg-bg4 transition-colors"
+            className="bg-bg4/90 text-white flex flex-row items-center gap-x-3 font-semibold font-mont text-lg 2xl:text-xl px-8 py-4 rounded-lg hover:bg-bg4 transition-colors"
           >
             Shop for more Hampers
-            <BsArrowUpRightCircleFill size={30} />
+            <BsArrowUpRightCircleFill size={32} />
           </button>
         </div>
 

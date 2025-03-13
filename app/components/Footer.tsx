@@ -70,7 +70,7 @@ const Footer = () => {
       </div> */}
 
       {/* Main Content with higher z-index */}
-      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-4 md:pb-6 font-semibold">
+      <div className="relative z-10 max-w-8xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 pt-8 md:pt-12 pb-4 md:pb-6 font-semibold">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 ">
           {/* Brand Section */}
@@ -85,7 +85,7 @@ const Footer = () => {
               />
             </Link>
             <div className="pl-6">
-              <div className="font-macondo font-bold text-2xl text-bg3 text-center md:text-left">
+              <div className="font-macondo font-bold text-2xl 2xl:text-3xl text-bg3 text-center md:text-left">
                 The Gifting Affair
               </div>
               <div>
@@ -101,7 +101,7 @@ const Footer = () => {
 
           {/* Navigation Links */}
           <div className="space-y-2 md:space-y-4">
-            <h3 className="font-semibold mb-2 md:mb-5 text-xl text-headline">
+            <h3 className="font-semibold mb-2 md:mb-5 text-xl 2xl:text-2xl text-headline">
               Quick Links
             </h3>
             <div className="grid grid-cols-2 gap-2">
@@ -117,7 +117,7 @@ const Footer = () => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-sm hover:text-bg3 transition-colors"
+                  className="text-sm 2xl:text-base hover:text-bg3 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -127,22 +127,22 @@ const Footer = () => {
 
           {/* Contact & Social */}
           <div className="space-y-2 md:space-y-4">
-            <h3 className="font-semibold text-xl mb-2 md:mb-5 text-headline">
+            <h3 className="font-semibold text-xl 2xl:text-2xl mb-2 md:mb-5 text-headline">
               Get in Touch
             </h3>
             <div className="space-y-2">
               <a
                 href="mailto:thegiftingaffair24@gmail.com"
-                className="flex items-center gap-2 text-sm hover:text-bg3 transition-colors"
+                className="flex items-center gap-2 text-sm 2xl:text-base hover:text-bg3 transition-colors"
               >
-                <Mail size={16} />
+                <Mail size={16} className="2xl:w-5 2xl:h-5" />
                 thegiftingaffair24@gmail.com
               </a>
               <a
                 href="tel:+6587430520"
-                className="flex items-center gap-2 text-sm hover:text-bg3 transition-colors"
+                className="flex items-center gap-2 text-sm 2xl:text-base hover:text-bg3 transition-colors"
               >
-                <Phone size={16} />
+                <Phone size={16} className="2xl:w-5 2xl:h-5" />
                 +65 87430520
               </a>
             </div>

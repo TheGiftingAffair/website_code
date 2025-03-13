@@ -72,49 +72,17 @@ const Personalized = () => {
   };
 
   return (
-    <div
-      // className="relative w-full overflow-hidden py-4 md:py-8 flex items-center flex-col justify-center"
-      className="relative w-full overflow-hidden py-4 md:py-8 flex items-center flex-col justify-center bg-gradient-to-r from-bg1/40 to-bg4/10"
-      // style={{
-      //   minHeight: "100px",
-      //   backgroundColor: "#ffffff",
-      //   backgroundImage: `
-      //     linear-gradient(45deg, transparent 25%, rgba(255, 240, 230, 0.5) 25%, rgba(255, 240, 230, 0.5) 75%, transparent 75%),
-      //     linear-gradient(-45deg, transparent 25%, rgba(255, 240, 230, 0.5) 25%, rgba(255, 240, 230, 0.5) 75%, transparent 75%)
-      //   `,
-      //   backgroundSize: "60px 60px",
-      //   backgroundPosition: "0 0, 30px 30px",
-      //   backgroundBlendMode: "multiply",
-      // }}
-    >
-      {/* <div className="absolute inset-0 bg-white" /> */}
-      {/* <div className="absolute -left-2 bottom-2 md:bottom-12 md:-left-4 w-24 md:w-60 h-20 md:h-44 z-20 drop-shadow-lg opacity-85 sm:block">
-        <Image
-          src="/images/hampers/custom1.png"
-          alt="Footer decoration 1"
-          fill
-          className="object-contain"
-        />
-      </div>
-      <div className="absolute -right-2 bottom-2 md:bottom-12 md:-right-4 w-24 md:w-60 h-20 md:h-44 z-20 drop-shadow-lg opacity-85 sm:block">
-        <Image
-          src="/images/hampers/custom2.png"
-          alt="Footer decoration 1"
-          fill
-          className="object-contain"
-        />
-      </div> */}
-      {/* Content Overlay */}
-      <h2 className="text-3xl md:text-5xl font-alegreya text-headline font-bold mb-4 md:mb-6 relative mt-2 md:mt-4 z-10 drop-shadow-lg text-center px-4">
+    <div className="relative w-full overflow-hidden py-4 md:py-8 flex items-center flex-col justify-center bg-gradient-to-r from-bg1/40 to-bg4/10">
+      <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-alegreya text-headline font-bold mb-4 md:mb-6 relative mt-2 md:mt-4 z-10 drop-shadow-lg text-center px-4">
         Want Personalized Hampers?
       </h2>
-      <p className="text-sm md:text-md text-bg4/95 font-domine font-bold h-12 md:h-16 text-center max-w-2xl px-4 relative z-10 drop-shadow">
+      <p className="text-sm md:text-md 2xl:text-  xl text-bg4/95 font-domine font-bold h-12 md:h-16 text-center max-w-2xl 2xl:max-w-3xl px-4 relative z-10 drop-shadow">
         <TypewriterText />
       </p>
 
       <button
         onClick={handleWhatsAppClick}
-        className="bg-green-500 hover:bg-green-600 text-white hover:text-white px-6 md:px-8 py-2 md:py-3 mb-2 font-mont text-sm md:text-base font-semibold rounded-full 
+        className="bg-green-500 hover:bg-green-600 text-white hover:text-white px-6 md:px-8 py-2 md:py-3 mb-2 font-mont text-sm md:text-base 2xl:text-2xl font-semibold rounded-full 
           flex items-center gap-2 transition-all shadow-lg relative z-10"
       >
         Chat on WhatsApp

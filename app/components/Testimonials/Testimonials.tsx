@@ -97,10 +97,10 @@ export default function Testimonials() {
     <section className="w-full py-8 sm:py-12 relative bg-gradient-to-r to-bg3/10 from-bg1/40 overflow-hidden">
       <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-3xl sm:text-5xl text-headline font-alegreya font-bold mb-2">
+          <h2 className="text-3xl sm:text-5xl 2xl:text-6xl text-headline font-alegreya font-bold mb-2">
             What Our Community Says
           </h2>
-          <p className="text-base sm:text-lg font-bold font-mont text-bg4">
+          <p className="text-base sm:text-lg 2xl:text-xl font-bold font-mont text-bg4">
             Real stories from real customers
           </p>
         </div>
@@ -121,14 +121,14 @@ export default function Testimonials() {
                     )
                   )}
                 </div>
-                <p className="text-headline font-alegreya font-semibold text-lg sm:text-xl mb-6 leading-relaxed">
+                <p className="text-headline font-alegreya font-semibold text-lg sm:text-xl 2xl:text-2xl mb-6 leading-relaxed">
                   "{testimonials[currentTestimonial].quote}"
                 </p>
                 <div className="text-center">
-                  <p className="font-mont font-bold text-bg4 text-base sm:text-lg">
+                  <p className="font-mont font-bold text-bg4 text-base sm:text-lg 2xl:text-xl">
                     {testimonials[currentTestimonial].name}
                   </p>
-                  <p className="font-mont text-bg3 italic font-semibold text-xs sm:text-sm">
+                  <p className="font-mont text-bg3 italic font-semibold text-xs sm:text-sm 2xl:text-base">
                     {testimonials[currentTestimonial].role} •{" "}
                     {testimonials[currentTestimonial].location}
                   </p>
