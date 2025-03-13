@@ -4,6 +4,9 @@ const offers = [
   "🎉 Free Delivery on all Orders!",
   "🎁 Exclusive Festive Hampers available",
   "⚡ Limited Time: Bulk Orders at Special Prices",
+  // "🎉 Free Delivery on all Orders!",
+  // "🎁 Exclusive Festive Hampers available",
+  // "⚡ Limited Time: Bulk Orders at Special Prices",
 ];
 
 const OfferSlider = () => {
@@ -22,6 +25,13 @@ const OfferSlider = () => {
           {/* Duplicated set for seamless loop */}
           {offers.map((offer, index) => (
             <div key={`second-${index}`} className="carousel-item">
+              <p className="text-center font-medium whitespace-nowrap px-8">
+                {offer}
+              </p>
+            </div>
+          ))}
+          {offers.map((offer, index) => (
+            <div key={`third-${index}`} className="carousel-item">
               <p className="text-center font-medium whitespace-nowrap px-8">
                 {offer}
               </p>
