@@ -25,6 +25,13 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
     return tomorrow.toISOString().split("T")[0];
   };
 
+  // Add max date calculation (3 months from now)
+  const getMaxDeliveryDate = () => {
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 3);
+    return maxDate.toISOString().split("T")[0];
+  };
+
   const handleCheckout = () => {
     if (!deliveryDate) {
       alert("Please select a delivery date");
@@ -99,15 +106,28 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
 
         <div className="flex-1 overflow-y-auto pb-4">
           <div className="p-4 border-b">
-            <p className="text-xs text-gray-600 mb-3">
-              For bulk orders, please contact us on WhatsApp*
-            </p>
+            {/* Same Day Delivery Disclaimer */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
+              <p className="text-sm text-gray-700">
+                Need same-day delivery? Kindly{" "}
+                <a
+                  href="https://wa.me/6587430520"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  contact us on WhatsApp
+                </a>
+              </p>
+            </div>
+
             <label className="text-sm text-gray-600 block mb-1">
               Select Delivery Date:
             </label>
             <input
               type="date"
               min={getMinDeliveryDate()}
+              max={getMaxDeliveryDate()}
               value={deliveryDate || ""}
               onChange={(e) => setDeliveryDate(e.target.value)}
               className="w-full p-2 text-sm border rounded"
