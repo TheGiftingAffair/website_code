@@ -113,6 +113,14 @@ const Footer = () => {
                   name: "Terms & Conditions",
                   href: "/terms-and-conditions",
                 },
+                {
+                  name: "Return & Refund Policy",
+                  href: "/terms-and-conditions",
+                },
+                {
+                  name: "Privacy Policy",
+                  href: "/terms-and-conditions",
+                },
               ].map((link) => (
                 <Link
                   key={link.name}
