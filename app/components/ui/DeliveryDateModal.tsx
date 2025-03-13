@@ -29,6 +29,22 @@ const DeliveryDateModal = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
         <h2 className="text-xl font-semibold mb-4">Select Delivery Date</h2>
+
+        {/* Same Day Delivery Disclaimer */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
+          <p className="text-sm text-gray-700">
+            Need same-day delivery? Kindly{" "}
+            <a
+              href="https://wa.me/6587430520"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-bg3 hover:underline font-medium"
+            >
+              contact us on WhatsApp
+            </a>
+          </p>
+        </div>
+
         <input
           type="date"
           min={minDate}
