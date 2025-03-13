@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -11,12 +12,42 @@ import {
   Phone,
   Gift,
 } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 
 const Footer = () => {
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // newsletter subscription logic
-  };
+  const [footerLogoBody1, setFooterLogoBody1] = useState(
+    "Unwrapping Happiness,"
+  );
+  const [footerLogoBody2, setFooterLogoBody2] = useState("One Gift at a Time!");
+
+  useEffect(() => {
+    const fetchTexts = async () => {
+      try {
+        const textIds = ["FooterLogoBody1", "FooterLogoBody2"];
+        const texts = await Promise.all(
+          textIds.map((id) => getDoc(doc(db, "variables", id)))
+        );
+
+        texts.forEach((doc) => {
+          if (doc.exists()) {
+            switch (doc.id) {
+              case "FooterLogoBody1":
+                setFooterLogoBody1(doc.data().value);
+                break;
+              case "FooterLogoBody2":
+                setFooterLogoBody2(doc.data().value);
+                break;
+            }
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching texts:", error);
+      }
+    };
+
+    fetchTexts();
+  }, []);
 
   return (
     <footer className="bg-gradient-to-b overflow-clip from-bg3/40 to-white text-gray-700 w-full relative">
@@ -59,10 +90,10 @@ const Footer = () => {
               </div>
               <div>
                 <p className="text-sm mt-8 md:mt-4 font-mont font-semibold text-bg4">
-                  Unwrapping Happiness,
+                  {footerLogoBody1}
                 </p>
                 <p className="text-sm font-mont font-semibold text-bg4">
-                  One Gift at a Time!
+                  {footerLogoBody2}
                 </p>
               </div>
             </div>

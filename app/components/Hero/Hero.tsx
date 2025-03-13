@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig"; // Ensure this path matches your Firebase config file location
 import Image from "next/image";
 import Link from "next/link";
@@ -13,8 +13,15 @@ export default function Hero() {
   const [currentImage, setCurrentImage] = useState(0);
   const [showFirstLine, setShowFirstLine] = useState(true);
   const [showSecondLine, setShowSecondLine] = useState(false);
+  const [mainTitle, setMainTitle] = useState("Welcome to The Gifting Affair");
+  const [subTitle, setSubTitle] = useState("Unwrap Happiness!");
+  const [bodyText1, setBodyText1] = useState(
+    "Discover thoughtfully curated hampers for every occasion,"
+  );
+  const [bodyText2, setBodyText2] = useState(
+    "handcrafted with love and delivered with care."
+  );
 
-  // Add new useEffect for fetching images
   useEffect(() => {
     const fetchImages = async () => {
       try {
@@ -31,6 +38,45 @@ export default function Hero() {
     };
 
     fetchImages();
+  }, []);
+
+  useEffect(() => {
+    const fetchTexts = async () => {
+      try {
+        const textIds = [
+          "HeroSectionTitle",
+          "HeroSectionSubTitle",
+          "HeroSectionBody1",
+          "HeroSectionBody2",
+        ];
+        const texts = await Promise.all(
+          textIds.map((id) => getDoc(doc(db, "variables", id)))
+        );
+
+        texts.forEach((doc) => {
+          if (doc.exists()) {
+            switch (doc.id) {
+              case "HeroSectionTitle":
+                setMainTitle(doc.data().value);
+                break;
+              case "HeroSectionSubTitle":
+                setSubTitle(doc.data().value);
+                break;
+              case "HeroSectionBody1":
+                setBodyText1(doc.data().value);
+                break;
+              case "HeroSectionBody2":
+                setBodyText2(doc.data().value);
+                break;
+            }
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching texts:", error);
+      }
+    };
+
+    fetchTexts();
   }, []);
 
   useEffect(() => {
@@ -92,24 +138,20 @@ export default function Hero() {
 
       <div className="relative flex h-full flex-col items-center justify-center px-4 text-center z-20 text-white">
         <h1 className="mb-4 font-lora text-4xl font-bold md:text-6xl font-alegreya">
-          Welcome to The Gifting Affair
+          {mainTitle}
           <br />
-          <span className="text-bg2 text-3xl md:text-5xl">
-            Unwrap Happiness!
-          </span>
+          <span className="text-bg2 text-3xl md:text-5xl">{subTitle}</span>
         </h1>
 
         <p className="mb-8 mt-4 font-poppins text-md font-mont font-semibold text-bg1 min-h-[3rem]">
           {showFirstLine && (
             <TypeWriter
-              text="Discover thoughtfully curated hampers for every occasion,"
+              text={bodyText1}
               onComplete={() => setShowSecondLine(true)}
             />
           )}
           <br />
-          {showSecondLine && (
-            <TypeWriter text="handcrafted with love and delivered with care." />
-          )}
+          {showSecondLine && <TypeWriter text={bodyText2} />}
         </p>
 
         <div className="flex flex-col gap-4 md:flex-row font-mont">

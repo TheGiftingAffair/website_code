@@ -17,7 +17,14 @@ import {
 } from "lucide-react";
 import OfferSlider from "./OfferSlider";
 import CartSidebar from "./CartSidebar";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 const Navbar = () => {
@@ -33,6 +40,7 @@ const Navbar = () => {
   const [festiveHampers, setFestiveHampers] = useState<
     Array<{ id: string; name: string }>
   >([]);
+  const [specialNav, setSpecialNav] = useState("Special");
 
   // Handle scroll effect
   useEffect(() => {
@@ -229,6 +237,34 @@ const Navbar = () => {
     fetchFestiveHampers();
   }, []);
 
+  // Update useEffect that fetches text content
+  useEffect(() => {
+    const fetchTexts = async () => {
+      try {
+        const textIds = [
+          "specialNav", // Add this new ID
+        ];
+        const texts = await Promise.all(
+          textIds.map((id) => getDoc(doc(db, "variables", id)))
+        );
+
+        texts.forEach((doc) => {
+          if (doc.exists()) {
+            switch (doc.id) {
+              case "specialNav":
+                setSpecialNav(doc.data().value);
+                break;
+            }
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching texts:", error);
+      }
+    };
+
+    fetchTexts();
+  }, []);
+
   return (
     <>
       <nav
@@ -265,7 +301,7 @@ const Navbar = () => {
                       onMouseEnter={() => setActiveDropdown("special")}
                       onMouseLeave={() => setActiveDropdown(null)}
                     >
-                      <span>Special</span>
+                      <span>{specialNav}</span>
                       <ChevronDown size={16} />
                     </button>
                     <div
@@ -459,7 +495,7 @@ const Navbar = () => {
                           )
                         }
                       >
-                        <span>Special</span>
+                        <span>{specialNav}</span>
                         {activeDropdown === "special" ? (
                           <ChevronUp size={16} />
                         ) : (
