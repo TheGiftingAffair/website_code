@@ -207,10 +207,33 @@ export default function ProductPage({
   };
 
   const handleBuyNow = () => {
-    setShowDateModal(true);
+    if (!deliveryDate) {
+      setShowDateModal(true);
+      return;
+    }
+
+    // Clear cart first
+    clearCart();
+
+    // Add current item
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      image: product.image,
+      giftMessage,
+      specialRequest,
+    });
+
+    // Redirect to checkout
+    router.push("/checkout");
   };
 
   const handleDateConfirm = (date: string) => {
+    // Set delivery date
+    setDeliveryDate(date);
+
     // Clear existing cart items
     clearCart();
 
@@ -224,9 +247,6 @@ export default function ProductPage({
       giftMessage,
       specialRequest,
     });
-
-    // Set delivery date
-    setDeliveryDate(date);
 
     // Close modal and redirect
     setShowDateModal(false);

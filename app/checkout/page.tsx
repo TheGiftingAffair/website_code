@@ -7,9 +7,10 @@ import { getUserData } from "@/utils/userService";
 import { createOrder, createGuestOrder } from "@/utils/orderService";
 import { getProductById } from "@/utils/productService";
 import { getPlaceholderImage } from "@/utils/placeholderService";
-import { validateCoupon } from "@/utils/couponService";
+import { validateCoupon, applyCoupon } from "@/utils/couponService";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from 'react-hot-toast';
 
 interface ShippingDetails {
   email: string;
@@ -77,9 +78,10 @@ const CheckoutPage = () => {
   const [couponError, setCouponError] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
-    type: "direct" | "percentage";
+    type: 'Flat' | 'Percentage';
     value: number;
     discount: number;
+    name: string;
   } | null>(null);
 
   const fetchUserData = async () => {
@@ -304,6 +306,10 @@ const CheckoutPage = () => {
         orderId = await createGuestOrder(orderData);
       }
 
+      if (appliedCoupon && shippingDetails.email) {
+        await applyCoupon(appliedCoupon.code, shippingDetails.email);
+      }
+
       clearCart();
       // Use replace instead of push to avoid history stack issues
       await router.replace(`/order-success?orderId=${orderId}`);
@@ -316,29 +322,49 @@ const CheckoutPage = () => {
 
   const handleApplyCoupon = async () => {
     if (!couponCode) {
-      setCouponError("Please enter a coupon code");
+      toast.error("Please enter a coupon code");
       return;
     }
-
+  
+    if (appliedCoupon) {
+      toast.error("You can only apply one coupon at a time");
+      return;
+    }
+  
     try {
-      const result = await validateCoupon(couponCode, subtotal);
-
+      const result = await validateCoupon(
+        couponCode, 
+        subtotal,
+        shippingDetails.email || user?.email
+      );
+  
       if (result.isValid && result.couponDetails) {
         setAppliedCoupon({
           code: couponCode.toUpperCase(),
           discount: result.discount,
           type: result.couponDetails.type,
-          value: result.couponDetails.value,
+          value: result.couponDetails.discountvalue,
+          name: result.couponDetails.name,
         });
         setCouponError("");
+        toast.success("Coupon applied successfully!");
       } else {
         setCouponError(result.message || "Invalid coupon");
         setAppliedCoupon(null);
+        toast.error(result.message || "Invalid coupon");
       }
     } catch (error) {
       setCouponError("Error applying coupon");
       setAppliedCoupon(null);
+      toast.error("Error applying coupon");
     }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+    toast.success("Coupon removed");
   };
 
   const subtotal = items.reduce(
@@ -666,13 +692,23 @@ const CheckoutPage = () => {
                     }
                     placeholder="Enter coupon code"
                     className="p-2 border rounded w-full sm:w-2/3 uppercase"
+                    disabled={appliedCoupon !== null}
                   />
-                  <button
-                    onClick={handleApplyCoupon}
-                    className="px-4 py-2 bg-bg3 text-white rounded hover:bg-bg4 transition-colors w-full sm:w-1/3"
-                  >
-                    Apply
-                  </button>
+                  {appliedCoupon ? (
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors w-full sm:w-1/3"
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleApplyCoupon}
+                      className="px-4 py-2 bg-bg3 text-white rounded hover:bg-bg4 transition-colors w-full sm:w-1/3"
+                    >
+                      Apply
+                    </button>
+                  )}
                 </div>
                 {couponError && (
                   <p className="text-red-500 text-sm break-words">
