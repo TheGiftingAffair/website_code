@@ -8,15 +8,13 @@ export async function POST(request: Request) {
     // Generate a unique reference number
     const referenceNumber = `TGA-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
+    // Get the correct base URL
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
     // Create URL-encoded body
     const formData = new URLSearchParams();
     formData.append('email', email);
-    
-    // Use absolute URLs for redirect and webhook
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
-    
     formData.append('redirect_url', `${baseUrl}/payment/success`);
     formData.append('webhook', `${baseUrl}/api/payment-webhook`);
     formData.append('reference_number', referenceNumber);

@@ -313,11 +313,21 @@ const CheckoutPage = () => {
           throw new Error('Payment URL not received in response');
         }
 
-        // Store order data in localStorage for retrieval after payment
-        localStorage.setItem('pendingOrderData', JSON.stringify({
+        // Store order data in both localStorage and sessionStorage
+        const storageData = JSON.stringify({
           orderData,
           paymentReference: paymentData.referenceNumber
-        }));
+        });
+        
+        try {
+          localStorage.setItem('pendingOrderData', storageData);
+          sessionStorage.setItem('pendingOrderData', storageData);
+        } catch (storageError) {
+          console.error('Storage error:', storageError);
+        }
+
+        // Clear cart before redirecting
+        clearCart();
 
         // Redirect to HitPay checkout
         window.location.href = paymentData.url;
