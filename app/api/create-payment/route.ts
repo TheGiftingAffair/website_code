@@ -8,14 +8,15 @@ export async function POST(request: Request) {
     // Generate a unique reference number
     const referenceNumber = `TGA-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Get the base URL (Vercel URL in production, localhost in development)
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXT_PUBLIC_BASE_URL;
-
     // Create URL-encoded body
     const formData = new URLSearchParams();
     formData.append('email', email);
+    
+    // Use absolute URLs for redirect and webhook
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000';
+    
     formData.append('redirect_url', `${baseUrl}/payment/success`);
     formData.append('webhook', `${baseUrl}/api/payment-webhook`);
     formData.append('reference_number', referenceNumber);
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
     formData.append('name', name);
     formData.append('purpose', 'Order payment');
     formData.append('payment_methods[]', 'paynow_online');
+    formData.append('send_email', 'true');
 
     try {
       console.log('Making payment request with data:', Object.fromEntries(formData));

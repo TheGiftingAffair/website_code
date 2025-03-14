@@ -229,6 +229,8 @@ const CheckoutPage = () => {
       }
 
       const orderData = {
+        userId: user?.uid, // Add userId if user is logged in
+        customerType: user ? "registered" : "guest",
         items: items.map((item) => ({
           productId: item.productId,
           name: item.name,
@@ -272,7 +274,6 @@ const CheckoutPage = () => {
         specialInstructions: specialRequest.trim() || null,
         subtotal: subtotal,
         total: total,
-        customerType: user ? "registered" : "guest", // Add this to identify guest orders
         coupon: appliedCoupon
           ? {
               code: appliedCoupon.code,
@@ -298,17 +299,7 @@ const CheckoutPage = () => {
             currency: 'SGD',
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
-            orderData: {
-              items,
-              deliveryDate,
-              shippingAddress: shippingDetails,
-              billingAddress: billingDetails.sameAsShipping ? shippingDetails : billingDetails,
-              specialInstructions: specialRequest.trim() || null,
-              subtotal,
-              total,
-              customerType: user ? "registered" : "guest",
-              coupon: appliedCoupon,
-            }
+            orderData: orderData, // Pass the complete orderData
           }),
         });
 
