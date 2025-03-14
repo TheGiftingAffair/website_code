@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createOrder, createGuestOrder } from '@/utils/orderService';
 import { toast } from 'react-hot-toast';
+import Link from 'next/link';
 
 const PaymentSuccessPage = () => {
   const searchParams = useSearchParams();
@@ -18,25 +19,34 @@ const PaymentSuccessPage = () => {
         console.log('Payment status:', status);
         console.log('Reference:', reference);
 
-        // Get stored order data - try multiple storage keys
+        // Check payment status first
+        if (status !== 'completed') {
+          console.log('Payment was not completed:', status);
+          toast.error('Payment was not successful. Please try again.');
+          // Clear stored data as payment was not completed
+          localStorage.removeItem('pendingOrderData');
+          sessionStorage.removeItem('pendingOrderData');
+          // Redirect back to checkout
+          router.push('/checkout');
+          return;
+        }
+
+        // Get stored order data
         let storedData = localStorage.getItem('pendingOrderData');
         if (!storedData) {
-          // Try sessionStorage as fallback
           storedData = sessionStorage.getItem('pendingOrderData');
         }
 
-        console.log('Stored order data:', storedData);
-
         if (!storedData) {
           console.error('No order data found in storage');
-          toast.error('Order data not found');
+          toast.error('Order data not found. Please try again.');
           router.push('/checkout');
           return;
         }
 
         const { orderData } = JSON.parse(storedData);
 
-        // Create the order
+        // Create the order only if payment was completed
         let orderId;
         try {
           if (orderData.customerType === 'registered' && orderData.userId) {
@@ -45,23 +55,18 @@ const PaymentSuccessPage = () => {
             orderId = await createGuestOrder(orderData);
           }
 
-          // Clear both storage locations
+          // Clear storage after successful order creation
           localStorage.removeItem('pendingOrderData');
           sessionStorage.removeItem('pendingOrderData');
 
           // Send confirmation email
           await fetch('/api/send-order-confirmation', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              orderId,
-              orderData,
-            }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId, orderData }),
           });
 
-          // Redirect to order success page
+          // Redirect to success page
           router.push(`/order-success?orderId=${orderId}`);
         } catch (error) {
           console.error('Error creating order:', error);
@@ -69,13 +74,31 @@ const PaymentSuccessPage = () => {
         }
       } catch (error) {
         console.error('Error processing order:', error);
-        toast.error('Failed to process order');
+        toast.error('Failed to process order. Please try again.');
         router.push('/checkout');
+      } finally {
+        setIsProcessing(false);
       }
     };
 
     processOrder();
   }, [searchParams, router]);
+
+  // Show different messages based on payment status
+  const status = searchParams.get('status');
+  if (!isProcessing && status !== 'completed') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-xl mb-4">Payment was not successful</div>
+          <p className="text-gray-600 mb-4">Please try your purchase again.</p>
+          <Link href="/checkout" className="text-blue-600 hover:underline">
+            Return to Checkout
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center">
