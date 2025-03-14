@@ -67,7 +67,7 @@ export default function ProductPage({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const router = useRouter();
-  const { addToCart, clearCart, setDeliveryDate, getTotalQuantity } = useCart();
+  const { addToCart, clearCart, setDeliveryDate, getTotalQuantity, deliveryDate } = useCart();
   const [showAgeVerification, setShowAgeVerification] = useState(false);
   const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
     null
@@ -217,6 +217,7 @@ export default function ProductPage({
 
     // Add current item
     addToCart({
+      productId: product.id,  // Add productId
       id: product.id,
       name: product.name,
       price: product.price,
@@ -227,7 +228,7 @@ export default function ProductPage({
     });
 
     // Redirect to checkout
-    router.push("/checkout");
+    router.replace("/checkout");  // Use replace instead of push
   };
 
   const handleDateConfirm = (date: string) => {
@@ -239,6 +240,7 @@ export default function ProductPage({
 
     // Add only the current item
     addToCart({
+      productId: product.id,  // Add productId
       id: product.id,
       name: product.name,
       price: product.price,
@@ -250,7 +252,7 @@ export default function ProductPage({
 
     // Close modal and redirect
     setShowDateModal(false);
-    router.push("/checkout");
+    router.replace("/checkout");  // Use replace instead of push
   };
 
   const nextImage = () => {

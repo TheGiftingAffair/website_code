@@ -11,6 +11,7 @@ import { validateCoupon, applyCoupon } from "@/utils/couponService";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from 'react-hot-toast';
+import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
 
 interface ShippingDetails {
   email: string;
@@ -35,7 +36,7 @@ interface ValidationErrors {
 }
 
 const CheckoutPage = () => {
-  const { items, getSubtotal, clearCart, deliveryDate } = useCart();
+  const { items, getSubtotal, clearCart, deliveryDate, setDeliveryDate } = useCart();
   const router = useRouter();
   const { user } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
@@ -83,6 +84,7 @@ const CheckoutPage = () => {
     discount: number;
     name: string;
   } | null>(null);
+  const [showDateModal, setShowDateModal] = useState(false);
 
   const fetchUserData = async () => {
     if (user) {
@@ -108,15 +110,10 @@ const CheckoutPage = () => {
 
   // Effect to check empty cart
   useEffect(() => {
-    const checkCart = async () => {
-      if (items.length === 0 && !isSubmitting) {
-        router.replace("/cart");
-      } else {
-        setIsLoading(false);
-      }
-    };
-    checkCart();
-  }, [items, router, isSubmitting]);
+    if (!isSubmitting) {
+      setIsLoading(false);
+    }
+  }, [isSubmitting]);
 
   // User data effect
   useEffect(() => {
@@ -365,6 +362,11 @@ const CheckoutPage = () => {
     setCouponCode("");
     setCouponError("");
     toast.success("Coupon removed");
+  };
+
+  const handleDateConfirm = (date: string) => {
+    setDeliveryDate(date);
+    setShowDateModal(false);
   };
 
   const subtotal = items.reduce(
@@ -644,6 +646,24 @@ const CheckoutPage = () => {
             <div className="bg-white p-6 rounded-lg shadow-sm sticky top-6">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
+              {/* Add Delivery Date Section */}
+              <div className="mb-6 border-b pb-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-semibold text-gray-700">Delivery Date</h3>
+                    <p className="text-gray-600">
+                      {deliveryDate || 'No date selected'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowDateModal(true)}
+                    className="px-3 py-1 text-sm bg-bg3 text-white rounded hover:bg-bg4 transition-colors"
+                  >
+                    {deliveryDate ? 'Change' : 'Select'} Date
+                  </button>
+                </div>
+              </div>
+
               {/* Cart Items */}
               <div className="space-y-4 mb-4">
                 {enrichedItems.map((item) => (
@@ -811,6 +831,11 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+      <DeliveryDateModal
+        isOpen={showDateModal}
+        onClose={() => setShowDateModal(false)}
+        onConfirm={handleDateConfirm}
+      />
     </div>
   );
 };
