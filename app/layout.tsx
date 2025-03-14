@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: "The Gifting Affair",
@@ -27,6 +28,7 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>{children}</CartProvider>
         </AuthProvider>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

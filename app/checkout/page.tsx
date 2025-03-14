@@ -7,9 +7,11 @@ import { getUserData } from "@/utils/userService";
 import { createOrder, createGuestOrder } from "@/utils/orderService";
 import { getProductById } from "@/utils/productService";
 import { getPlaceholderImage } from "@/utils/placeholderService";
-import { validateCoupon } from "@/utils/couponService";
+import { validateCoupon, applyCoupon } from "@/utils/couponService";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from 'react-hot-toast';
+import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
 
 interface ShippingDetails {
   email: string;
@@ -34,7 +36,7 @@ interface ValidationErrors {
 }
 
 const CheckoutPage = () => {
-  const { items, getSubtotal, clearCart, deliveryDate } = useCart();
+  const { items, getSubtotal, clearCart, deliveryDate, setDeliveryDate } = useCart();
   const router = useRouter();
   const { user } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
@@ -77,10 +79,12 @@ const CheckoutPage = () => {
   const [couponError, setCouponError] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
-    type: "direct" | "percentage";
+    type: 'Flat' | 'Percentage';
     value: number;
     discount: number;
+    name: string;
   } | null>(null);
+  const [showDateModal, setShowDateModal] = useState(false);
 
   const fetchUserData = async () => {
     if (user) {
@@ -106,15 +110,10 @@ const CheckoutPage = () => {
 
   // Effect to check empty cart
   useEffect(() => {
-    const checkCart = async () => {
-      if (items.length === 0 && !isSubmitting) {
-        router.replace("/cart");
-      } else {
-        setIsLoading(false);
-      }
-    };
-    checkCart();
-  }, [items, router, isSubmitting]);
+    if (!isSubmitting) {
+      setIsLoading(false);
+    }
+  }, [isSubmitting]);
 
   // User data effect
   useEffect(() => {
@@ -304,6 +303,10 @@ const CheckoutPage = () => {
         orderId = await createGuestOrder(orderData);
       }
 
+      if (appliedCoupon && shippingDetails.email) {
+        await applyCoupon(appliedCoupon.code, shippingDetails.email);
+      }
+
       clearCart();
       // Use replace instead of push to avoid history stack issues
       await router.replace(`/order-success?orderId=${orderId}`);
@@ -316,29 +319,54 @@ const CheckoutPage = () => {
 
   const handleApplyCoupon = async () => {
     if (!couponCode) {
-      setCouponError("Please enter a coupon code");
+      toast.error("Please enter a coupon code");
       return;
     }
-
+  
+    if (appliedCoupon) {
+      toast.error("You can only apply one coupon at a time");
+      return;
+    }
+  
     try {
-      const result = await validateCoupon(couponCode, subtotal);
-
+      const result = await validateCoupon(
+        couponCode, 
+        subtotal,
+        shippingDetails.email || user?.email
+      );
+  
       if (result.isValid && result.couponDetails) {
         setAppliedCoupon({
           code: couponCode.toUpperCase(),
           discount: result.discount,
           type: result.couponDetails.type,
-          value: result.couponDetails.value,
+          value: result.couponDetails.discountvalue,
+          name: result.couponDetails.name,
         });
         setCouponError("");
+        toast.success("Coupon applied successfully!");
       } else {
         setCouponError(result.message || "Invalid coupon");
         setAppliedCoupon(null);
+        toast.error(result.message || "Invalid coupon");
       }
     } catch (error) {
       setCouponError("Error applying coupon");
       setAppliedCoupon(null);
+      toast.error("Error applying coupon");
     }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+    toast.success("Coupon removed");
+  };
+
+  const handleDateConfirm = (date: string) => {
+    setDeliveryDate(date);
+    setShowDateModal(false);
   };
 
   const subtotal = items.reduce(
@@ -618,6 +646,24 @@ const CheckoutPage = () => {
             <div className="bg-white p-6 rounded-lg shadow-sm sticky top-6">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
+              {/* Add Delivery Date Section */}
+              <div className="mb-6 border-b pb-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-semibold text-gray-700">Delivery Date</h3>
+                    <p className="text-gray-600">
+                      {deliveryDate || 'No date selected'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowDateModal(true)}
+                    className="px-3 py-1 text-sm bg-bg3 text-white rounded hover:bg-bg4 transition-colors"
+                  >
+                    {deliveryDate ? 'Change' : 'Select'} Date
+                  </button>
+                </div>
+              </div>
+
               {/* Cart Items */}
               <div className="space-y-4 mb-4">
                 {enrichedItems.map((item) => (
@@ -666,13 +712,23 @@ const CheckoutPage = () => {
                     }
                     placeholder="Enter coupon code"
                     className="p-2 border rounded w-full sm:w-2/3 uppercase"
+                    disabled={appliedCoupon !== null}
                   />
-                  <button
-                    onClick={handleApplyCoupon}
-                    className="px-4 py-2 bg-bg3 text-white rounded hover:bg-bg4 transition-colors w-full sm:w-1/3"
-                  >
-                    Apply
-                  </button>
+                  {appliedCoupon ? (
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors w-full sm:w-1/3"
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleApplyCoupon}
+                      className="px-4 py-2 bg-bg3 text-white rounded hover:bg-bg4 transition-colors w-full sm:w-1/3"
+                    >
+                      Apply
+                    </button>
+                  )}
                 </div>
                 {couponError && (
                   <p className="text-red-500 text-sm break-words">
@@ -775,6 +831,11 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+      <DeliveryDateModal
+        isOpen={showDateModal}
+        onClose={() => setShowDateModal(false)}
+        onConfirm={handleDateConfirm}
+      />
     </div>
   );
 };

@@ -67,7 +67,7 @@ export default function ProductPage({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const router = useRouter();
-  const { addToCart, clearCart, setDeliveryDate, getTotalQuantity } = useCart();
+  const { addToCart, clearCart, setDeliveryDate, getTotalQuantity, deliveryDate } = useCart();
   const [showAgeVerification, setShowAgeVerification] = useState(false);
   const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
     null
@@ -207,15 +207,17 @@ export default function ProductPage({
   };
 
   const handleBuyNow = () => {
-    setShowDateModal(true);
-  };
+    if (!deliveryDate) {
+      setShowDateModal(true);
+      return;
+    }
 
-  const handleDateConfirm = (date: string) => {
-    // Clear existing cart items
+    // Clear cart first
     clearCart();
 
-    // Add only the current item
+    // Add current item
     addToCart({
+      productId: product.id,  // Add productId
       id: product.id,
       name: product.name,
       price: product.price,
@@ -225,12 +227,32 @@ export default function ProductPage({
       specialRequest,
     });
 
+    // Redirect to checkout
+    router.replace("/checkout");  // Use replace instead of push
+  };
+
+  const handleDateConfirm = (date: string) => {
     // Set delivery date
     setDeliveryDate(date);
 
+    // Clear existing cart items
+    clearCart();
+
+    // Add only the current item
+    addToCart({
+      productId: product.id,  // Add productId
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      image: product.image,
+      giftMessage,
+      specialRequest,
+    });
+
     // Close modal and redirect
     setShowDateModal(false);
-    router.push("/checkout");
+    router.replace("/checkout");  // Use replace instead of push
   };
 
   const nextImage = () => {
