@@ -10,7 +10,7 @@ import { getPlaceholderImage } from "@/utils/placeholderService";
 import { validateCoupon, applyCoupon } from "@/utils/couponService";
 import Link from "next/link";
 import Image from "next/image";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
 
 interface ShippingDetails {
@@ -36,7 +36,8 @@ interface ValidationErrors {
 }
 
 const CheckoutPage = () => {
-  const { items, getSubtotal, clearCart, deliveryDate, setDeliveryDate } = useCart();
+  const { items, getSubtotal, clearCart, deliveryDate, setDeliveryDate } =
+    useCart();
   const router = useRouter();
   const { user } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
@@ -79,7 +80,7 @@ const CheckoutPage = () => {
   const [couponError, setCouponError] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
-    type: 'Flat' | 'Percentage';
+    type: "Flat" | "Percentage";
     value: number;
     discount: number;
     name: string;
@@ -322,19 +323,19 @@ const CheckoutPage = () => {
       toast.error("Please enter a coupon code");
       return;
     }
-  
+
     if (appliedCoupon) {
       toast.error("You can only apply one coupon at a time");
       return;
     }
-  
+
     try {
       const result = await validateCoupon(
-        couponCode, 
+        couponCode,
         subtotal,
         shippingDetails.email || user?.email
       );
-  
+
       if (result.isValid && result.couponDetails) {
         setAppliedCoupon({
           code: couponCode.toUpperCase(),
@@ -395,7 +396,8 @@ const CheckoutPage = () => {
           <Link href="/" className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full overflow-hidden">
               <Image
-                src="/images/logo.jpg"
+                // src="/images/logo.jpg"
+                src="/images/logo2.png"
                 alt="Logo"
                 width={40}
                 height={40}
@@ -650,16 +652,18 @@ const CheckoutPage = () => {
               <div className="mb-6 border-b pb-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold text-gray-700">Delivery Date</h3>
+                    <h3 className="font-semibold text-gray-700">
+                      Delivery Date
+                    </h3>
                     <p className="text-gray-600">
-                      {deliveryDate || 'No date selected'}
+                      {deliveryDate || "No date selected"}
                     </p>
                   </div>
                   <button
                     onClick={() => setShowDateModal(true)}
                     className="px-3 py-1 text-sm bg-bg3 text-white rounded hover:bg-bg4 transition-colors"
                   >
-                    {deliveryDate ? 'Change' : 'Select'} Date
+                    {deliveryDate ? "Change" : "Select"} Date
                   </button>
                 </div>
               </div>
