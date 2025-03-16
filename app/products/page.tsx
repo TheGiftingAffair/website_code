@@ -4,6 +4,7 @@ import Navbar from "../components/Ṇavbar/Navbar";
 import ShopByCategories from "../components/ShopByCategories/ShopByCategories";
 import ShopByOccasion from "../components/ShopByOccasion/ShopByOccasion";
 import ShopByPrice from "../components/ShopByPrice/ShopByPrice";
+import ShopBySpecial from "../components/ShopBySpecial/ShopBySpecial";
 import Footer from "../components/Footer";
 import WhatsappRedirect from "../components/WhatsappRedirect";
 import { imageCache } from "@/utils/imageCache";
@@ -69,7 +70,7 @@ const ProductsPage = () => {
       };
 
       // Add a delay to ensure components are mounted
-      setTimeout(scrollToSection, 100);
+      setTimeout(scrollToSection, 1000);
     };
 
     // Initial load
@@ -98,6 +99,7 @@ const ProductsPage = () => {
         <ShopByCategories />
         <ShopByOccasion />
         <ShopByPrice />
+        <ShopBySpecial />
         <Footer />
       </div>
       <WhatsappRedirect />

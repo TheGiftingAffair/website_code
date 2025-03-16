@@ -78,6 +78,7 @@ const Footer = () => {
             <Link href="/" className="block">
               <Image
                 src="/images/logo.jpg"
+                // src="/images/logo3.png"
                 alt="The Gifting Affair Logo"
                 width={120}
                 height={120}

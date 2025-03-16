@@ -279,9 +279,10 @@ const Navbar = () => {
               href="/"
               className="flex items-center space-x-3 2xl:space-x-5"
             >
-              <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-full overflow-hidden">
+              <div className="w-12 h-12 2xl:w-16 2xl:h-16 rounded-full overflow-hidden">
                 <Image
                   src="/images/logo.jpg"
+                  // src="/images/logo3.png"
                   alt="Logo"
                   width={64}
                   height={64}
@@ -296,37 +297,21 @@ const Navbar = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg">
               <div className="flex flex-row gap-8 2xl:gap-12">
-                {/* Special Dropdown - Only show if there are festive hampers */}
+                {/* Special Link - Only show if there are festive hampers */}
                 {festiveHampers.length > 0 && (
-                  <div className="relative group">
-                    <button
-                      className="flex items-center space-x-1 2xl:space-x-2 hover:text-bg3 transition-colors"
-                      onMouseEnter={() => setActiveDropdown("special")}
-                      onMouseLeave={() => setActiveDropdown(null)}
-                    >
-                      <span>{specialNav}</span>
-                      <ChevronDown size={16} className="2xl:w-6 2xl:h-6" />
-                    </button>
-                    <div
-                      className={`absolute top-full left-0 w-48 2xl:w-56 bg-white shadow-lg rounded-md py-2 2xl:py-3 transition-all duration-200 ${
-                        activeDropdown === "special"
-                          ? "opacity-100 visible"
-                          : "opacity-0 invisible"
-                      }`}
-                      onMouseEnter={() => setActiveDropdown("special")}
-                      onMouseLeave={() => setActiveDropdown(null)}
-                    >
-                      {festiveHampers.map((hamper) => (
-                        <Link
-                          key={hamper.id}
-                          href={`/product/${hamper.id}`}
-                          className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
-                        >
-                          {hamper.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
+                  <Link
+                    href="/products#shop-by-special"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(
+                        "/products#shop-by-special",
+                        "shop-by-special"
+                      );
+                    }}
+                    className="hover:text-bg3 transition-colors"
+                  >
+                    {specialNav}
+                  </Link>
                 )}
               </div>
 
@@ -491,39 +476,22 @@ const Navbar = () => {
             <div className="md:hidden py-4">
               <div className="flex flex-col space-y-4">
                 <div className="space-y-2">
-                  {/* Special Mobile Dropdown - Only show if there are festive hampers */}
+                  {/* Special Mobile Link - Only show if there are festive hampers */}
                   {festiveHampers.length > 0 && (
-                    <div>
-                      <button
-                        className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
-                        onClick={() =>
-                          setActiveDropdown(
-                            activeDropdown === "special" ? null : "special"
-                          )
-                        }
-                      >
-                        <span>{specialNav}</span>
-                        {activeDropdown === "special" ? (
-                          <ChevronUp size={16} />
-                        ) : (
-                          <ChevronDown size={16} />
-                        )}
-                      </button>
-                      {activeDropdown === "special" && (
-                        <div className="mx-2 space-y-2 mt-2">
-                          {festiveHampers.map((hamper) => (
-                            <Link
-                              key={hamper.id}
-                              href={`/product/${hamper.id}`}
-                              className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
-                            >
-                              <ChevronRight size={14} className="mx-2" />
-                              {hamper.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <Link
+                      href="/products#shop-by-special"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigation(
+                          "/products#shop-by-special",
+                          "shop-by-special"
+                        );
+                        setIsMenuOpen(false);
+                      }}
+                      className="block px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                    >
+                      {specialNav}
+                    </Link>
                   )}
 
                   {/* Shop By Category */}
