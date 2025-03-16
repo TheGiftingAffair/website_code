@@ -34,7 +34,8 @@ const OrderSuccessPage = () => {
     <Link href="/" className="flex items-center justify-center space-x-3 mb-8">
       <div className="w-12 h-12 rounded-full overflow-hidden">
         <Image
-          src="/images/logo.jpg"
+          // src="/images/logo.jpg"
+          src="/images/logo2.png"
           alt="Logo"
           width={48}
           height={48}

@@ -281,8 +281,8 @@ const Navbar = () => {
             >
               <div className="w-12 h-12 2xl:w-16 2xl:h-16 rounded-full overflow-hidden">
                 <Image
-                  src="/images/logo.jpg"
-                  // src="/images/logo3.png"
+                  // src="/images/logo.jpg"
+                  src="/images/logo2.png"
                   alt="Logo"
                   width={64}
                   height={64}
