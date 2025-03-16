@@ -73,7 +73,6 @@ const CheckoutPage = () => {
     pincode: "",
     address: "",
   });
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [couponCode, setCouponCode] = useState("");
@@ -145,14 +144,6 @@ const CheckoutPage = () => {
     };
     enrichItems();
   }, [items]);
-
-  useEffect(() => {
-    const fetchQrCode = async () => {
-      const url = await getPlaceholderImage("qrcode");
-      setQrCodeUrl(url);
-    };
-    fetchQrCode();
-  }, []);
 
   const handleBillingInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -239,6 +230,8 @@ const CheckoutPage = () => {
       }
 
       const orderData = {
+        userId: user?.uid, // Add userId if user is logged in
+        customerType: user ? "registered" : "guest",
         items: items.map((item) => ({
           productId: item.productId,
           name: item.name,
@@ -282,7 +275,6 @@ const CheckoutPage = () => {
         specialInstructions: specialRequest.trim() || null,
         subtotal: subtotal,
         total: total,
-        customerType: user ? "registered" : "guest", // Add this to identify guest orders
         coupon: appliedCoupon
           ? {
               code: appliedCoupon.code,
@@ -296,24 +288,60 @@ const CheckoutPage = () => {
         total: total,
       };
 
-      let orderId;
+      // Create HitPay payment request
+      try {
+        const paymentResponse = await fetch('/api/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount: total,
+            currency: 'SGD',
+            email: shippingDetails.email,
+            name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
+            orderData: orderData, // Pass the complete orderData
+          }),
+        });
 
-      if (user) {
-        orderId = await createOrder({ ...orderData, userId: user.uid });
-      } else {
-        orderId = await createGuestOrder(orderData);
+        if (!paymentResponse.ok) {
+          throw new Error('Payment request failed');
+        }
+
+        const paymentData = await paymentResponse.json();
+        
+        if (!paymentData.url) {
+          throw new Error('Payment URL not received in response');
+        }
+
+        // Store order data in both localStorage and sessionStorage
+        const storageData = JSON.stringify({
+          orderData,
+          paymentReference: paymentData.referenceNumber
+        });
+        
+        try {
+          localStorage.setItem('pendingOrderData', storageData);
+          sessionStorage.setItem('pendingOrderData', storageData);
+        } catch (storageError) {
+          console.error('Storage error:', storageError);
+        }
+
+        // Clear cart before redirecting
+        clearCart();
+
+        // Redirect to HitPay checkout
+        window.location.href = paymentData.url;
+        
+      } catch (error) {
+        console.error('Payment creation failed:', error);
+        toast.error('Failed to initiate payment. Please try again.');
+        setIsSubmitting(false);
       }
 
-      if (appliedCoupon && shippingDetails.email) {
-        await applyCoupon(appliedCoupon.code, shippingDetails.email);
-      }
-
-      clearCart();
-      // Use replace instead of push to avoid history stack issues
-      await router.replace(`/order-success?orderId=${orderId}`);
     } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place order. Please try again.");
+      console.error("Error:", error);
+      toast.error("Failed to process order. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -757,38 +785,8 @@ const CheckoutPage = () => {
               </div>
 
               {/* Payment Section */}
-              <div className="mt-6 flex flex-col items-center">
-                <h3 className="font-semibold mb-3">Scan QR to Pay</h3>
-                {qrCodeUrl ? (
-                  <img
-                    src={qrCodeUrl}
-                    alt="Payment QR Code"
-                    className="w-48 h-48 mb-4 object-contain"
-                  />
-                ) : (
-                  <div className="w-48 h-48 mb-4 flex items-center justify-center bg-gray-100 rounded-lg">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
-                  </div>
-                )}
-
-                {/* Updated Payment Verification Checkbox */}
-                <div className="w-full flex items-start gap-2 mb-4">
-                  <input
-                    type="checkbox"
-                    id="paymentVerification"
-                    checked={paymentVerified}
-                    onChange={(e) => setPaymentVerified(e.target.checked)}
-                    className="mt-1 form-checkbox h-4 w-4 text-green-600 rounded border-gray-300"
-                  />
-                  <label
-                    htmlFor="paymentVerification"
-                    className="text-sm text-gray-600 flex-1"
-                  >
-                    I confirm that I have made the payment
-                  </label>
-                </div>
-
-                {/* Updated Terms and Conditions Checkbox */}
+              <div className="mt-6">
+                {/* Terms and Conditions Checkbox */}
                 <div className="w-full flex items-start gap-2 mb-4">
                   <input
                     type="checkbox"
@@ -814,9 +812,9 @@ const CheckoutPage = () => {
 
                 <button
                   onClick={handleSubmitOrder}
-                  disabled={!paymentVerified || isSubmitting || !termsAccepted}
+                  disabled={isSubmitting || !termsAccepted}
                   className={`w-full py-3 rounded-md font-semibold ${
-                    paymentVerified && !isSubmitting && termsAccepted
+                    !isSubmitting && termsAccepted
                       ? "bg-green-600 hover:bg-green-700 text-white"
                       : "bg-gray-300 cursor-not-allowed text-gray-500"
                   }`}
@@ -827,7 +825,7 @@ const CheckoutPage = () => {
                       Processing...
                     </div>
                   ) : (
-                    "Place Order"
+                    "Proceed to Payment"
                   )}
                 </button>
               </div>
