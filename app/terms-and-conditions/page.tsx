@@ -245,9 +245,9 @@ const TermsAndConditions = () => {
               Phone: +65 87430520
             </p>
 
-            <div className="mt-8 text-sm text-gray-600">
+            {/* <div className="mt-8 text-sm text-gray-600">
               <p>Last updated: {new Date().toLocaleDateString()}</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

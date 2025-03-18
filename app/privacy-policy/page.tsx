@@ -197,9 +197,9 @@ const PrivacyPolicy = () => {
               described in this Privacy Policy.
             </p>
 
-            <div className="mt-8 text-sm text-gray-600">
+            {/* <div className="mt-8 text-sm text-gray-600">
               <p>Last updated: {new Date().toLocaleDateString()}</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
