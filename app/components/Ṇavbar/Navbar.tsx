@@ -270,7 +270,8 @@ const Navbar = () => {
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-200 ${
           isScrolled ? "shadow-md" : ""
-        } bg-[#f9f9f9]`}
+          // } bg-[#f9f9f9]`}
+        } bg-blue-950`}
       >
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 2xl:px-16 font-semibold font-mont">
           <div className="flex items-center justify-between h-14 2xl:h-20">
@@ -282,20 +283,20 @@ const Navbar = () => {
               <div className="w-12 h-12 2xl:w-16 2xl:h-16 rounded-full overflow-hidden">
                 <Image
                   // src="/images/logo.jpg"
-                  src="/images/logo2.png"
+                  src="/images/logo4.png"
                   alt="Logo"
                   width={64}
                   height={64}
-                  className="object-cover"
+                  className="object-cover brightness-110 mt-1"
                 />
               </div>
-              <span className="font-macondo font-bold text-xl 2xl:text-3xl text-bg3 hover:text-bg4 transition-colors">
+              <span className="font-macondo font-bold text-xl 2xl:text-3xl text-bg2 hover:text-bg3   transition-colors">
                 The Gifting Affair
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg">
+            <div className="hidden md:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg text-gray-200">
               <div className="flex flex-row gap-8 2xl:gap-12">
                 {/* Special Link - Only show if there are festive hampers */}
                 {festiveHampers.length > 0 && (
@@ -308,7 +309,7 @@ const Navbar = () => {
                         "shop-by-special"
                       );
                     }}
-                    className="hover:text-bg3 transition-colors"
+                    className="hover:text-bg2 transition-colors"
                   >
                     {specialNav}
                   </Link>
@@ -318,7 +319,7 @@ const Navbar = () => {
               {/* Shop By Category Dropdown */}
               <div className="relative group">
                 <button
-                  className="flex items-center space-x-1 hover:text-bg3 transition-colors"
+                  className="flex items-center space-x-1 hover:text-bg2 transition-colors"
                   onMouseEnter={() => setActiveDropdown("category")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
@@ -326,7 +327,7 @@ const Navbar = () => {
                   <ChevronDown size={16} />
                 </button>
                 <div
-                  className={`absolute top-full left-0 w-48 bg-white shadow-lg rounded-md py-2 transition-all duration-200 ${
+                  className={`absolute top-full left-0 w-48 bg-[#f9f9f9] shadow-lg rounded-md py-2 transition-all duration-200 ${
                     activeDropdown === "category"
                       ? "opacity-100 visible"
                       : "opacity-0 invisible"
@@ -342,7 +343,7 @@ const Navbar = () => {
                         e.preventDefault();
                         handleNavigation(category.href, category.section);
                       }}
-                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
                       {category.name}
                     </Link>
@@ -353,7 +354,7 @@ const Navbar = () => {
               {/* Shop By Occasion Dropdown */}
               <div className="relative group">
                 <button
-                  className="flex items-center space-x-1 hover:text-bg3 transition-colors"
+                  className="flex items-center space-x-1 hover:text-bg2 transition-colors"
                   onMouseEnter={() => setActiveDropdown("occasion")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
@@ -361,7 +362,7 @@ const Navbar = () => {
                   <ChevronDown size={16} />
                 </button>
                 <div
-                  className={`absolute top-full left-0 w-48 bg-white shadow-lg rounded-md py-2 transition-all duration-200 ${
+                  className={`absolute top-full left-0 w-48 bg-[#f9f9f9] shadow-lg rounded-md py-2 transition-all duration-200 ${
                     activeDropdown === "occasion"
                       ? "opacity-100 visible"
                       : "opacity-0 invisible"
@@ -377,7 +378,7 @@ const Navbar = () => {
                         e.preventDefault();
                         handleNavigation(occasion.href, occasion.section);
                       }}
-                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
                       {occasion.name}
                     </Link>
@@ -388,7 +389,7 @@ const Navbar = () => {
               {/* Shop By Price Dropdown */}
               <div className="relative group">
                 <button
-                  className="flex items-center space-x-1 hover:text-bg3 transition-colors"
+                  className="flex items-center space-x-1 hover:text-bg2 transition-colors"
                   onMouseEnter={() => setActiveDropdown("price")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
@@ -396,7 +397,7 @@ const Navbar = () => {
                   <ChevronDown size={16} />
                 </button>
                 <div
-                  className={`absolute top-full left-0 w-48 bg-white shadow-lg rounded-md py-2 transition-all duration-200 ${
+                  className={`absolute top-full left-0 w-48 bg-[#f9f9f9] shadow-lg rounded-md py-2 transition-all duration-200 ${
                     activeDropdown === "price"
                       ? "opacity-100 visible"
                       : "opacity-0 invisible"
@@ -412,7 +413,7 @@ const Navbar = () => {
                         e.preventDefault();
                         handleNavigation(range.href, range.section);
                       }}
-                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
                       {range.name}
                     </Link>
@@ -426,13 +427,13 @@ const Navbar = () => {
 
               <Link
                 href="/profile"
-                className="hover:text-bg3 transition-colors"
+                className="hover:text-bg2 transition-colors"
               >
                 <User size={24} className="2xl:w-8 2xl:h-8" />
               </Link>
 
               <button
-                className="hover:text-bg3 transition-colors relative"
+                className="hover:text-bg2 transition-colors relative"
                 onClick={() => setIsCartOpen(!isCartOpen)}
               >
                 <ShoppingCart size={24} className="2xl:w-8 2xl:h-8" />
@@ -449,22 +450,28 @@ const Navbar = () => {
                   href="/profile"
                   className="hover:text-bg3 transition-colors"
                 >
-                  <User size={24} className="2xl:w-8 2xl:h-8" />
+                  <User size={24} className="2xl:w-8 2xl:h-8 text-[#f9f9f9]" />
                 </Link>
                 <button
                   className="hover:text-bg3 transition-colors relative"
                   onClick={() => setIsCartOpen(!isCartOpen)}
                 >
-                  <ShoppingCart size={24} className="2xl:w-8 2xl:h-8" />
+                  <ShoppingCart
+                    size={24}
+                    className="2xl:w-8 2xl:h-8 text-[#f9f9f9]"
+                  />
                   <span className="absolute -top-2 -right-2 bg-bg3 text-white text-xs 2xl:text-sm rounded-full w-5 h-5 2xl:w-6 2xl:h-6 flex items-center justify-center">
                     {cartCount}
                   </span>
                 </button>
                 <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
                   {isMenuOpen ? (
-                    <X size={24} className="2xl:w-8 2xl:h-8" />
+                    <X size={24} className="2xl:w-8 2xl:h-8 text-[#f9f9f9]" />
                   ) : (
-                    <Menu size={24} className="2xl:w-8 2xl:h-8" />
+                    <Menu
+                      size={24}
+                      className="2xl:w-8 2xl:h-8 text-[#f9f9f9]"
+                    />
                   )}
                 </button>
               </div>
@@ -488,7 +495,7 @@ const Navbar = () => {
                         );
                         setIsMenuOpen(false);
                       }}
-                      className="block px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                      className="block px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
                     >
                       {specialNav}
                     </Link>
@@ -497,7 +504,7 @@ const Navbar = () => {
                   {/* Shop By Category */}
                   <div>
                     <button
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                      className="flex items-center justify-between w-full px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
                       onClick={() =>
                         setActiveDropdown(
                           activeDropdown === "category" ? null : "category"
@@ -521,7 +528,7 @@ const Navbar = () => {
                               e.preventDefault();
                               handleNavigation(category.href, category.section);
                             }}
-                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
                             {category.name}
@@ -534,7 +541,7 @@ const Navbar = () => {
                   {/* Shop By Occasion */}
                   <div>
                     <button
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                      className="flex items-center justify-between w-full px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
                       onClick={() =>
                         setActiveDropdown(
                           activeDropdown === "occasion" ? null : "occasion"
@@ -558,7 +565,7 @@ const Navbar = () => {
                               e.preventDefault();
                               handleNavigation(occasion.href, occasion.section);
                             }}
-                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
                             {occasion.name}
@@ -571,7 +578,7 @@ const Navbar = () => {
                   {/* Shop By Price */}
                   <div>
                     <button
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                      className="flex items-center justify-between w-full px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
                       onClick={() =>
                         setActiveDropdown(
                           activeDropdown === "price" ? null : "price"
@@ -595,7 +602,7 @@ const Navbar = () => {
                               e.preventDefault();
                               handleNavigation(range.href, range.section);
                             }}
-                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
                             {range.name}

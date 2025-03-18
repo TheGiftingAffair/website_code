@@ -157,7 +157,7 @@ const ShopByOccasion = () => {
           ))}
         </div>
         {/* Hamper Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 lg:mt-4 hover:cursor-pointer">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 gap-4 lg:mt-4 hover:cursor-pointer">
           <AnimatePresence mode="wait">
             {filteredHampers.length > 0 ? (
               filteredHampers.map((hamper) => (
