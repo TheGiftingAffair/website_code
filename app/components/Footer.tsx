@@ -75,7 +75,6 @@ const Footer = () => {
           <div className="space-y-0 md:space-y-2 flex flex-col items-center text-center">
             <Link href="/" className="block">
               <Image
-                // src="/images/logo.jpg"
                 src="/images/logo4.png"
                 alt="The Gifting Affair Logo"
                 width={180}
@@ -88,7 +87,7 @@ const Footer = () => {
                 The Gifting Affair
               </div> */}
               <div>
-                <p className="text-sm mt-8 md:mt-2 font-mont font-semibold text-bg1">
+                <p className="text-sm font-mont font-semibold text-bg1">
                   {footerLogoBody1} {footerLogoBody2}
                 </p>
                 {/* <p className="text-sm font-mont font-semibold text-bg1">

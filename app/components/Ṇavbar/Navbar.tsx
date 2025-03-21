@@ -26,6 +26,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -190,8 +191,8 @@ const Navbar = () => {
   const special = [
     {
       name: "Valentine",
-      href: "/products",
-      section: "shop-by-category",
+      href: "/special",
+      section: "shop-by-special",
     },
   ];
 
@@ -265,6 +266,8 @@ const Navbar = () => {
     fetchTexts();
   }, []);
 
+  const router = useRouter();
+
   return (
     <>
       <nav
@@ -280,14 +283,14 @@ const Navbar = () => {
               href="/"
               className="flex items-center space-x-3 2xl:space-x-5"
             >
-              <div className="w-12 h-12 2xl:w-16 2xl:h-16 rounded-full overflow-hidden">
+              <div className="w-16 h-16 2xl:w-24 2xl:h-24 rounded-full overflow-hidden">
                 <Image
                   // src="/images/logo.jpg"
                   src="/images/logo4.png"
                   alt="Logo"
-                  width={64}
-                  height={64}
-                  className="object-cover brightness-110 mt-1"
+                  width={120}
+                  height={120}
+                  className="object-cover brightness-110"
                 />
               </div>
               <span className="font-macondo font-bold text-xl 2xl:text-3xl text-bg2 hover:text-bg3   transition-colors">
@@ -301,13 +304,11 @@ const Navbar = () => {
                 {/* Special Link - Only show if there are festive hampers */}
                 {festiveHampers.length > 0 && (
                   <Link
-                    href="/products#shop-by-special"
+                    href="/special"
                     onClick={(e) => {
                       e.preventDefault();
-                      handleNavigation(
-                        "/products#shop-by-special",
-                        "shop-by-special"
-                      );
+                      // handleNavigation("/special", "shop-by-special");
+                      router.push("/special");
                     }}
                     className="hover:text-bg2 transition-colors"
                   >
@@ -486,13 +487,11 @@ const Navbar = () => {
                   {/* Special Mobile Link - Only show if there are festive hampers */}
                   {festiveHampers.length > 0 && (
                     <Link
-                      href="/products#shop-by-special"
+                      href="/special"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleNavigation(
-                          "/products#shop-by-special",
-                          "shop-by-special"
-                        );
+                        // handleNavigation("/special", "shop-by-special");
+                        router.push("/special");
                         setIsMenuOpen(false);
                       }}
                       className="block px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"

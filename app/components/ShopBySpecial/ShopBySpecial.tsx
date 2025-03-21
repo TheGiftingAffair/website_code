@@ -101,8 +101,8 @@ const ShopBySpecial = () => {
   return (
     <section
       id="shop-by-special"
-      className="relative py-8 px-4 md:px-8 bg-gradient-to-l from-bg3/10 to-bg1/40"
-      style={{ minHeight: "calc(100vh - 50px)" }}
+      className="relative py-8 px-4 md:px-8 bg-gradient-to-l from-bg3/10 to-bg1/40 md:h-[calc(100vh-100px)]"
+      // style={{ minHeight: "calc(100vh - 50px)" }}
     >
       <div className="relative z-10 max-w-8xl mx-auto">
         <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-alegreya text-headline font-bold text-center mb-2">
