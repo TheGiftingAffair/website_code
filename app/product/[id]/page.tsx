@@ -23,6 +23,8 @@ import {
   IoChevronBackOutline,
   IoChevronForwardOutline,
   IoInformationCircleOutline,
+  IoShieldCheckmark, // Add this import
+  IoTimeOutline, // Add this import
 } from "react-icons/io5";
 import { CachedImage } from "@/components/CachedImage";
 import AgeVerificationModal from "@/app/components/ui/AgeVerificationModal";
@@ -67,7 +69,13 @@ export default function ProductPage({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const router = useRouter();
-  const { addToCart, clearCart, setDeliveryDate, getTotalQuantity, deliveryDate } = useCart();
+  const {
+    addToCart,
+    clearCart,
+    setDeliveryDate,
+    getTotalQuantity,
+    deliveryDate,
+  } = useCart();
   const [showAgeVerification, setShowAgeVerification] = useState(false);
   const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
     null
@@ -217,7 +225,7 @@ export default function ProductPage({
 
     // Add current item
     addToCart({
-      productId: product.id,  // Add productId
+      productId: product.id, // Add productId
       id: product.id,
       name: product.name,
       price: product.price,
@@ -228,7 +236,7 @@ export default function ProductPage({
     });
 
     // Redirect to checkout
-    router.replace("/checkout");  // Use replace instead of push
+    router.replace("/checkout"); // Use replace instead of push
   };
 
   const handleDateConfirm = (date: string) => {
@@ -240,7 +248,7 @@ export default function ProductPage({
 
     // Add only the current item
     addToCart({
-      productId: product.id,  // Add productId
+      productId: product.id, // Add productId
       id: product.id,
       name: product.name,
       price: product.price,
@@ -252,7 +260,7 @@ export default function ProductPage({
 
     // Close modal and redirect
     setShowDateModal(false);
-    router.replace("/checkout");  // Use replace instead of push
+    router.replace("/checkout"); // Use replace instead of push
   };
 
   const nextImage = () => {
@@ -757,13 +765,13 @@ export default function ProductPage({
               {/* Payment and Delivery Disclaimers */}
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-4">
                 <div className="bg-white shadow-sm py-2 px-4 rounded-full border border-gray-100 flex items-center gap-2">
-                  <IoInformationCircleOutline className="text-gray-600 text-xl" />
+                  <IoShieldCheckmark className="text-gray-600 text-xl" />
                   <p className="text-gray-700 font-mont text-xs 2xl:text-base">
                     100% secure payment
                   </p>
                 </div>
                 <div className="bg-white shadow-sm py-2 px-4 rounded-full border border-gray-100 flex items-center gap-2">
-                  <IoInformationCircleOutline className="text-gray-600 text-xl" />
+                  <IoTimeOutline className="text-gray-600 text-xl" />
                   <p className="text-gray-700 font-mont text-xs 2xl:text-base">
                     On time delivery
                   </p>
