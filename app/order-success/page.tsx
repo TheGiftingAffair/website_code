@@ -32,14 +32,14 @@ const OrderSuccessPage = () => {
 
   const BrandLogo = () => (
     <Link href="/" className="flex items-center justify-center space-x-3 mb-8">
-      <div className="w-12 h-12 rounded-full overflow-hidden">
+      <div className="w-16 h-16 2xl:w-24 2xl:h-24 rounded-full overflow-hidden">
         <Image
           // src="/images/logo.jpg"
-          src="/images/logo2.png"
+          src="/images/logo4.png"
           alt="Logo"
-          width={48}
-          height={48}
-          className="object-cover"
+          width={120}
+          height={120}
+          className="object-cover brightness-110"
         />
       </div>
       <span className="font-macondo font-bold text-2xl text-bg3 hover:text-bg4 transition-colors">

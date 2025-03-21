@@ -299,7 +299,7 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg text-gray-200">
+            <div className="hidden lg:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg text-gray-200">
               <div className="flex flex-row gap-8 2xl:gap-12">
                 {/* Special Link - Only show if there are festive hampers */}
                 {festiveHampers.length > 0 && (
@@ -445,7 +445,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <div className="flex flex-row gap-4">
                 <Link
                   href="/profile"
