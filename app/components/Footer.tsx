@@ -68,7 +68,7 @@ const Footer = () => {
       </div> */}
 
       {/* Main Content with higher z-index */}
-      <div className="relative z-10 max-w-8xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 pt-8 md:pt-12 pb-4 md:pb-6 font-semibold">
+      <div className="relative z-10 max-w-8xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 pt-8 md:pt-6 pb-4 md:pb-6 font-semibold">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 ">
           {/* Brand Section */}
@@ -99,7 +99,7 @@ const Footer = () => {
 
           {/* Navigation Links */}
           <div className="space-y-2 md:space-y-4">
-            <h3 className="font-semibold mb-2 md:mb-5 text-xl 2xl:text-2xl text-bg3 ">
+            <h3 className="font-semibold mb-2 md:mb-5 md:pt-6 text-xl 2xl:text-2xl text-bg3 ">
               Quick Links
             </h3>
             <div className="grid grid-cols-2 gap-2">
@@ -133,7 +133,7 @@ const Footer = () => {
 
           {/* Contact & Social */}
           <div className="space-y-2 md:space-y-4">
-            <h3 className="font-semibold text-xl 2xl:text-2xl mb-2 md:mb-5 text-bg3 ">
+            <h3 className="font-semibold text-xl 2xl:text-2xl mb-2 md:mb-5 md:pt-6 text-bg3 ">
               Get in Touch
             </h3>
             <div className="space-y-2 text-[#f9f9f9]">
