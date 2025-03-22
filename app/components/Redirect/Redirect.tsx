@@ -71,11 +71,11 @@ const CategoryCard = ({ category, index }) => {
         />
         <div className="absolute inset-0 bg-black bg-opacity-60 transition-opacity group-hover:bg-opacity-45" />
       </div>
-      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+      <div className="absolute bottom-0 left-0 right-0 p-4 text-[#f9f9f9]">
         <h3 className="text-xl lg:text-2xl 2xl:text-3xl font-bold font-mont mb-1">
           {category.title}
         </h3>
-        <p className="text-xs 2xl:text-sm mb-2 opacity-90 font-semibold italic">
+        <p className="hidden md:block text-xs 2xl:text-sm mb-2 opacity-90 font-semibold italic">
           {category.description}
         </p>
       </div>
