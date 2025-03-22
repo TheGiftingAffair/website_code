@@ -293,7 +293,7 @@ const Navbar = () => {
                   className="object-cover brightness-110"
                 />
               </div>
-              <span className="font-macondo font-bold text-xl 2xl:text-3xl text-bg2 hover:text-bg3   transition-colors">
+              <span className="hidden md:block font-macondo font-bold text-xl 2xl:text-3xl text-bg2 hover:text-bg3   transition-colors">
                 The Gifting Affair
               </span>
             </Link>
