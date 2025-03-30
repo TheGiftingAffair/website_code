@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Occasion =
@@ -30,18 +30,29 @@ interface Hamper {
 
 const ShopByOccasion = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
-  const [selectedOccasion, setSelectedOccasion] =
-    useState<Occasion>("Birthday");
-  const occasions: Occasion[] = [
-    "Birthday",
-    "Anniversary",
-    "Farewell",
-    "Congratulations",
-    "Housewarming",
-    "Graduation",
-    "Special Day",
-    "Get Well Soon",
-  ];
+  const [selectedOccasion, setSelectedOccasion] = useState<Occasion>("Birthday");
+  const [occasions, setOccasions] = useState<Occasion[]>([]);
+
+  useEffect(() => {
+    const fetchOccasions = async () => {
+      try {
+        const docRef = doc(db, "variables", "ShopByOccasion");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const occasionsArray = docSnap.data().valueArray as Occasion[];
+          setOccasions(occasionsArray);
+          if (occasionsArray.length > 0) {
+            setSelectedOccasion(occasionsArray[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching occasions:", error);
+      }
+    };
+
+    fetchOccasions();
+  }, []);
 
   useEffect(() => {
     const handleUrlParamsChanged = (event: CustomEvent) => {
@@ -75,7 +86,7 @@ const ShopByOccasion = () => {
         handleUrlParamsChanged as EventListener
       );
     };
-  }, []);
+  }, [occasions]);
 
   const handleOccasionChange = (occasion: Occasion) => {
     setSelectedOccasion(occasion);

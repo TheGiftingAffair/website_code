@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Category =
@@ -32,20 +32,29 @@ interface Hamper {
 
 const ShopByCategories = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
-  const [selectedCategory, setSelectedCategory] =
-    useState<Category>("For Him/Her");
-  const categories: Category[] = [
-    "For Him/Her",
-    "Chocolate & Cookies",
-    "Tea & Coffee",
-    "Wine & Whiskey",
-    "Fruits",
-    "Beauty",
-    "Baby",
-    "Halal",
-    "Wellness",
-    "Evergreen",
-  ];
+  const [selectedCategory, setSelectedCategory] = useState<Category>("For Him/Her");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const docRef = doc(db, "variables", "ShopByCategories");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const categoriesArray = docSnap.data().valueArray as Category[];
+          setCategories(categoriesArray);
+          if (categoriesArray.length > 0) {
+            setSelectedCategory(categoriesArray[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handleUrlChange = () => {
@@ -84,7 +93,7 @@ const ShopByCategories = () => {
     return () => {
       window.removeEventListener("urlChanged", handleUrlChange);
     };
-  }, []);
+  }, [categories]);
 
   useEffect(() => {
     const handleUrlParamsChanged = (event: CustomEvent) => {
@@ -125,7 +134,7 @@ const ShopByCategories = () => {
         handleUrlParamsChanged as EventListener
       );
     };
-  }, []);
+  }, [categories]);
 
   // Update URL when category changes
   const handleCategoryChange = (category: Category) => {

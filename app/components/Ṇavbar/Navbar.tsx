@@ -33,14 +33,16 @@ const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [cartCount, setCartCount] = useState(0); // Add this line
+  const [cartCount, setCartCount] = useState(0);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const { items } = useCart(); // Change this line to destructure items instead of cart
+  const { items } = useCart();
   const [festiveHampers, setFestiveHampers] = useState<
     Array<{ id: string; name: string }>
   >([]);
   const [specialNav, setSpecialNav] = useState("Special");
+  const [occasions, setOccasions] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
 
   // Handle scroll effect
   useEffect(() => {
@@ -59,147 +61,18 @@ const Navbar = () => {
     const [path, hash] = href.split("#");
 
     if (currentPath === "/products") {
-      // Already on products page, just update hash and let scroll handler work
       window.location.hash = hash;
     } else {
-      // Store target section and navigate to products page
       sessionStorage.setItem("scrollTarget", `#${hash}`);
       window.location.href = `/products#${hash}`;
     }
   };
 
-  const categories = [
-    {
-      name: "For Him/Her",
-      href: "/products#shop-by-categories?category=for-him-her",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Chocolate & Cookies",
-      href: "/products#shop-by-categories?category=chocolate-cookies",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Tea & Coffee",
-      href: "/products#shop-by-categories?category=tea-coffee",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Wine & Whiskey",
-      href: "/products#shop-by-categories?category=wine-whiskey",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Fruits",
-      href: "/products#shop-by-categories?category=fruits",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Beauty",
-      href: "/products#shop-by-categories?category=beauty",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Baby",
-      href: "/products#shop-by-categories?category=baby",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Halal",
-      href: "/products#shop-by-categories?category=halal",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Wellness",
-      href: "/products#shop-by-categories?category=wellness",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Evergreen",
-      href: "/products#shop-by-categories?category=evergreen",
-      section: "shop-by-categories",
-    },
-  ];
-
-  const occasions = [
-    {
-      name: "Birthday",
-      href: "/products#shop-by-occasion?occasion=birthday",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Anniversary",
-      href: "/products#shop-by-occasion?occasion=anniversary",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Farewell",
-      href: "/products#shop-by-occasion?occasion=farewell",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Congratulations",
-      href: "/products#shop-by-occasion?occasion=congratulations",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Housewarming",
-      href: "/products#shop-by-occasion?occasion=housewarming",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Graduation",
-      href: "/products#shop-by-occasion?occasion=graduation",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Special Day",
-      href: "/products#shop-by-occasion?occasion=special-day",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Get Well Soon",
-      href: "/products#shop-by-occasion?occasion=get-well-soon",
-      section: "shop-by-occasion",
-    },
-  ];
-
-  const priceRanges = [
-    {
-      name: "Below $100",
-      href: "/products#shop-by-price?price=below100",
-      section: "shop-by-price",
-    },
-    {
-      name: "$100 - $150",
-      href: "/products#shop-by-price?price=100to150",
-      section: "shop-by-price",
-    },
-    {
-      name: "$150 - $200",
-      href: "/products#shop-by-price?price=150to200",
-      section: "shop-by-price",
-    },
-    {
-      name: "$200 & Above",
-      href: "/products#shop-by-price?price=above200",
-      section: "shop-by-price",
-    },
-  ];
-
-  const special = [
-    {
-      name: "Valentine",
-      href: "/products",
-      section: "shop-by-category",
-    },
-  ];
-
   // Update cart count when cart changes
   useEffect(() => {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
     setCartCount(totalItems);
-  }, [items]); // Change dependency to items
+  }, [items]);
 
   // Listen for cart updates from storage events
   useEffect(() => {
@@ -241,9 +114,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchTexts = async () => {
       try {
-        const textIds = [
-          "specialNav", // Add this new ID
-        ];
+        const textIds = ["specialNav"];
         const texts = await Promise.all(
           textIds.map((id) => getDoc(doc(db, "variables", id)))
         );
@@ -263,6 +134,31 @@ const Navbar = () => {
     };
 
     fetchTexts();
+  }, []);
+
+  // Add new useEffect to fetch both arrays
+  useEffect(() => {
+    const fetchArrays = async () => {
+      try {
+        const occasionsDoc = await getDoc(
+          doc(db, "variables", "ShopByOccasion")
+        );
+        if (occasionsDoc.exists()) {
+          setOccasions(occasionsDoc.data().valueArray);
+        }
+
+        const categoriesDoc = await getDoc(
+          doc(db, "variables", "ShopByCategories")
+        );
+        if (categoriesDoc.exists()) {
+          setCategories(categoriesDoc.data().valueArray);
+        }
+      } catch (error) {
+        console.error("Error fetching arrays:", error);
+      }
+    };
+
+    fetchArrays();
   }, []);
 
   return (
@@ -351,15 +247,22 @@ const Navbar = () => {
                 >
                   {categories.map((category) => (
                     <Link
-                      key={category.name}
-                      href={category.href}
+                      key={category}
+                      href={`/products#shop-by-categories?category=${category
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")}`}
                       onClick={(e) => {
                         e.preventDefault();
-                        handleNavigation(category.href, category.section);
+                        handleNavigation(
+                          `/products#shop-by-categories?category=${category
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}`,
+                          "shop-by-categories"
+                        );
                       }}
                       className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
-                      {category.name}
+                      {category}
                     </Link>
                   ))}
                 </div>
@@ -386,15 +289,22 @@ const Navbar = () => {
                 >
                   {occasions.map((occasion) => (
                     <Link
-                      key={occasion.name}
-                      href={occasion.href}
+                      key={occasion}
+                      href={`/products#shop-by-occasion?occasion=${occasion
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")}`}
                       onClick={(e) => {
                         e.preventDefault();
-                        handleNavigation(occasion.href, occasion.section);
+                        handleNavigation(
+                          `/products#shop-by-occasion?occasion=${occasion
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}`,
+                          "shop-by-occasion"
+                        );
                       }}
                       className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
-                      {occasion.name}
+                      {occasion}
                     </Link>
                   ))}
                 </div>
@@ -419,25 +329,30 @@ const Navbar = () => {
                   onMouseEnter={() => setActiveDropdown("price")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {priceRanges.map((range) => (
-                    <Link
-                      key={range.name}
-                      href={range.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigation(range.href, range.section);
-                      }}
-                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
-                    >
-                      {range.name}
-                    </Link>
-                  ))}
+                  {["Below $100", "$100 - $150", "$150 - $200", "$200 & Above"].map(
+                    (range) => (
+                      <Link
+                        key={range}
+                        href={`/products#shop-by-price?price=${range
+                          .toLowerCase()
+                          .replace(/\s+/g, "")}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigation(
+                            `/products#shop-by-price?price=${range
+                              .toLowerCase()
+                              .replace(/\s+/g, "")}`,
+                            "shop-by-price"
+                          );
+                        }}
+                        className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      >
+                        {range}
+                      </Link>
+                    )
+                  )}
                 </div>
               </div>
-
-              {/* <Link href="/about" className="hover:text-bg3 transition-colors">
-                About Us
-              </Link> */}
 
               <Link
                 href="/profile"
@@ -547,16 +462,23 @@ const Navbar = () => {
                       <div className="mx-2 space-y-2 mt-2">
                         {categories.map((category) => (
                           <Link
-                            key={category.name}
-                            href={category.href}
+                            key={category}
+                            href={`/products#shop-by-categories?category=${category
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`}
                             onClick={(e) => {
                               e.preventDefault();
-                              handleNavigation(category.href, category.section);
+                              handleNavigation(
+                                `/products#shop-by-categories?category=${category
+                                  .toLowerCase()
+                                  .replace(/\s+/g, "-")}`,
+                                "shop-by-categories"
+                              );
                             }}
                             className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
-                            {category.name}
+                            {category}
                           </Link>
                         ))}
                       </div>
@@ -584,16 +506,23 @@ const Navbar = () => {
                       <div className="mx-2 space-y-2 mt-2">
                         {occasions.map((occasion) => (
                           <Link
-                            key={occasion.name}
-                            href={occasion.href}
+                            key={occasion}
+                            href={`/products#shop-by-occasion?occasion=${occasion
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`}
                             onClick={(e) => {
                               e.preventDefault();
-                              handleNavigation(occasion.href, occasion.section);
+                              handleNavigation(
+                                `/products#shop-by-occasion?occasion=${occasion
+                                  .toLowerCase()
+                                  .replace(/\s+/g, "-")}`,
+                                "shop-by-occasion"
+                              );
                             }}
                             className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
-                            {occasion.name}
+                            {occasion}
                           </Link>
                         ))}
                       </div>
@@ -619,20 +548,29 @@ const Navbar = () => {
                     </button>
                     {activeDropdown === "price" && (
                       <div className="mx-2 space-y-2 mt-2">
-                        {priceRanges.map((range) => (
-                          <Link
-                            key={range.name}
-                            href={range.href}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleNavigation(range.href, range.section);
-                            }}
-                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
-                          >
-                            <ChevronRight size={14} className="mx-2" />
-                            {range.name}
-                          </Link>
-                        ))}
+                        {["Below $100", "$100 - $150", "$150 - $200", "$200 & Above"].map(
+                          (range) => (
+                            <Link
+                              key={range}
+                              href={`/products#shop-by-price?price=${range
+                                .toLowerCase()
+                                .replace(/\s+/g, "")}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigation(
+                                  `/products#shop-by-price?price=${range
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "")}`,
+                                  "shop-by-price"
+                                );
+                              }}
+                              className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                            >
+                              <ChevronRight size={14} className="mx-2" />
+                              {range}
+                            </Link>
+                          )
+                        )}
                       </div>
                     )}
                   </div>
