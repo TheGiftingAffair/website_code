@@ -29,6 +29,7 @@ import { db } from "../../../firebaseConfig";
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -264,7 +265,6 @@ const Navbar = () => {
                     href="/special"
                     onClick={(e) => {
                       e.preventDefault();
-                      // handleNavigation("/special", "shop-by-special");
                       router.push("/special");
                     }}
                     className="hover:text-bg2 transition-colors"
@@ -463,7 +463,6 @@ const Navbar = () => {
                       href="/special"
                       onClick={(e) => {
                         e.preventDefault();
-                        // handleNavigation("/special", "shop-by-special");
                         router.push("/special");
                         setIsMenuOpen(false);
                       }}
