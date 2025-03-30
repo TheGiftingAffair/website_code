@@ -8,8 +8,13 @@ import Link from "next/link";
 import ConfettiBackground from "./heroBg";
 import TypeWriter from "./TypeWriter";
 
+interface ImageData {
+  link: string;
+  visibility: boolean;
+}
+
 export default function Hero() {
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<string[]>([]);
   const [currentImage, setCurrentImage] = useState(0);
   const [showFirstLine, setShowFirstLine] = useState(true);
   const [showSecondLine, setShowSecondLine] = useState(false);
@@ -29,8 +34,13 @@ export default function Hero() {
           collection(db, "PlaceHolderImages")
         );
         const imageUrls = querySnapshot.docs
-          .filter((doc) => doc.id !== "qrcode")
+          .filter((doc) => {
+            const data = doc.data();
+            return doc.id !== "qrcode" && data.visibility === true;
+          })
           .map((doc) => doc.data().link);
+
+        console.log("Fetched image URLs:", imageUrls); // Debug log
         setImages(imageUrls);
       } catch (error) {
         console.error("Error fetching images:", error);
@@ -80,6 +90,8 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
+    if (images.length === 0) return;
+
     // Image slider timer
     const imageTimer = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
@@ -109,30 +121,36 @@ export default function Hero() {
 
       {/* Background Image Slider */}
       <div className="absolute inset-0">
-        {images.map((src, index) => (
-          <div
-            key={src}
-            className={`absolute inset-0 transition-opacity duration-1000 bg-black ${
-              index === currentImage ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <Image
-              src={src}
-              alt={`Luxury hamper ${index + 1}`}
-              fill
-              className="object-cover opacity-75"
-              priority={index === 0}
-              sizes="100vw"
-              unoptimized // Added for external images
-            />
-          </div>
-        ))}
+        {images.length > 0 ? (
+          images.map((src, index) => (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentImage ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={src}
+                alt={`Luxury hamper ${index + 1}`}
+                fill
+                className="object-cover"
+                priority={index === 0}
+                sizes="100vw"
+                unoptimized
+              />
+              {/* Overlay for each image */}
+              <div className="absolute inset-0 bg-black opacity-25" />
+            </div>
+          ))
+        ) : (
+          // Fallback when no images are available
+          <div className="absolute inset-0 bg-gray-900" />
+        )}
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60" />
       </div>
 
       {/* Content */}
-
       <div className="relative flex h-full flex-col items-center justify-center px-4 text-center z-20 text-white">
         <h1 className="mb-4 font-lora text-4xl font-bold md:text-6xl 2xl:text-8xl font-alegreya">
           {mainTitle}
@@ -174,17 +192,19 @@ export default function Hero() {
         </div>
 
         {/* Slider Navigation Dots */}
-        <div className="absolute bottom-8 flex gap-2">
-          {images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImage(index)}
-              className={`h-2 w-2 rounded-full transition-all ${
-                index === currentImage ? "bg-white w-4" : "bg-white/50"
-              }`}
-            />
-          ))}
-        </div>
+        {images.length > 1 && (
+          <div className="absolute bottom-8 flex gap-2">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImage(index)}
+                className={`h-2 w-2 rounded-full transition-all ${
+                  index === currentImage ? "bg-white w-4" : "bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

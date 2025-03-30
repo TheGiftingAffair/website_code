@@ -41,12 +41,25 @@ const ShopByCategories = () => {
         const docRef = doc(db, "variables", "ShopByCategories");
         const docSnap = await getDoc(docRef);
         
-        if (docSnap.exists() && docSnap.data()?.valueArray) {
-          console.log("Fetched categories:", docSnap.data().valueArray);
-          const categoriesArray = docSnap.data().valueArray as Category[];
-          setCategories(categoriesArray || []);
-          if (categoriesArray && categoriesArray.length > 0) {
-            setSelectedCategory(categoriesArray[0]);
+        if (docSnap.exists() && docSnap.data()?.valuearray) {
+          const rawCategories = docSnap.data().valuearray;
+          // Convert the format: first letter uppercase, handle special cases
+          const formattedCategories = rawCategories.map((cat: string) => {
+            const words = cat.split(' ');
+            return words.map(word => {
+              if (word.includes('/')) {
+                return word.split('/').map(w => 
+                  w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                ).join('/');
+              }
+              if (word === '&') return '&';
+              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }).join(' ') as Category;
+          });
+          setCategories(formattedCategories);
+          // Set the initial selected category
+          if (formattedCategories.length > 0) {
+            setSelectedCategory(formattedCategories[0]);
           }
         }
       } catch (error) {
@@ -152,6 +165,8 @@ const ShopByCategories = () => {
 
   useEffect(() => {
     const fetchHampers = async () => {
+      if (!selectedCategory) return; // Don't fetch if no category is selected
+      
       try {
         const q = query(
           collection(db, "Products"),
@@ -161,16 +176,15 @@ const ShopByCategories = () => {
 
         const querySnapshot = await getDocs(q);
         const hampers: Hamper[] = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Hamper)
+          (doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          } as Hamper)
         );
 
         setHampersData(hampers);
       } catch (error) {
-        console.error("Error fetching hampers from Firestore:", error);
+        console.error("Error fetching hampers:", error);
       }
     };
 

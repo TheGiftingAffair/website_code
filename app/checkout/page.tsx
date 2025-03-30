@@ -767,7 +767,12 @@ const CheckoutPage = () => {
                 )}
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-600 flex-wrap gap-1">
-                    <span className="break-all">{appliedCoupon.code}</span>
+                    <span className="break-all">
+                      {appliedCoupon.code} 
+                      ({appliedCoupon.type === 'Flat' 
+                        ? `$${appliedCoupon.value}` 
+                        : `${appliedCoupon.value}%`} off)
+                    </span>
                     <span>-${appliedCoupon.discount.toFixed(2)}</span>
                   </div>
                 )}

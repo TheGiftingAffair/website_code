@@ -179,18 +179,49 @@ const Navbar = () => {
           doc(db, "variables", "ShopByCategories")
         );
 
-        if (occasionsDoc.exists() && occasionsDoc.data()?.valueArray) {
-          console.log("Fetched occasions:", occasionsDoc.data().valueArray);
-          setOccasions(occasionsDoc.data().valueArray || []);
+        if (occasionsDoc.exists() && occasionsDoc.data()?.valuearray) {
+          const rawOccasions = occasionsDoc.data().valuearray;
+          const formattedOccasions = rawOccasions.map((occ: string) =>
+            occ
+              .split(" ")
+              .map(
+                (word) =>
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+              )
+              .join(" ")
+          );
+          console.log("Formatted occasions:", formattedOccasions);
+          setOccasions(formattedOccasions);
         }
-        if (categoriesDoc.exists() && categoriesDoc.data()?.valueArray) {
-          console.log("Fetched categories:", categoriesDoc.data().valueArray);
-          setCategories(categoriesDoc.data().valueArray || []);
+
+        if (categoriesDoc.exists() && categoriesDoc.data()?.valuearray) {
+          const rawCategories = categoriesDoc.data().valuearray;
+          const formattedCategories = rawCategories.map((cat: string) => {
+            const words = cat.split(" ");
+            return words
+              .map((word) => {
+                if (word.includes("/")) {
+                  return word
+                    .split("/")
+                    .map(
+                      (w) =>
+                        w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                    )
+                    .join("/");
+                }
+                if (word === "&") return "&";
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+              })
+              .join(" ");
+          });
+          console.log("Formatted categories:", formattedCategories);
+          setCategories(formattedCategories);
         }
       } catch (error) {
         console.error("Error fetching arrays:", error);
       }
     };
+
     fetchArrays();
   }, []);
 

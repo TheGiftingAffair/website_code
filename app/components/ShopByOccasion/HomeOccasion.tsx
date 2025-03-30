@@ -37,9 +37,14 @@ const HomeOccasion = () => {
         const docRef = doc(db, "variables", "ShopByOccasion");
         const docSnap = await getDoc(docRef);
         
-        if (docSnap.exists()) {
-          const occasionsArray = docSnap.data().valueArray as Occasion[];
-          setOccasions(occasionsArray);
+        if (docSnap.exists() && docSnap.data()?.valuearray) {
+          const rawOccasions = docSnap.data().valuearray;
+          const formattedOccasions = rawOccasions.map((occ: string) => 
+            occ.split(' ').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' ') as Occasion
+          );
+          setOccasions(formattedOccasions || []);
         }
       } catch (error) {
         console.error("Error fetching occasions:", error);
@@ -117,7 +122,7 @@ const HomeOccasion = () => {
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 2xl:gap-6 px-4">
-          {occasions.map((occasion) => (
+          {Array.isArray(occasions) && occasions.map((occasion) => (
             <div
               key={occasion}
               onClick={() => handleOccasionClick(occasion)}

@@ -72,10 +72,18 @@ export const validateCoupon = async (
       }
     }
 
-    // Calculate discount
-    const discount = couponData.type === 'Flat' 
-      ? couponData.discountvalue 
-      : (cartTotal * couponData.discountvalue) / 100;
+    // Calculate discount based on coupon type
+    let discount = 0;
+    if (couponData.type === 'Flat') {
+      // For flat discount, use the direct value
+      discount = Math.min(couponData.discountvalue, cartTotal); // Ensure discount doesn't exceed cart total
+    } else if (couponData.type === 'Percentage') {
+      // For percentage discount, calculate the percentage of cart total
+      discount = Math.min((cartTotal * couponData.discountvalue) / 100, cartTotal);
+    }
+
+    // Round discount to 2 decimal places
+    discount = Math.round(discount * 100) / 100;
 
     return {
       isValid: true,

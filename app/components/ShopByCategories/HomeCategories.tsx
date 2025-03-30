@@ -31,18 +31,30 @@ interface Hamper {
 
 const HomeCategories = () => {
   const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]); // Initialize with empty array
 
-  // Add new useEffect to fetch categories array
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const docRef = doc(db, "variables", "ShopByCategories");
         const docSnap = await getDoc(docRef);
         
-        if (docSnap.exists()) {
-          const categoriesArray = docSnap.data().valueArray as Category[];
-          setCategories(categoriesArray);
+        if (docSnap.exists() && docSnap.data()?.valuearray) { // Changed valueArray to valuearray
+          const rawCategories = docSnap.data().valuearray;
+          // Convert the format: first letter uppercase, handle special cases
+          const formattedCategories = rawCategories.map((cat: string) => {
+            const words = cat.split(' ');
+            return words.map(word => {
+              if (word.includes('/')) {
+                return word.split('/').map(w => 
+                  w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                ).join('/');
+              }
+              if (word === '&') return '&';
+              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }).join(' ') as Category;
+          });
+          setCategories(formattedCategories || []);
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -127,7 +139,7 @@ const HomeCategories = () => {
 
         {/* Category Cards Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 2xl:gap-6 px-4">
-          {categories.map((category) => (
+          {Array.isArray(categories) && categories.map((category) => (
             <div
               key={category}
               onClick={() => handleCategoryClick(category)}
