@@ -10,7 +10,7 @@ import { getPlaceholderImage } from "@/utils/placeholderService";
 import { validateCoupon, applyCoupon } from "@/utils/couponService";
 import Link from "next/link";
 import Image from "next/image";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
 
 interface ShippingDetails {
@@ -36,7 +36,8 @@ interface ValidationErrors {
 }
 
 const CheckoutPage = () => {
-  const { items, getSubtotal, clearCart, deliveryDate, setDeliveryDate } = useCart();
+  const { items, getSubtotal, clearCart, deliveryDate, setDeliveryDate } =
+    useCart();
   const router = useRouter();
   const { user } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
@@ -78,7 +79,7 @@ const CheckoutPage = () => {
   const [couponError, setCouponError] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
-    type: 'Flat' | 'Percentage';
+    type: "Flat" | "Percentage";
     value: number;
     discount: number;
     name: string;
@@ -289,14 +290,14 @@ const CheckoutPage = () => {
 
       // Create HitPay payment request
       try {
-        const paymentResponse = await fetch('/api/create-payment', {
-          method: 'POST',
+        const paymentResponse = await fetch("/api/create-payment", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             amount: total,
-            currency: 'SGD',
+            currency: "SGD",
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
             orderData: orderData, // Pass the complete orderData
@@ -304,26 +305,26 @@ const CheckoutPage = () => {
         });
 
         if (!paymentResponse.ok) {
-          throw new Error('Payment request failed');
+          throw new Error("Payment request failed");
         }
 
         const paymentData = await paymentResponse.json();
-        
+
         if (!paymentData.url) {
-          throw new Error('Payment URL not received in response');
+          throw new Error("Payment URL not received in response");
         }
 
         // Store order data in both localStorage and sessionStorage
         const storageData = JSON.stringify({
           orderData,
-          paymentReference: paymentData.referenceNumber
+          paymentReference: paymentData.referenceNumber,
         });
-        
+
         try {
-          localStorage.setItem('pendingOrderData', storageData);
-          sessionStorage.setItem('pendingOrderData', storageData);
+          localStorage.setItem("pendingOrderData", storageData);
+          sessionStorage.setItem("pendingOrderData", storageData);
         } catch (storageError) {
-          console.error('Storage error:', storageError);
+          console.error("Storage error:", storageError);
         }
 
         // Clear cart before redirecting
@@ -331,13 +332,11 @@ const CheckoutPage = () => {
 
         // Redirect to HitPay checkout
         window.location.href = paymentData.url;
-        
       } catch (error) {
-        console.error('Payment creation failed:', error);
-        toast.error('Failed to initiate payment. Please try again.');
+        console.error("Payment creation failed:", error);
+        toast.error("Failed to initiate payment. Please try again.");
         setIsSubmitting(false);
       }
-
     } catch (error) {
       console.error("Error:", error);
       toast.error("Failed to process order. Please try again.");
@@ -350,19 +349,19 @@ const CheckoutPage = () => {
       toast.error("Please enter a coupon code");
       return;
     }
-  
+
     if (appliedCoupon) {
       toast.error("You can only apply one coupon at a time");
       return;
     }
-  
+
     try {
       const result = await validateCoupon(
-        couponCode, 
+        couponCode,
         subtotal,
         shippingDetails.email || user?.email
       );
-  
+
       if (result.isValid && result.couponDetails) {
         setAppliedCoupon({
           code: couponCode.toUpperCase(),
@@ -421,17 +420,18 @@ const CheckoutPage = () => {
             Checkout
           </h1>
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden">
+            <div className="w-16 h-16 2xl:w-24 2xl:h-24 rounded-full overflow-hidden">
               <Image
-                src="/images/logo.jpg"
+                // src="/images/logo.jpg"
+                src="/images/logo4.png"
                 alt="Logo"
-                width={40}
-                height={40}
-                className="object-cover"
+                width={120}
+                height={120}
+                className="object-cover brightness-110"
               />
             </div>
             <span className="font-macondo font-bold text-xl text-bg3 hover:text-bg4 transition-colors">
-              The Gifting Affairs
+              The Gifting Affair
             </span>
           </Link>
         </div>
@@ -678,16 +678,18 @@ const CheckoutPage = () => {
               <div className="mb-6 border-b pb-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold text-gray-700">Delivery Date</h3>
+                    <h3 className="font-semibold text-gray-700">
+                      Delivery Date
+                    </h3>
                     <p className="text-gray-600">
-                      {deliveryDate || 'No date selected'}
+                      {deliveryDate || "No date selected"}
                     </p>
                   </div>
                   <button
                     onClick={() => setShowDateModal(true)}
                     className="px-3 py-1 text-sm bg-bg3 text-white rounded hover:bg-bg4 transition-colors"
                   >
-                    {deliveryDate ? 'Change' : 'Select'} Date
+                    {deliveryDate ? "Change" : "Select"} Date
                   </button>
                 </div>
               </div>

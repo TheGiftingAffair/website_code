@@ -4,6 +4,7 @@ import Navbar from "../components/Ṇavbar/Navbar";
 import ShopByCategories from "../components/ShopByCategories/ShopByCategories";
 import ShopByOccasion from "../components/ShopByOccasion/ShopByOccasion";
 import ShopByPrice from "../components/ShopByPrice/ShopByPrice";
+import ShopBySpecial from "../components/ShopBySpecial/ShopBySpecial";
 import Footer from "../components/Footer";
 import WhatsappRedirect from "../components/WhatsappRedirect";
 import { imageCache } from "@/utils/imageCache";
@@ -95,9 +96,7 @@ const ProductsPage = () => {
     <>
       <div>
         <Navbar />
-        <ShopByCategories />
-        <ShopByOccasion />
-        <ShopByPrice />
+        <ShopBySpecial />
         <Footer />
       </div>
       <WhatsappRedirect />

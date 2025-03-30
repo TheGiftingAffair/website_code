@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "The Gifting Affair",
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   keywords: "hampers, gifts, shopping, online store",
   // authors: [{ name: "Your Name", url: "https://yourwebsite.com" }],
   icons: {
-    icon: "/images/logo.jpg",
+    // icon: "/images/logo.jpg",
+    icon: "/images/logo2.png",
   },
 };
 

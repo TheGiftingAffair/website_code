@@ -71,11 +71,11 @@ const CategoryCard = ({ category, index }) => {
         />
         <div className="absolute inset-0 bg-black bg-opacity-60 transition-opacity group-hover:bg-opacity-45" />
       </div>
-      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-        <h3 className="text-xl lg:text-2xl font-bold font-mont mb-1">
+      <div className="absolute bottom-0 left-0 right-0 p-4 text-[#f9f9f9]">
+        <h3 className="text-xl lg:text-2xl 2xl:text-3xl font-bold font-mont mb-1">
           {category.title}
         </h3>
-        <p className="text-xs mb-2 opacity-90 font-semibold italic">
+        <p className="hidden md:block text-xs 2xl:text-sm mb-2 opacity-90 font-semibold italic">
           {category.description}
         </p>
       </div>
@@ -86,7 +86,6 @@ const CategoryCard = ({ category, index }) => {
 export default function Categories() {
   return (
     <section
-      // className="relative overflow-hidden bg-gradient-to-b from-bg3 to-bg1 min-h-[calc(100vh - 50px)] md:h-[calc(100vh - 50px)]"
       className="relative overflow-hidden bg-gradient-to-r from-bg3/10 to-bg1/40 min-h-[calc(100vh - 50px)] md:h-[calc(100vh - 50px)]"
       style={{
         height: "calc(100vh - 50px)",
@@ -98,15 +97,15 @@ export default function Categories() {
       {/* <ConfettiBackground /> */}
       <div className="container mx-auto max-w-7xl h-full px-4 py-4 relative z-10">
         <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-5xl font-bold mb-1 mt-5 md:mt-3 font-alegreya text-headline">
+          <h2 className="text-2xl md:text-5xl 2xl:text-6xl font-bold mb-1 mt-5 md:mt-3 font-alegreya text-headline">
             Discover Our Hampers
           </h2>
-          <p className="text-black font-semibold font-mont text-sm md:text-md">
+          <p className="text-black font-semibold font-mont text-sm md:text-md 2xl:text-lg">
             Explore the perfect hampers for all occasions, tastes, and purposes!
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 md:gap-4 space-y-2 gap-2 md:space-y-0 md:mx-24 h-[calc(100%-260px)] md:h-[calc(100%-220px)] 2xl:h-[calc(100%-300px)]">
+        <div className="grid grid-cols-2 lg:grid-cols-3 md:gap-4 space-y-2 gap-2 md:space-y-0 md:mx-24 h-[calc(100%-260px)] md:h-[calc(100%-220px)] 2xl:h-[calc(100%-280px)]">
           {categories.map((category, index) => (
             <CategoryCard
               key={category.title}
@@ -117,13 +116,13 @@ export default function Categories() {
         </div>
 
         <div className="text-center mt-4 z-10">
-          <p className="text-black font-mont font-semibold text-sm mb-2 mt-6">
+          <p className="text-black font-mont font-semibold text-sm 2xl:text-lg mb-2 mt-6">
             Not sure which hamper to pick? Explore our entire collection now!
           </p>
           <Link
             href="/products"
             className="inline-block bg-headline/90 hover:scale-105 duration-300 hover:bg-headline text-white px-8 py-3 rounded-full font-medium 
-              transform transition-all hover:shadow-lg"
+              transform transition-all hover:shadow-lg text-base 2xl:text-2xl"
           >
             View All Hampers
           </Link>

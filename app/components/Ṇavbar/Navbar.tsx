@@ -26,6 +26,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,6 +68,133 @@ const Navbar = () => {
       window.location.href = `/products#${hash}`;
     }
   };
+
+  const categories = [
+    {
+      name: "For Him/Her",
+      href: "/products#shop-by-categories?category=for-him-her",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Chocolate & Cookies",
+      href: "/products#shop-by-categories?category=chocolate-cookies",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Tea & Coffee",
+      href: "/products#shop-by-categories?category=tea-coffee",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Wine & Whiskey",
+      href: "/products#shop-by-categories?category=wine-whiskey",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Fruits",
+      href: "/products#shop-by-categories?category=fruits",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Beauty",
+      href: "/products#shop-by-categories?category=beauty",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Baby",
+      href: "/products#shop-by-categories?category=baby",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Halal",
+      href: "/products#shop-by-categories?category=halal",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Wellness",
+      href: "/products#shop-by-categories?category=wellness",
+      section: "shop-by-categories",
+    },
+    {
+      name: "Evergreen",
+      href: "/products#shop-by-categories?category=evergreen",
+      section: "shop-by-categories",
+    },
+  ];
+
+  const occasions = [
+    {
+      name: "Birthday",
+      href: "/products#shop-by-occasion?occasion=birthday",
+      section: "shop-by-occasion",
+    },
+    {
+      name: "Anniversary",
+      href: "/products#shop-by-occasion?occasion=anniversary",
+      section: "shop-by-occasion",
+    },
+    {
+      name: "Farewell",
+      href: "/products#shop-by-occasion?occasion=farewell",
+      section: "shop-by-occasion",
+    },
+    {
+      name: "Congratulations",
+      href: "/products#shop-by-occasion?occasion=congratulations",
+      section: "shop-by-occasion",
+    },
+    {
+      name: "Housewarming",
+      href: "/products#shop-by-occasion?occasion=housewarming",
+      section: "shop-by-occasion",
+    },
+    {
+      name: "Graduation",
+      href: "/products#shop-by-occasion?occasion=graduation",
+      section: "shop-by-occasion",
+    },
+    {
+      name: "Special Day",
+      href: "/products#shop-by-occasion?occasion=special-day",
+      section: "shop-by-occasion",
+    },
+    {
+      name: "Get Well Soon",
+      href: "/products#shop-by-occasion?occasion=get-well-soon",
+      section: "shop-by-occasion",
+    },
+  ];
+
+  const priceRanges = [
+    {
+      name: "Below $100",
+      href: "/products#shop-by-price?price=below100",
+      section: "shop-by-price",
+    },
+    {
+      name: "$100 - $150",
+      href: "/products#shop-by-price?price=100to150",
+      section: "shop-by-price",
+    },
+    {
+      name: "$150 - $200",
+      href: "/products#shop-by-price?price=150to200",
+      section: "shop-by-price",
+    },
+    {
+      name: "$200 & Above",
+      href: "/products#shop-by-price?price=above200",
+      section: "shop-by-price",
+    },
+  ];
+
+  const special = [
+    {
+      name: "Valentine",
+      href: "/special",
+      section: "shop-by-special",
+    },
+  ];
 
   // Update cart count when cart changes
   useEffect(() => {
@@ -136,37 +264,13 @@ const Navbar = () => {
     fetchTexts();
   }, []);
 
-  // Add new useEffect to fetch both arrays
-  useEffect(() => {
-    const fetchArrays = async () => {
-      try {
-        const occasionsDoc = await getDoc(
-          doc(db, "variables", "ShopByOccasion")
-        );
-        if (occasionsDoc.exists()) {
-          setOccasions(occasionsDoc.data().valueArray);
-        }
-
-        const categoriesDoc = await getDoc(
-          doc(db, "variables", "ShopByCategories")
-        );
-        if (categoriesDoc.exists()) {
-          setCategories(categoriesDoc.data().valueArray);
-        }
-      } catch (error) {
-        console.error("Error fetching arrays:", error);
-      }
-    };
-
-    fetchArrays();
-  }, []);
-
   return (
     <>
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-200 ${
           isScrolled ? "shadow-md" : ""
-        } bg-[#f9f9f9]`}
+          // } bg-[#f9f9f9]`}
+        } bg-blue-950`}
       >
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 2xl:px-16 font-semibold font-mont">
           <div className="flex items-center justify-between h-14 2xl:h-20">
@@ -175,61 +279,44 @@ const Navbar = () => {
               href="/"
               className="flex items-center space-x-3 2xl:space-x-5"
             >
-              <div className="w-10 h-10 2xl:w-16 2xl:h-16 rounded-full overflow-hidden">
+              <div className="w-16 h-16 2xl:w-24 2xl:h-24 rounded-full overflow-hidden">
                 <Image
-                  src="/images/logo.jpg"
+                  // src="/images/logo.jpg"
+                  src="/images/logo4.png"
                   alt="Logo"
-                  width={64}
-                  height={64}
-                  className="object-cover"
+                  width={120}
+                  height={120}
+                  className="object-cover brightness-110"
                 />
               </div>
-              <span className="font-macondo font-bold text-xl 2xl:text-3xl text-bg3 hover:text-bg4 transition-colors">
+              <span className="hidden md:block font-macondo font-bold text-xl 2xl:text-3xl text-bg2 hover:text-bg3   transition-colors">
                 The Gifting Affair
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg">
+            <div className="hidden lg:flex items-center space-x-8 2xl:space-x-12 text-sm 2xl:text-lg text-gray-200">
               <div className="flex flex-row gap-8 2xl:gap-12">
-                {/* Special Dropdown - Only show if there are festive hampers */}
+                {/* Special Link - Only show if there are festive hampers */}
                 {festiveHampers.length > 0 && (
-                  <div className="relative group">
-                    <button
-                      className="flex items-center space-x-1 2xl:space-x-2 hover:text-bg3 transition-colors"
-                      onMouseEnter={() => setActiveDropdown("special")}
-                      onMouseLeave={() => setActiveDropdown(null)}
-                    >
-                      <span>{specialNav}</span>
-                      <ChevronDown size={16} className="2xl:w-6 2xl:h-6" />
-                    </button>
-                    <div
-                      className={`absolute top-full left-0 w-48 2xl:w-56 bg-white shadow-lg rounded-md py-2 2xl:py-3 transition-all duration-200 ${
-                        activeDropdown === "special"
-                          ? "opacity-100 visible"
-                          : "opacity-0 invisible"
-                      }`}
-                      onMouseEnter={() => setActiveDropdown("special")}
-                      onMouseLeave={() => setActiveDropdown(null)}
-                    >
-                      {festiveHampers.map((hamper) => (
-                        <Link
-                          key={hamper.id}
-                          href={`/product/${hamper.id}`}
-                          className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
-                        >
-                          {hamper.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
+                  <Link
+                    href="/special"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // handleNavigation("/special", "shop-by-special");
+                      router.push("/special");
+                    }}
+                    className="hover:text-bg2 transition-colors"
+                  >
+                    {specialNav}
+                  </Link>
                 )}
               </div>
 
               {/* Shop By Category Dropdown */}
               <div className="relative group">
                 <button
-                  className="flex items-center space-x-1 hover:text-bg3 transition-colors"
+                  className="flex items-center space-x-1 hover:text-bg2 transition-colors"
                   onMouseEnter={() => setActiveDropdown("category")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
@@ -237,7 +324,7 @@ const Navbar = () => {
                   <ChevronDown size={16} />
                 </button>
                 <div
-                  className={`absolute top-full left-0 w-48 bg-white shadow-lg rounded-md py-2 transition-all duration-200 ${
+                  className={`absolute top-full left-0 w-48 bg-[#f9f9f9] shadow-lg rounded-md py-2 transition-all duration-200 ${
                     activeDropdown === "category"
                       ? "opacity-100 visible"
                       : "opacity-0 invisible"
@@ -260,7 +347,7 @@ const Navbar = () => {
                           "shop-by-categories"
                         );
                       }}
-                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
                       {category}
                     </Link>
@@ -271,7 +358,7 @@ const Navbar = () => {
               {/* Shop By Occasion Dropdown */}
               <div className="relative group">
                 <button
-                  className="flex items-center space-x-1 hover:text-bg3 transition-colors"
+                  className="flex items-center space-x-1 hover:text-bg2 transition-colors"
                   onMouseEnter={() => setActiveDropdown("occasion")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
@@ -279,7 +366,7 @@ const Navbar = () => {
                   <ChevronDown size={16} />
                 </button>
                 <div
-                  className={`absolute top-full left-0 w-48 bg-white shadow-lg rounded-md py-2 transition-all duration-200 ${
+                  className={`absolute top-full left-0 w-48 bg-[#f9f9f9] shadow-lg rounded-md py-2 transition-all duration-200 ${
                     activeDropdown === "occasion"
                       ? "opacity-100 visible"
                       : "opacity-0 invisible"
@@ -302,7 +389,7 @@ const Navbar = () => {
                           "shop-by-occasion"
                         );
                       }}
-                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
                       {occasion}
                     </Link>
@@ -313,7 +400,7 @@ const Navbar = () => {
               {/* Shop By Price Dropdown */}
               <div className="relative group">
                 <button
-                  className="flex items-center space-x-1 hover:text-bg3 transition-colors"
+                  className="flex items-center space-x-1 hover:text-bg2 transition-colors"
                   onMouseEnter={() => setActiveDropdown("price")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
@@ -321,7 +408,7 @@ const Navbar = () => {
                   <ChevronDown size={16} />
                 </button>
                 <div
-                  className={`absolute top-full left-0 w-48 bg-white shadow-lg rounded-md py-2 transition-all duration-200 ${
+                  className={`absolute top-full left-0 w-48 bg-[#f9f9f9] shadow-lg rounded-md py-2 transition-all duration-200 ${
                     activeDropdown === "price"
                       ? "opacity-100 visible"
                       : "opacity-0 invisible"
@@ -329,40 +416,31 @@ const Navbar = () => {
                   onMouseEnter={() => setActiveDropdown("price")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {["Below $100", "$100 - $150", "$150 - $200", "$200 & Above"].map(
-                    (range) => (
-                      <Link
-                        key={range}
-                        href={`/products#shop-by-price?price=${range
-                          .toLowerCase()
-                          .replace(/\s+/g, "")}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleNavigation(
-                            `/products#shop-by-price?price=${range
-                              .toLowerCase()
-                              .replace(/\s+/g, "")}`,
-                            "shop-by-price"
-                          );
-                        }}
-                        className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
-                      >
-                        {range}
-                      </Link>
-                    )
-                  )}
+                  {priceRanges.map((range) => (
+                    <Link
+                      key={range.name}
+                      href={range.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigation(range.href, range.section);
+                      }}
+                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                    >
+                      {range.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
 
               <Link
                 href="/profile"
-                className="hover:text-bg3 transition-colors"
+                className="hover:text-bg2 transition-colors"
               >
                 <User size={24} className="2xl:w-8 2xl:h-8" />
               </Link>
 
               <button
-                className="hover:text-bg3 transition-colors relative"
+                className="hover:text-bg2 transition-colors relative"
                 onClick={() => setIsCartOpen(!isCartOpen)}
               >
                 <ShoppingCart size={24} className="2xl:w-8 2xl:h-8" />
@@ -373,28 +451,34 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <div className="flex flex-row gap-4">
                 <Link
                   href="/profile"
                   className="hover:text-bg3 transition-colors"
                 >
-                  <User size={24} className="2xl:w-8 2xl:h-8" />
+                  <User size={24} className="2xl:w-8 2xl:h-8 text-[#f9f9f9]" />
                 </Link>
                 <button
                   className="hover:text-bg3 transition-colors relative"
                   onClick={() => setIsCartOpen(!isCartOpen)}
                 >
-                  <ShoppingCart size={24} className="2xl:w-8 2xl:h-8" />
+                  <ShoppingCart
+                    size={24}
+                    className="2xl:w-8 2xl:h-8 text-[#f9f9f9]"
+                  />
                   <span className="absolute -top-2 -right-2 bg-bg3 text-white text-xs 2xl:text-sm rounded-full w-5 h-5 2xl:w-6 2xl:h-6 flex items-center justify-center">
                     {cartCount}
                   </span>
                 </button>
                 <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
                   {isMenuOpen ? (
-                    <X size={24} className="2xl:w-8 2xl:h-8" />
+                    <X size={24} className="2xl:w-8 2xl:h-8 text-[#f9f9f9]" />
                   ) : (
-                    <Menu size={24} className="2xl:w-8 2xl:h-8" />
+                    <Menu
+                      size={24}
+                      className="2xl:w-8 2xl:h-8 text-[#f9f9f9]"
+                    />
                   )}
                 </button>
               </div>
@@ -406,45 +490,26 @@ const Navbar = () => {
             <div className="md:hidden py-4">
               <div className="flex flex-col space-y-4">
                 <div className="space-y-2">
-                  {/* Special Mobile Dropdown - Only show if there are festive hampers */}
+                  {/* Special Mobile Link - Only show if there are festive hampers */}
                   {festiveHampers.length > 0 && (
-                    <div>
-                      <button
-                        className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
-                        onClick={() =>
-                          setActiveDropdown(
-                            activeDropdown === "special" ? null : "special"
-                          )
-                        }
-                      >
-                        <span>{specialNav}</span>
-                        {activeDropdown === "special" ? (
-                          <ChevronUp size={16} />
-                        ) : (
-                          <ChevronDown size={16} />
-                        )}
-                      </button>
-                      {activeDropdown === "special" && (
-                        <div className="mx-2 space-y-2 mt-2">
-                          {festiveHampers.map((hamper) => (
-                            <Link
-                              key={hamper.id}
-                              href={`/product/${hamper.id}`}
-                              className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
-                            >
-                              <ChevronRight size={14} className="mx-2" />
-                              {hamper.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <Link
+                      href="/special"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        // handleNavigation("/special", "shop-by-special");
+                        router.push("/special");
+                        setIsMenuOpen(false);
+                      }}
+                      className="block px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
+                    >
+                      {specialNav}
+                    </Link>
                   )}
 
                   {/* Shop By Category */}
                   <div>
                     <button
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                      className="flex items-center justify-between w-full px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
                       onClick={() =>
                         setActiveDropdown(
                           activeDropdown === "category" ? null : "category"
@@ -475,7 +540,7 @@ const Navbar = () => {
                                 "shop-by-categories"
                               );
                             }}
-                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
                             {category}
@@ -488,7 +553,7 @@ const Navbar = () => {
                   {/* Shop By Occasion */}
                   <div>
                     <button
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                      className="flex items-center justify-between w-full px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
                       onClick={() =>
                         setActiveDropdown(
                           activeDropdown === "occasion" ? null : "occasion"
@@ -519,7 +584,7 @@ const Navbar = () => {
                                 "shop-by-occasion"
                               );
                             }}
-                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
                             {occasion}
@@ -532,7 +597,7 @@ const Navbar = () => {
                   {/* Shop By Price */}
                   <div>
                     <button
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-bg2 rounded-md transition-colors border border-bg2"
+                      className="flex items-center justify-between w-full px-4 py-2 text-gray-200 hover:text-bg2 rounded-md transition-colors border border-gray-200"
                       onClick={() =>
                         setActiveDropdown(
                           activeDropdown === "price" ? null : "price"
@@ -548,29 +613,20 @@ const Navbar = () => {
                     </button>
                     {activeDropdown === "price" && (
                       <div className="mx-2 space-y-2 mt-2">
-                        {["Below $100", "$100 - $150", "$150 - $200", "$200 & Above"].map(
-                          (range) => (
-                            <Link
-                              key={range}
-                              href={`/products#shop-by-price?price=${range
-                                .toLowerCase()
-                                .replace(/\s+/g, "")}`}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleNavigation(
-                                  `/products#shop-by-price?price=${range
-                                    .toLowerCase()
-                                    .replace(/\s+/g, "")}`,
-                                  "shop-by-price"
-                                );
-                              }}
-                              className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
-                            >
-                              <ChevronRight size={14} className="mx-2" />
-                              {range}
-                            </Link>
-                          )
-                        )}
+                        {priceRanges.map((range) => (
+                          <Link
+                            key={range.name}
+                            href={range.href}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleNavigation(range.href, range.section);
+                            }}
+                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                          >
+                            <ChevronRight size={14} className="mx-2" />
+                            {range.name}
+                          </Link>
+                        ))}
                       </div>
                     )}
                   </div>

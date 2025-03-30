@@ -9,62 +9,43 @@ import AnimatedCubesBackground from "./testimonialsBg";
 const testimonials = [
   {
     id: 1,
-    name: "Marcus Tan",
-    role: "Corporate Executive",
-    location: "Tampines",
+    name: "Sarita",
+    role: "",
+    location: "",
     image: "/images/user1.png",
     quote:
-      "The GiftBox was perfect for our company's D&D event. The local-inspired gifts were a huge hit with our international colleagues!",
+      "I ordered Diwali gifts from Gifting Affair for my office colleagues and friends. They were beautifully packed and thoughtfully curated. Perfect for spreading festive joy with elegance and charm. Price was also reasonable. Will surely buy again.",
     rating: 5,
   },
   {
     id: 2,
-    name: "Sarah Lee",
-    role: "Interior Designer",
-    location: "Holland Village",
+    name: "Prerna Soni Thakkar",
+    role: "",
+    location: "",
     image: "/images/user2.png",
     quote:
-      "Such a wonderful way to celebrate local artisans! The packaging was beautiful and delivery was prompt to my office.",
+      "Customised on request at short notice and delivered in time. Also it came out beautiful hamper, even better than expected. Quite happy!! Recommend",
     rating: 5,
   },
+
   {
     id: 3,
-    name: "Raj Kumar",
-    role: "Tech Lead",
-    location: "Jurong East",
+    name: "Catryne ee",
+    role: "",
+    location: "",
     image: "/images/user3.png",
     quote:
-      "Ordered a customized gift box for my parents' anniversary. The mix of traditional and modern items was perfect!",
-    rating: 4,
+      "I recently purchased a CNY gift hamper from The Gifting Affair and was really impressed! The selection was great, and everything was packaged beautifully. Perfect for gifting during festive season. Highly recommend if you're looking for a thoughtful and quality gift.",
+    rating: 5,
   },
   {
     id: 4,
-    name: "Michelle Chen",
-    role: "Healthcare Professional",
-    location: "Novena",
+    name: "Savita Aggarwal",
+    role: "",
+    location: "",
     image: "/images/user4.png",
     quote:
-      "The local snacks and crafts in the gift box brought back so many memories. It's the perfect Singapore gift!",
-    rating: 5,
-  },
-  {
-    id: 5,
-    name: "Ahmad Bin Hassan",
-    role: "Restaurant Owner",
-    location: "Geylang",
-    image: "/images/user5.png",
-    quote:
-      "Used these gift boxes for my restaurant's VIP customers during Hari Raya. Everyone loved the personal touch!",
-    rating: 4,
-  },
-  {
-    id: 6,
-    name: "Linda Wong",
-    role: "Bank Manager",
-    location: "Marina Bay",
-    image: "/images/user6.png",
-    quote:
-      "The quality and curation of items is outstanding. Perfect for both local and overseas friends to experience Singapore's finest.",
+      "I had the opportunity to buy my first hamper for our distant relative from Monika Bansal. She went all the way to customise my hamper as per my requirement. Am sure our relatives will surely like it too. Thanks for arranging all the things at the last minute. I would surely recommend her for all your gifting needs.",
     rating: 5,
   },
 ];
@@ -129,8 +110,13 @@ export default function Testimonials() {
                     {testimonials[currentTestimonial].name}
                   </p>
                   <p className="font-mont text-bg3 italic font-semibold text-xs sm:text-sm 2xl:text-base">
-                    {testimonials[currentTestimonial].role} •{" "}
-                    {testimonials[currentTestimonial].location}
+                    {testimonials[currentTestimonial].role &&
+                      testimonials[currentTestimonial].role}
+                    {testimonials[currentTestimonial].role &&
+                      testimonials[currentTestimonial].location &&
+                      " • "}
+                    {testimonials[currentTestimonial].location &&
+                      testimonials[currentTestimonial].location}
                   </p>
                 </div>
               </div>

@@ -89,60 +89,165 @@ const TermsAndConditions = () => {
             </ul>
 
             <h2 className="text-xl font-semibold mb-4">
-              4. Order and Delivery
+              4. Product Descriptions and Availability
             </h2>
             <ul className="list-disc pl-5 mb-4">
-              <li>
-                All orders are subject to availability and confirmation of the
-                order price.
+              <li className="mb-2">
+                <strong>Product Descriptions:</strong> While we strive to ensure
+                that product descriptions, images, and prices do match as
+                displayed on the website, some variations may occur due to
+                packaging changes, product availability or any other unforeseen
+                reasons. We will try our best to notify you of any major change
+                done in your hamper.
               </li>
-              <li>Delivery times shown are estimates and not guaranteed.</li>
-              <li>
-                We reserve the right to refuse or cancel any orders at our
-                discretion.
+              <li className="mb-2">
+                <strong>Availability:</strong> While we attempt to keep our
+                website up-to-date, products may become unavailable or go out of
+                stock. If an item you ordered goes out of stock, we will inform
+                you, offer alternatives or arrange for a refund. Refund, if any,
+                will require 5 to 10days time to process and will be made to the
+                original payment mode.
               </li>
             </ul>
 
             <h2 className="text-xl font-semibold mb-4">
-              5. Pricing and Payment
+              5. Purchase of Alcohol
             </h2>
             <p className="mb-4">
-              All prices are in Singapore Dollars (SGD) and include GST where
-              applicable. Payment must be received in full before orders are
-              processed.
+              It is an offence to supply alcohol to or obtain alcohol on behalf
+              of a person under the age of 18 years. While we take all measures
+              to abide by the rules, it's your responsibility to declare your
+              eligibility for any purchase containing alcohol.
             </p>
 
             <h2 className="text-xl font-semibold mb-4">
-              6. Cancellation and Refunds
+              6. Shipping and Delivery
+            </h2>
+            <ul className="list-disc pl-5 mb-4">
+              <li className="mb-2">
+                <strong>Delivery Areas:</strong> We currently deliver to all
+                areas in Singapore. All delivery timings are subjected to
+                traffic and weather conditions and any other unforeseen
+                situation.
+              </li>
+              <li className="mb-2">
+                <strong>Delivery Schedule:</strong> Deliveries are made between
+                9 AM to 9 PM on the selected delivery date. We will try our best
+                to accommodate specific timing requests but we cannot guarantee
+                exact delivery timings.
+              </li>
+              <li className="mb-2">
+                <strong>Delivery Charges:</strong> Standard delivery fees apply
+                for all orders. Additional charges may apply for urgent
+                deliveries or specific time slot requests.
+              </li>
+              <li className="mb-2">
+                <strong>Undelivered Items:</strong> If no one is available to
+                receive the delivery at the provided address, we will attempt to
+                contact the recipient. A redelivery fee may apply for subsequent
+                delivery attempts.
+              </li>
+            </ul>
+
+            <h2 className="text-xl font-semibold mb-4">7. Returns Policy</h2>
+            <ul className="list-disc pl-5 mb-4">
+              <li className="mb-2">
+                Due to the perishable nature of our products, we do not accept
+                returns unless the products are damaged upon delivery.
+              </li>
+              <li className="mb-2">
+                Any damage or issue must be reported within 24 hours of delivery
+                with clear photographs for our assessment.
+              </li>
+            </ul>
+
+            <h2 className="text-xl font-semibold mb-4">8. Refund Policy</h2>
+            <ul className="list-disc pl-5 mb-4">
+              <li className="mb-2">
+                Refunds will only be processed for damaged items or orders
+                cancelled before processing begins.
+              </li>
+              <li className="mb-2">
+                Refunds will be processed through the original payment method
+                and may take 5-10 business days to reflect.
+              </li>
+            </ul>
+
+            <h2 className="text-xl font-semibold mb-4">
+              9. Order Cancellation
+            </h2>
+            <ul className="list-disc pl-5 mb-4">
+              <li className="mb-2">
+                Orders can be cancelled free of charge only if the order has not
+                been processed.
+              </li>
+              <li className="mb-2">
+                For orders that have begun processing, cancellation charges may
+                apply.
+              </li>
+            </ul>
+
+            <h2 className="text-xl font-semibold mb-4">
+              10. Privacy and Data Protection
             </h2>
             <p className="mb-4">
-              Orders can be cancelled up to 24 hours before the scheduled
-              delivery date. Refunds will be processed according to our refund
-              policy.
-            </p>
-
-            <h2 className="text-xl font-semibold mb-4">7. Privacy Policy</h2>
-            <p className="mb-4">
-              Your personal information will be handled according to our privacy
-              policy. We protect your data and only use it for order processing
-              and delivery.
+              Your privacy is important to us. Please refer to our Privacy
+              Policy for details on how we collect, use, and protect your
+              personal information.
             </p>
 
             <h2 className="text-xl font-semibold mb-4">
-              8. Contact Information
+              11. Intellectual Property
             </h2>
             <p className="mb-4">
-              For any questions or concerns regarding these terms, please
-              contact us at:
-              <br />
-              Email: support@thegiftingaffair.com
-              <br />
-              Phone: +65 XXXX XXXX
+              All content on this website, including images, text, logos, and
+              designs, is the intellectual property of The Gifting Affair and
+              protected by copyright laws.
             </p>
 
-            <div className="mt-8 text-sm text-gray-600">
+            <h2 className="text-xl font-semibold mb-4">
+              12. Limitation of Liability
+            </h2>
+            <p className="mb-4">
+              The Gifting Affair shall not be liable for any indirect,
+              incidental, special, consequential, or punitive damages resulting
+              from your use of our services.
+            </p>
+
+            <h2 className="text-xl font-semibold mb-4">
+              13. Governing Law and Jurisdiction
+            </h2>
+            <p className="mb-4">
+              These terms and conditions shall be governed by and construed in
+              accordance with the laws of Singapore. Any disputes shall be
+              subject to the exclusive jurisdiction of the courts of Singapore.
+            </p>
+
+            <h2 className="text-xl font-semibold mb-4">
+              14. Modifications to Terms
+            </h2>
+            <p className="mb-4">
+              We reserve the right to modify these terms at any time. Changes
+              will be effective immediately upon posting on the website.
+              Continued use of our services constitutes acceptance of the
+              modified terms.
+            </p>
+
+            <h2 className="text-xl font-semibold mb-4">
+              15. Contact Information
+            </h2>
+            <p className="mb-4">
+              For any questions, concerns, or inquiries regarding these Terms
+              and Conditions, please contact us at:
+              <br />
+              Email: thegiftingaffair24@gmail.com
+              <br />
+              Phone: +65 87430520
+            </p>
+
+            {/* <div className="mt-8 text-sm text-gray-600">
               <p>Last updated: {new Date().toLocaleDateString()}</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
