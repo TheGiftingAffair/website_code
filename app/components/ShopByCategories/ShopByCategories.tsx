@@ -42,6 +42,7 @@ const ShopByCategories = () => {
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
+          console.log("Fetched categories:", docSnap.data().valueArray); // Add logging
           const categoriesArray = docSnap.data().valueArray as Category[];
           setCategories(categoriesArray);
           if (categoriesArray.length > 0) {
@@ -77,7 +78,7 @@ const ShopByCategories = () => {
             decodedCategory
               .toLowerCase()
               .replace(/[/&]/g, "")
-              .replace(/\s+/g, "")
+              .replace(/\s+/g, ""
         );
 
         if (validCategory) {

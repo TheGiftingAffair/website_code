@@ -40,6 +40,7 @@ const ShopByOccasion = () => {
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
+          console.log("Fetched occasions:", docSnap.data().valueArray); // Add logging
           const occasionsArray = docSnap.data().valueArray as Occasion[];
           setOccasions(occasionsArray);
           if (occasionsArray.length > 0) {

@@ -180,9 +180,11 @@ const Navbar = () => {
         );
 
         if (occasionsDoc.exists()) {
+          console.log("Fetched occasions:", occasionsDoc.data().valueArray);
           setOccasions(occasionsDoc.data().valueArray);
         }
         if (categoriesDoc.exists()) {
+          console.log("Fetched categories:", categoriesDoc.data().valueArray);
           setCategories(categoriesDoc.data().valueArray);
         }
       } catch (error) {
