@@ -39,11 +39,11 @@ const ShopByOccasion = () => {
         const docRef = doc(db, "variables", "ShopByOccasion");
         const docSnap = await getDoc(docRef);
         
-        if (docSnap.exists()) {
-          console.log("Fetched occasions:", docSnap.data().valueArray); // Add logging
+        if (docSnap.exists() && docSnap.data()?.valueArray) {
+          console.log("Fetched occasions:", docSnap.data().valueArray);
           const occasionsArray = docSnap.data().valueArray as Occasion[];
-          setOccasions(occasionsArray);
-          if (occasionsArray.length > 0) {
+          setOccasions(occasionsArray || []);
+          if (occasionsArray && occasionsArray.length > 0) {
             setSelectedOccasion(occasionsArray[0]);
           }
         }
@@ -154,7 +154,7 @@ const ShopByOccasion = () => {
         </p>
         {/* Occasion Navigation */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 lg:mt-">
-          {occasions.map((occasion) => (
+          {Array.isArray(occasions) && occasions.map((occasion) => (
             <button
               key={occasion}
               onClick={() => handleOccasionChange(occasion)}

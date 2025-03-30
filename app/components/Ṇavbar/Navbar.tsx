@@ -179,13 +179,13 @@ const Navbar = () => {
           doc(db, "variables", "ShopByCategories")
         );
 
-        if (occasionsDoc.exists()) {
+        if (occasionsDoc.exists() && occasionsDoc.data()?.valueArray) {
           console.log("Fetched occasions:", occasionsDoc.data().valueArray);
-          setOccasions(occasionsDoc.data().valueArray);
+          setOccasions(occasionsDoc.data().valueArray || []);
         }
-        if (categoriesDoc.exists()) {
+        if (categoriesDoc.exists() && categoriesDoc.data()?.valueArray) {
           console.log("Fetched categories:", categoriesDoc.data().valueArray);
-          setCategories(categoriesDoc.data().valueArray);
+          setCategories(categoriesDoc.data().valueArray || []);
         }
       } catch (error) {
         console.error("Error fetching arrays:", error);
@@ -262,30 +262,31 @@ const Navbar = () => {
                   onMouseEnter={() => setActiveDropdown("category")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {categories.map((category) => (
-                    <Link
-                      key={category}
-                      href={`/products#shop-by-categories?category=${category
-                        .toLowerCase()
-                        .replace(/\s*&\s*/g, "-")
-                        .replace(/\//g, "-")
-                        .replace(/\s+/g, "-")}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigation(
-                          `/products#shop-by-categories?category=${category
-                            .toLowerCase()
-                            .replace(/\s*&\s*/g, "-")
-                            .replace(/\//g, "-")
-                            .replace(/\s+/g, "-")}`,
-                          "shop-by-categories"
-                        );
-                      }}
-                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
-                    >
-                      {category}
-                    </Link>
-                  ))}
+                  {Array.isArray(categories) &&
+                    categories.map((category) => (
+                      <Link
+                        key={category}
+                        href={`/products#shop-by-categories?category=${category
+                          .toLowerCase()
+                          .replace(/\s*&\s*/g, "-")
+                          .replace(/\//g, "-")
+                          .replace(/\s+/g, "-")}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigation(
+                            `/products#shop-by-categories?category=${category
+                              .toLowerCase()
+                              .replace(/\s*&\s*/g, "-")
+                              .replace(/\//g, "-")
+                              .replace(/\s+/g, "-")}`,
+                            "shop-by-categories"
+                          );
+                        }}
+                        className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      >
+                        {category}
+                      </Link>
+                    ))}
                 </div>
               </div>
 
@@ -308,26 +309,27 @@ const Navbar = () => {
                   onMouseEnter={() => setActiveDropdown("occasion")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {occasions.map((occasion) => (
-                    <Link
-                      key={occasion}
-                      href={`/products#shop-by-occasion?occasion=${occasion
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigation(
-                          `/products#shop-by-occasion?occasion=${occasion
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")}`,
-                          "shop-by-occasion"
-                        );
-                      }}
-                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
-                    >
-                      {occasion}
-                    </Link>
-                  ))}
+                  {Array.isArray(occasions) &&
+                    occasions.map((occasion) => (
+                      <Link
+                        key={occasion}
+                        href={`/products#shop-by-occasion?occasion=${occasion
+                          .toLowerCase()
+                          .replace(/\s+/g, "-")}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigation(
+                            `/products#shop-by-occasion?occasion=${occasion
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`,
+                            "shop-by-occasion"
+                          );
+                        }}
+                        className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      >
+                        {occasion}
+                      </Link>
+                    ))}
                 </div>
               </div>
 
@@ -459,31 +461,32 @@ const Navbar = () => {
                     </button>
                     {activeDropdown === "category" && (
                       <div className="mx-2 space-y-2 mt-2">
-                        {categories.map((category) => (
-                          <Link
-                            key={category}
-                            href={`/products#shop-by-categories?category=${category
-                              .toLowerCase()
-                              .replace(/\s*&\s*/g, "-")
-                              .replace(/\//g, "-")
-                              .replace(/\s+/g, "-")}`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleNavigation(
-                                `/products#shop-by-categories?category=${category
-                                  .toLowerCase()
-                                  .replace(/\s*&\s*/g, "-")
-                                  .replace(/\//g, "-")
-                                  .replace(/\s+/g, "-")}`,
-                                "shop-by-categories"
-                              );
-                            }}
-                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
-                          >
-                            <ChevronRight size={14} className="mx-2" />
-                            {category}
-                          </Link>
-                        ))}
+                        {Array.isArray(categories) &&
+                          categories.map((category) => (
+                            <Link
+                              key={category}
+                              href={`/products#shop-by-categories?category=${category
+                                .toLowerCase()
+                                .replace(/\s*&\s*/g, "-")
+                                .replace(/\//g, "-")
+                                .replace(/\s+/g, "-")}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigation(
+                                  `/products#shop-by-categories?category=${category
+                                    .toLowerCase()
+                                    .replace(/\s*&\s*/g, "-")
+                                    .replace(/\//g, "-")
+                                    .replace(/\s+/g, "-")}`,
+                                  "shop-by-categories"
+                                );
+                              }}
+                              className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
+                            >
+                              <ChevronRight size={14} className="mx-2" />
+                              {category}
+                            </Link>
+                          ))}
                       </div>
                     )}
                   </div>
@@ -507,27 +510,28 @@ const Navbar = () => {
                     </button>
                     {activeDropdown === "occasion" && (
                       <div className="mx-2 space-y-2 mt-2">
-                        {occasions.map((occasion) => (
-                          <Link
-                            key={occasion}
-                            href={`/products#shop-by-occasion?occasion=${occasion
-                              .toLowerCase()
-                              .replace(/\s+/g, "-")}`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleNavigation(
-                                `/products#shop-by-occasion?occasion=${occasion
-                                  .toLowerCase()
-                                  .replace(/\s+/g, "-")}`,
-                                "shop-by-occasion"
-                              );
-                            }}
-                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
-                          >
-                            <ChevronRight size={14} className="mx-2" />
-                            {occasion}
-                          </Link>
-                        ))}
+                        {Array.isArray(occasions) &&
+                          occasions.map((occasion) => (
+                            <Link
+                              key={occasion}
+                              href={`/products#shop-by-occasion?occasion=${occasion
+                                .toLowerCase()
+                                .replace(/\s+/g, "-")}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigation(
+                                  `/products#shop-by-occasion?occasion=${occasion
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")}`,
+                                  "shop-by-occasion"
+                                );
+                              }}
+                              className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
+                            >
+                              <ChevronRight size={14} className="mx-2" />
+                              {occasion}
+                            </Link>
+                          ))}
                       </div>
                     )}
                   </div>

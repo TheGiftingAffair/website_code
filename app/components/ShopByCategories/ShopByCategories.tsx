@@ -41,11 +41,11 @@ const ShopByCategories = () => {
         const docRef = doc(db, "variables", "ShopByCategories");
         const docSnap = await getDoc(docRef);
         
-        if (docSnap.exists()) {
-          console.log("Fetched categories:", docSnap.data().valueArray); // Add logging
+        if (docSnap.exists() && docSnap.data()?.valueArray) {
+          console.log("Fetched categories:", docSnap.data().valueArray);
           const categoriesArray = docSnap.data().valueArray as Category[];
-          setCategories(categoriesArray);
-          if (categoriesArray.length > 0) {
+          setCategories(categoriesArray || []);
+          if (categoriesArray && categoriesArray.length > 0) {
             setSelectedCategory(categoriesArray[0]);
           }
         }
@@ -199,7 +199,7 @@ const ShopByCategories = () => {
 
         {/* Category Navigation */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 lg:mt-">
-          {categories.map((category) => (
+          {Array.isArray(categories) && categories.map((category) => (
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
