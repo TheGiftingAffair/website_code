@@ -69,102 +69,6 @@ const Navbar = () => {
     }
   };
 
-  const categories = [
-    {
-      name: "For Him/Her",
-      href: "/products#shop-by-categories?category=for-him-her",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Chocolate & Cookies",
-      href: "/products#shop-by-categories?category=chocolate-cookies",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Tea & Coffee",
-      href: "/products#shop-by-categories?category=tea-coffee",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Wine & Whiskey",
-      href: "/products#shop-by-categories?category=wine-whiskey",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Fruits",
-      href: "/products#shop-by-categories?category=fruits",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Beauty",
-      href: "/products#shop-by-categories?category=beauty",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Baby",
-      href: "/products#shop-by-categories?category=baby",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Halal",
-      href: "/products#shop-by-categories?category=halal",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Wellness",
-      href: "/products#shop-by-categories?category=wellness",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Evergreen",
-      href: "/products#shop-by-categories?category=evergreen",
-      section: "shop-by-categories",
-    },
-  ];
-
-  const occasions = [
-    {
-      name: "Birthday",
-      href: "/products#shop-by-occasion?occasion=birthday",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Anniversary",
-      href: "/products#shop-by-occasion?occasion=anniversary",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Farewell",
-      href: "/products#shop-by-occasion?occasion=farewell",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Congratulations",
-      href: "/products#shop-by-occasion?occasion=congratulations",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Housewarming",
-      href: "/products#shop-by-occasion?occasion=housewarming",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Graduation",
-      href: "/products#shop-by-occasion?occasion=graduation",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Special Day",
-      href: "/products#shop-by-occasion?occasion=special-day",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Get Well Soon",
-      href: "/products#shop-by-occasion?occasion=get-well-soon",
-      section: "shop-by-occasion",
-    },
-  ];
-
   const priceRanges = [
     {
       name: "Below $100",
@@ -264,6 +168,30 @@ const Navbar = () => {
     fetchTexts();
   }, []);
 
+  // Add new useEffect to fetch occasions and categories
+  useEffect(() => {
+    const fetchArrays = async () => {
+      try {
+        const occasionsDoc = await getDoc(
+          doc(db, "variables", "ShopByOccasion")
+        );
+        const categoriesDoc = await getDoc(
+          doc(db, "variables", "ShopByCategories")
+        );
+
+        if (occasionsDoc.exists()) {
+          setOccasions(occasionsDoc.data().valueArray);
+        }
+        if (categoriesDoc.exists()) {
+          setCategories(categoriesDoc.data().valueArray);
+        }
+      } catch (error) {
+        console.error("Error fetching arrays:", error);
+      }
+    };
+    fetchArrays();
+  }, []);
+
   return (
     <>
       <nav
@@ -337,12 +265,16 @@ const Navbar = () => {
                       key={category}
                       href={`/products#shop-by-categories?category=${category
                         .toLowerCase()
+                        .replace(/\s*&\s*/g, "-")
+                        .replace(/\//g, "-")
                         .replace(/\s+/g, "-")}`}
                       onClick={(e) => {
                         e.preventDefault();
                         handleNavigation(
                           `/products#shop-by-categories?category=${category
                             .toLowerCase()
+                            .replace(/\s*&\s*/g, "-")
+                            .replace(/\//g, "-")
                             .replace(/\s+/g, "-")}`,
                           "shop-by-categories"
                         );
@@ -530,12 +462,16 @@ const Navbar = () => {
                             key={category}
                             href={`/products#shop-by-categories?category=${category
                               .toLowerCase()
+                              .replace(/\s*&\s*/g, "-")
+                              .replace(/\//g, "-")
                               .replace(/\s+/g, "-")}`}
                             onClick={(e) => {
                               e.preventDefault();
                               handleNavigation(
                                 `/products#shop-by-categories?category=${category
                                   .toLowerCase()
+                                  .replace(/\s*&\s*/g, "-")
+                                  .replace(/\//g, "-")
                                   .replace(/\s+/g, "-")}`,
                                 "shop-by-categories"
                               );

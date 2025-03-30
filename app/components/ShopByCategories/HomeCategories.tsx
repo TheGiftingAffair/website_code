@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Category =
@@ -30,21 +30,27 @@ interface Hamper {
 }
 
 const HomeCategories = () => {
-  const [categoryImages, setCategoryImages] = useState<Record<string, string>>(
-    {}
-  );
-  const categories: Category[] = [
-    "For Him/Her",
-    "Chocolate & Cookies",
-    "Tea & Coffee",
-    "Wine & Whiskey",
-    "Fruits",
-    "Beauty",
-    "Baby",
-    "Halal",
-    "Wellness",
-    "Evergreen",
-  ];
+  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  // Add new useEffect to fetch categories array
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const docRef = doc(db, "variables", "ShopByCategories");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const categoriesArray = docSnap.data().valueArray as Category[];
+          setCategories(categoriesArray);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchCategoryImages = async () => {
@@ -89,7 +95,7 @@ const HomeCategories = () => {
     };
 
     fetchCategoryImages();
-  }, []);
+  }, [categories]);
 
   const handleCategoryClick = (category: Category) => {
     const encodedCategory = category

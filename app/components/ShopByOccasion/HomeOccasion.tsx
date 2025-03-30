@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { useRouter } from "next/navigation";
 
@@ -28,19 +28,26 @@ interface Hamper {
 
 const HomeOccasion = () => {
   const router = useRouter();
-  const [occasionImages, setOccasionImages] = useState<Record<string, string>>(
-    {}
-  );
-  const occasions: Occasion[] = [
-    "Birthday",
-    "Anniversary",
-    "Farewell",
-    "Congratulations",
-    "Housewarming",
-    "Graduation",
-    "Special Day",
-    "Get Well Soon",
-  ];
+  const [occasionImages, setOccasionImages] = useState<Record<string, string>>({});
+  const [occasions, setOccasions] = useState<Occasion[]>([]);
+
+  useEffect(() => {
+    const fetchOccasions = async () => {
+      try {
+        const docRef = doc(db, "variables", "ShopByOccasion");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const occasionsArray = docSnap.data().valueArray as Occasion[];
+          setOccasions(occasionsArray);
+        }
+      } catch (error) {
+        console.error("Error fetching occasions:", error);
+      }
+    };
+
+    fetchOccasions();
+  }, []);
 
   useEffect(() => {
     const fetchOccasionImages = async () => {
@@ -83,7 +90,7 @@ const HomeOccasion = () => {
     };
 
     fetchOccasionImages();
-  }, []);
+  }, [occasions]);
 
   const handleOccasionClick = (occasion: Occasion) => {
     const encodedOccasion = occasion.toLowerCase().replace(/\s+/g, "-");
