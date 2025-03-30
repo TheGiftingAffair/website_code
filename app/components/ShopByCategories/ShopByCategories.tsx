@@ -75,10 +75,7 @@ const ShopByCategories = () => {
         const validCategory = categories.find(
           (cat) =>
             cat.toLowerCase().replace(/[/&]/g, "").replace(/\s+/g, "") ===
-            decodedCategory
-              .toLowerCase()
-              .replace(/[/&]/g, "")
-              .replace(/\s+/g, ""
+            decodedCategory.toLowerCase().replace(/[/&]/g, "").replace(/\s+/g, "")
         );
 
         if (validCategory) {
