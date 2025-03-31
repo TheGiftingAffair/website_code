@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { createOrder, createGuestOrder } from '@/utils/orderService';
+import { updateOrderStatus } from '@/utils/orderService';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -15,9 +15,6 @@ const PaymentSuccessPage = () => {
       try {
         const reference = searchParams.get('reference');
         const status = searchParams.get('status');
-
-        console.log('Payment status:', status);
-        console.log('Reference:', reference); // This is HitPay's order ID
 
         // Check payment status first
         if (status !== 'completed') {
@@ -44,33 +41,33 @@ const PaymentSuccessPage = () => {
           return;
         }
 
-        const { orderData } = JSON.parse(storedData);
+        const { orderData, orderId } = JSON.parse(storedData);
 
-        // Create the order with HitPay's reference number as the order ID
-        try {
-          if (orderData.customerType === 'registered' && orderData.userId) {
-            await createOrder({ ...orderData, id: reference });
-          } else {
-            await createGuestOrder({ ...orderData, id: reference });
-          }
-
-          // Clear storage after successful order creation
-          localStorage.removeItem('pendingOrderData');
-          sessionStorage.removeItem('pendingOrderData');
-
-          // Send confirmation email
-          await fetch('/api/send-order-confirmation', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderId: reference, orderData }),
-          });
-
-          // Redirect to success page
-          router.push(`/order-success?orderId=${reference}`);
-        } catch (error) {
-          console.error('Error creating order:', error);
-          throw error;
+        // Verify the reference from HitPay matches our orderId
+        if (reference !== orderId) {
+          console.error('Order ID mismatch:', { reference, orderId });
+          toast.error('Order verification failed');
+          router.push('/checkout');
+          return;
         }
+
+        // Update order status to confirmed
+        await updateOrderStatus(orderId, 'confirmed');
+
+        // Send confirmation email
+        await fetch('/api/send-order-confirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, orderData }),
+        });
+
+        // Clear storage after confirmation
+        localStorage.removeItem('pendingOrderData');
+        sessionStorage.removeItem('pendingOrderData');
+
+        // Redirect to success page
+        router.push(`/order-success?orderId=${orderId}`);
+
       } catch (error) {
         console.error('Error processing order:', error);
         toast.error('Failed to process order. Please try again.');

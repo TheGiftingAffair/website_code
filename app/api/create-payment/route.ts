@@ -3,12 +3,12 @@ import { createPaymentRequest } from '@/utils/hitpayService';
 
 export async function POST(request: Request) {
   try {
-    const { amount, currency, email, name, orderData } = await request.json();
-    console.log('Received payment request:', { amount, currency, email, name });
+    const { amount, currency, email, name, orderData, orderId } = await request.json();
+    console.log('Received payment request:', { amount, currency, email, name, orderId });
 
     // Validate required fields
-    if (!amount || !currency || !email || !name) {
-      console.error('Missing required fields:', { amount, currency, email, name });
+    if (!amount || !currency || !email || !name || !orderId) {
+      console.error('Missing required fields:', { amount, currency, email, name, orderId });
       return NextResponse.json(
         { message: 'Missing required fields' },
         { status: 400 }
@@ -18,18 +18,15 @@ export async function POST(request: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-    // Generate a reference number using the same format as the order ID
-    const referenceNumber = `TGA-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
     const formData = new URLSearchParams();
     formData.append('email', email);
     formData.append('redirect_url', `${baseUrl}/payment/success`);
     formData.append('webhook', `${baseUrl}/api/payment-webhook`);
-    formData.append('reference_number', referenceNumber);
+    formData.append('reference_number', orderId); // Use our orderId
     formData.append('currency', currency);
     formData.append('amount', amount.toString()); // Ensure amount is string
     formData.append('name', name);
-    formData.append('purpose', `Order ${referenceNumber}`);
+    formData.append('purpose', `Order ${orderId}`);
 
     try {
       console.log('Creating payment request with data:', Object.fromEntries(formData));

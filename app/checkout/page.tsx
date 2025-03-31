@@ -7,6 +7,7 @@ import { getUserData } from "@/utils/userService";
 import { getProductById } from "@/utils/productService";
 import { getPlaceholderImage } from "@/utils/placeholderService";
 import { validateCoupon, applyCoupon } from "@/utils/couponService";
+import { createOrder, createGuestOrder } from "@/utils/orderService";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
@@ -287,12 +288,23 @@ const CheckoutPage = () => {
         total: total,
       };
 
-      // Store order data temporarily
-      const storageData = JSON.stringify({ orderData });
+      // Create order first to get our order ID
+      let orderId;
+      if (user) {
+        orderId = await createOrder(orderData);
+      } else {
+        orderId = await createGuestOrder(orderData);
+      }
+
+      // Store order data with our orderId
+      const storageData = JSON.stringify({
+        orderData: { ...orderData, id: orderId },
+        orderId, // Store orderId separately for easy access
+      });
       localStorage.setItem("pendingOrderData", storageData);
       sessionStorage.setItem("pendingOrderData", storageData);
 
-      // Create payment with HitPay
+      // Create payment with HitPay using our orderId
       try {
         const paymentResponse = await fetch("/api/create-payment", {
           method: "POST",
@@ -305,6 +317,7 @@ const CheckoutPage = () => {
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
             orderData: orderData,
+            orderId: orderId, // Pass our orderId to HitPay
           }),
         });
 
