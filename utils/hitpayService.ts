@@ -6,15 +6,7 @@ const HITPAY_SALT = process.env.HITPAY_SALT || '';
 const HITPAY_API_URL = process.env.NEXT_PUBLIC_HITPAY_API_URL || 'https://api.sandbox.hit-pay.com/v1';
 
 const PAYMENT_METHODS = [
-  'paynow_online',
-  'card',
-  'wechat',
-  'alipay',
-  'grabpay',
-  'shopback',
-  'fpx',
-  'zip',
-  'atome'
+  'paynow_online'  // Only use paynow_online for sandbox testing
 ];
 
 interface CreatePaymentRequestParams {
