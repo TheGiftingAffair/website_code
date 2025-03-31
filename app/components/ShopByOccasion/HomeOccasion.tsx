@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { useRouter } from "next/navigation";
 
@@ -28,19 +28,31 @@ interface Hamper {
 
 const HomeOccasion = () => {
   const router = useRouter();
-  const [occasionImages, setOccasionImages] = useState<Record<string, string>>(
-    {}
-  );
-  const occasions: Occasion[] = [
-    "Birthday",
-    "Anniversary",
-    "Farewell",
-    "Congratulations",
-    "Housewarming",
-    "Graduation",
-    "Special Day",
-    "Get Well Soon",
-  ];
+  const [occasionImages, setOccasionImages] = useState<Record<string, string>>({});
+  const [occasions, setOccasions] = useState<Occasion[]>([]);
+
+  useEffect(() => {
+    const fetchOccasions = async () => {
+      try {
+        const docRef = doc(db, "variables", "ShopByOccasion");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists() && docSnap.data()?.valuearray) {
+          const rawOccasions = docSnap.data().valuearray;
+          const formattedOccasions = rawOccasions.map((occ: string) => 
+            occ.split(' ').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' ') as Occasion
+          );
+          setOccasions(formattedOccasions || []);
+        }
+      } catch (error) {
+        console.error("Error fetching occasions:", error);
+      }
+    };
+
+    fetchOccasions();
+  }, []);
 
   useEffect(() => {
     const fetchOccasionImages = async () => {
@@ -83,7 +95,7 @@ const HomeOccasion = () => {
     };
 
     fetchOccasionImages();
-  }, []);
+  }, [occasions]);
 
   const handleOccasionClick = (occasion: Occasion) => {
     const encodedOccasion = occasion.toLowerCase().replace(/\s+/g, "-");
@@ -110,7 +122,7 @@ const HomeOccasion = () => {
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 2xl:gap-6 px-4">
-          {occasions.map((occasion) => (
+          {Array.isArray(occasions) && occasions.map((occasion) => (
             <div
               key={occasion}
               onClick={() => handleOccasionClick(occasion)}

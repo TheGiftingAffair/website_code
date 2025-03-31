@@ -44,27 +44,39 @@ const cleanItemsData = (items: any[]) => {
   }));
 };
 
-const generateOrderId = (): string => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const randomLength = 4;
-  let randomPart = '';
-  
-  // Get current date in DDMMYY format
+const getSingaporeTime = () => {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+};
+
+export const generateOrderId = async (): Promise<string> => {
   const date = getSingaporeTime();
   const datePart = date.getDate().toString().padStart(2, '0') +
                    (date.getMonth() + 1).toString().padStart(2, '0') +
                    date.getFullYear().toString().slice(-2);
   
-  // Generate random letters
-  for (let i = 0; i < randomLength; i++) {
+  // Use milliseconds for unique timestamp (last 4 digits)
+  const timestamp = date.getMilliseconds().toString().padStart(4, '0');
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let randomPart = '';
+  
+  // Generate exactly 3 random letters
+  for (let i = 0; i < 3; i++) {
     randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   
-  return `TGA-${datePart}-${randomPart}`;
-};
-
-const getSingaporeTime = () => {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+  const orderId = `TGA${datePart}${timestamp}${randomPart}`;
+  
+  // Ensure uniqueness by checking database
+  const orderRef = doc(db, 'orders', orderId);
+  const orderDoc = await getDoc(orderRef);
+  
+  if (orderDoc.exists()) {
+    // If exists, recursively try again with small delay
+    await new Promise(resolve => setTimeout(resolve, 10));
+    return generateOrderId();
+  }
+  
+  return orderId;
 };
 
 export const getOrdersByIds = async (orderIds: string[]) => {
@@ -98,7 +110,7 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
     }
 
     const now = getSingaporeTime();
-    const customOrderId = generateOrderId(); // No longer async
+    const orderId = await generateOrderId();
     
     const orderDoc = cleanDataForFirestore({
       userId: orderData.userId,
@@ -127,14 +139,14 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       updatedAt: now,
     });
 
-    const orderRef = doc(db, 'orders', customOrderId);
+    const orderRef = doc(db, 'orders', orderId);
     await setDoc(orderRef, orderDoc);
 
     // Update user's orderIds
     const userData = await getUserData(orderData.userId);
     if (userData) {
       await updateUserData(orderData.userId, {
-        orderIds: [...(userData.orderIds || []), customOrderId]
+        orderIds: [...(userData.orderIds || []), orderId]
       });
     }
 
@@ -146,7 +158,7 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId: customOrderId,
+          orderId: orderId,
           total: orderData.total,
           customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
           customerEmail: orderData.shippingAddress.email,
@@ -157,7 +169,7 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       // Don't throw error as order is already created
     }
 
-    return customOrderId;
+    return orderId;
   } catch (error) {
     console.error('Error creating order:', error);
     throw error;
@@ -172,7 +184,7 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
     }
 
     const now = getSingaporeTime();
-    const customOrderId = generateOrderId(); // No longer async
+    const customOrderId = await generateOrderId();
     
     const orderDoc = cleanDataForFirestore({
       userId: 'guest',

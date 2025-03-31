@@ -46,6 +46,7 @@ export interface Order {
     userConfirmed: boolean;
     adminConfirmed: boolean;
     confirmedAt?: Date;
+    hitpayReference?: string; // Add this field
   };
   tracking: {
     isDelivered: boolean;

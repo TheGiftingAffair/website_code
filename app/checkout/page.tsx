@@ -4,10 +4,10 @@ import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserData } from "@/utils/userService";
-import { createOrder, createGuestOrder } from "@/utils/orderService";
 import { getProductById } from "@/utils/productService";
 import { getPlaceholderImage } from "@/utils/placeholderService";
 import { validateCoupon, applyCoupon } from "@/utils/couponService";
+import { createOrder, createGuestOrder } from "@/utils/orderService";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
@@ -288,7 +288,24 @@ const CheckoutPage = () => {
         total: total,
       };
 
-      // Create HitPay payment request
+      // Create order first and get our order ID
+      let orderId;
+      if (user) {
+        orderId = await createOrder(orderData);
+      } else {
+        orderId = await createGuestOrder(orderData);
+      }
+
+      // Store our order ID and order data temporarily
+      const storageData = JSON.stringify({
+        orderData,
+        orderId,
+        status: 'pending' // Add status to track payment state
+      });
+      localStorage.setItem("pendingOrderData", storageData);
+      sessionStorage.setItem("pendingOrderData", storageData);
+
+      // Create payment with HitPay
       try {
         const paymentResponse = await fetch("/api/create-payment", {
           method: "POST",
@@ -300,31 +317,20 @@ const CheckoutPage = () => {
             currency: "SGD",
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
-            orderData: orderData, // Pass the complete orderData
+            orderData: orderData,
+            orderId: orderId
           }),
         });
 
         if (!paymentResponse.ok) {
-          throw new Error("Payment request failed");
+          const errorData = await paymentResponse.json();
+          throw new Error(errorData.message || "Payment request failed");
         }
 
         const paymentData = await paymentResponse.json();
 
         if (!paymentData.url) {
           throw new Error("Payment URL not received in response");
-        }
-
-        // Store order data in both localStorage and sessionStorage
-        const storageData = JSON.stringify({
-          orderData,
-          paymentReference: paymentData.referenceNumber,
-        });
-
-        try {
-          localStorage.setItem("pendingOrderData", storageData);
-          sessionStorage.setItem("pendingOrderData", storageData);
-        } catch (storageError) {
-          console.error("Storage error:", storageError);
         }
 
         // Clear cart before redirecting
@@ -767,7 +773,12 @@ const CheckoutPage = () => {
                 )}
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-600 flex-wrap gap-1">
-                    <span className="break-all">{appliedCoupon.code}</span>
+                    <span className="break-all">
+                      {appliedCoupon.code} 
+                      ({appliedCoupon.type === 'Flat' 
+                        ? `$${appliedCoupon.value}` 
+                        : `${appliedCoupon.value}%`} off)
+                    </span>
                     <span>-${appliedCoupon.discount.toFixed(2)}</span>
                   </div>
                 )}

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Category =
@@ -32,20 +32,43 @@ interface Hamper {
 
 const ShopByCategories = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
-  const [selectedCategory, setSelectedCategory] =
-    useState<Category>("For Him/Her");
-  const categories: Category[] = [
-    "For Him/Her",
-    "Chocolate & Cookies",
-    "Tea & Coffee",
-    "Wine & Whiskey",
-    "Fruits",
-    "Beauty",
-    "Baby",
-    "Halal",
-    "Wellness",
-    "Evergreen",
-  ];
+  const [selectedCategory, setSelectedCategory] = useState<Category>("For Him/Her");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const docRef = doc(db, "variables", "ShopByCategories");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists() && docSnap.data()?.valuearray) {
+          const rawCategories = docSnap.data().valuearray;
+          // Convert the format: first letter uppercase, handle special cases
+          const formattedCategories = rawCategories.map((cat: string) => {
+            const words = cat.split(' ');
+            return words.map(word => {
+              if (word.includes('/')) {
+                return word.split('/').map(w => 
+                  w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                ).join('/');
+              }
+              if (word === '&') return '&';
+              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }).join(' ') as Category;
+          });
+          setCategories(formattedCategories);
+          // Set the initial selected category
+          if (formattedCategories.length > 0) {
+            setSelectedCategory(formattedCategories[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handleUrlChange = () => {
@@ -65,10 +88,7 @@ const ShopByCategories = () => {
         const validCategory = categories.find(
           (cat) =>
             cat.toLowerCase().replace(/[/&]/g, "").replace(/\s+/g, "") ===
-            decodedCategory
-              .toLowerCase()
-              .replace(/[/&]/g, "")
-              .replace(/\s+/g, "")
+            decodedCategory.toLowerCase().replace(/[/&]/g, "").replace(/\s+/g, "")
         );
 
         if (validCategory) {
@@ -84,7 +104,7 @@ const ShopByCategories = () => {
     return () => {
       window.removeEventListener("urlChanged", handleUrlChange);
     };
-  }, []);
+  }, [categories]);
 
   useEffect(() => {
     const handleUrlParamsChanged = (event: CustomEvent) => {
@@ -125,7 +145,7 @@ const ShopByCategories = () => {
         handleUrlParamsChanged as EventListener
       );
     };
-  }, []);
+  }, [categories]);
 
   // Update URL when category changes
   const handleCategoryChange = (category: Category) => {
@@ -145,6 +165,8 @@ const ShopByCategories = () => {
 
   useEffect(() => {
     const fetchHampers = async () => {
+      if (!selectedCategory) return; // Don't fetch if no category is selected
+      
       try {
         const q = query(
           collection(db, "Products"),
@@ -154,16 +176,15 @@ const ShopByCategories = () => {
 
         const querySnapshot = await getDocs(q);
         const hampers: Hamper[] = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Hamper)
+          (doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          } as Hamper)
         );
 
         setHampersData(hampers);
       } catch (error) {
-        console.error("Error fetching hampers from Firestore:", error);
+        console.error("Error fetching hampers:", error);
       }
     };
 
@@ -192,7 +213,7 @@ const ShopByCategories = () => {
 
         {/* Category Navigation */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 lg:mt-">
-          {categories.map((category) => (
+          {Array.isArray(categories) && categories.map((category) => (
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}

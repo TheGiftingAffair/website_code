@@ -29,19 +29,22 @@ import { db } from "../../../firebaseConfig";
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [cartCount, setCartCount] = useState(0); // Add this line
+  const [cartCount, setCartCount] = useState(0);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const { items } = useCart(); // Change this line to destructure items instead of cart
+  const { items } = useCart();
   const [festiveHampers, setFestiveHampers] = useState<
     Array<{ id: string; name: string }>
   >([]);
   const [specialNav, setSpecialNav] = useState("Special");
+  const [occasions, setOccasions] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
 
   // Handle scroll effect
   useEffect(() => {
@@ -60,110 +63,12 @@ const Navbar = () => {
     const [path, hash] = href.split("#");
 
     if (currentPath === "/products") {
-      // Already on products page, just update hash and let scroll handler work
       window.location.hash = hash;
     } else {
-      // Store target section and navigate to products page
       sessionStorage.setItem("scrollTarget", `#${hash}`);
       window.location.href = `/products#${hash}`;
     }
   };
-
-  const categories = [
-    {
-      name: "For Him/Her",
-      href: "/products#shop-by-categories?category=for-him-her",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Chocolate & Cookies",
-      href: "/products#shop-by-categories?category=chocolate-cookies",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Tea & Coffee",
-      href: "/products#shop-by-categories?category=tea-coffee",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Wine & Whiskey",
-      href: "/products#shop-by-categories?category=wine-whiskey",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Fruits",
-      href: "/products#shop-by-categories?category=fruits",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Beauty",
-      href: "/products#shop-by-categories?category=beauty",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Baby",
-      href: "/products#shop-by-categories?category=baby",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Halal",
-      href: "/products#shop-by-categories?category=halal",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Wellness",
-      href: "/products#shop-by-categories?category=wellness",
-      section: "shop-by-categories",
-    },
-    {
-      name: "Evergreen",
-      href: "/products#shop-by-categories?category=evergreen",
-      section: "shop-by-categories",
-    },
-  ];
-
-  const occasions = [
-    {
-      name: "Birthday",
-      href: "/products#shop-by-occasion?occasion=birthday",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Anniversary",
-      href: "/products#shop-by-occasion?occasion=anniversary",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Farewell",
-      href: "/products#shop-by-occasion?occasion=farewell",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Congratulations",
-      href: "/products#shop-by-occasion?occasion=congratulations",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Housewarming",
-      href: "/products#shop-by-occasion?occasion=housewarming",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Graduation",
-      href: "/products#shop-by-occasion?occasion=graduation",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Special Day",
-      href: "/products#shop-by-occasion?occasion=special-day",
-      section: "shop-by-occasion",
-    },
-    {
-      name: "Get Well Soon",
-      href: "/products#shop-by-occasion?occasion=get-well-soon",
-      section: "shop-by-occasion",
-    },
-  ];
 
   const priceRanges = [
     {
@@ -200,7 +105,7 @@ const Navbar = () => {
   useEffect(() => {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
     setCartCount(totalItems);
-  }, [items]); // Change dependency to items
+  }, [items]);
 
   // Listen for cart updates from storage events
   useEffect(() => {
@@ -242,9 +147,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchTexts = async () => {
       try {
-        const textIds = [
-          "specialNav", // Add this new ID
-        ];
+        const textIds = ["specialNav"];
         const texts = await Promise.all(
           textIds.map((id) => getDoc(doc(db, "variables", id)))
         );
@@ -266,7 +169,62 @@ const Navbar = () => {
     fetchTexts();
   }, []);
 
-  const router = useRouter();
+  // Add new useEffect to fetch occasions and categories
+  useEffect(() => {
+    const fetchArrays = async () => {
+      try {
+        const occasionsDoc = await getDoc(
+          doc(db, "variables", "ShopByOccasion")
+        );
+        const categoriesDoc = await getDoc(
+          doc(db, "variables", "ShopByCategories")
+        );
+
+        if (occasionsDoc.exists() && occasionsDoc.data()?.valuearray) {
+          const rawOccasions = occasionsDoc.data().valuearray;
+          const formattedOccasions = rawOccasions.map((occ: string) =>
+            occ
+              .split(" ")
+              .map(
+                (word) =>
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+              )
+              .join(" ")
+          );
+          console.log("Formatted occasions:", formattedOccasions);
+          setOccasions(formattedOccasions);
+        }
+
+        if (categoriesDoc.exists() && categoriesDoc.data()?.valuearray) {
+          const rawCategories = categoriesDoc.data().valuearray;
+          const formattedCategories = rawCategories.map((cat: string) => {
+            const words = cat.split(" ");
+            return words
+              .map((word) => {
+                if (word.includes("/")) {
+                  return word
+                    .split("/")
+                    .map(
+                      (w) =>
+                        w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                    )
+                    .join("/");
+                }
+                if (word === "&") return "&";
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+              })
+              .join(" ");
+          });
+          console.log("Formatted categories:", formattedCategories);
+          setCategories(formattedCategories);
+        }
+      } catch (error) {
+        console.error("Error fetching arrays:", error);
+      }
+    };
+
+    fetchArrays();
+  }, []);
 
   return (
     <>
@@ -307,7 +265,6 @@ const Navbar = () => {
                     href="/special"
                     onClick={(e) => {
                       e.preventDefault();
-                      // handleNavigation("/special", "shop-by-special");
                       router.push("/special");
                     }}
                     className="hover:text-bg2 transition-colors"
@@ -336,19 +293,31 @@ const Navbar = () => {
                   onMouseEnter={() => setActiveDropdown("category")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {categories.map((category) => (
-                    <Link
-                      key={category.name}
-                      href={category.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigation(category.href, category.section);
-                      }}
-                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
+                  {Array.isArray(categories) &&
+                    categories.map((category) => (
+                      <Link
+                        key={category}
+                        href={`/products#shop-by-categories?category=${category
+                          .toLowerCase()
+                          .replace(/\s*&\s*/g, "-")
+                          .replace(/\//g, "-")
+                          .replace(/\s+/g, "-")}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigation(
+                            `/products#shop-by-categories?category=${category
+                              .toLowerCase()
+                              .replace(/\s*&\s*/g, "-")
+                              .replace(/\//g, "-")
+                              .replace(/\s+/g, "-")}`,
+                            "shop-by-categories"
+                          );
+                        }}
+                        className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      >
+                        {category}
+                      </Link>
+                    ))}
                 </div>
               </div>
 
@@ -371,19 +340,27 @@ const Navbar = () => {
                   onMouseEnter={() => setActiveDropdown("occasion")}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {occasions.map((occasion) => (
-                    <Link
-                      key={occasion.name}
-                      href={occasion.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigation(occasion.href, occasion.section);
-                      }}
-                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
-                    >
-                      {occasion.name}
-                    </Link>
-                  ))}
+                  {Array.isArray(occasions) &&
+                    occasions.map((occasion) => (
+                      <Link
+                        key={occasion}
+                        href={`/products#shop-by-occasion?occasion=${occasion
+                          .toLowerCase()
+                          .replace(/\s+/g, "-")}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigation(
+                            `/products#shop-by-occasion?occasion=${occasion
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`,
+                            "shop-by-occasion"
+                          );
+                        }}
+                        className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      >
+                        {occasion}
+                      </Link>
+                    ))}
                 </div>
               </div>
 
@@ -414,17 +391,13 @@ const Navbar = () => {
                         e.preventDefault();
                         handleNavigation(range.href, range.section);
                       }}
-                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
                       {range.name}
                     </Link>
                   ))}
                 </div>
               </div>
-
-              {/* <Link href="/about" className="hover:text-bg3 transition-colors">
-                About Us
-              </Link> */}
 
               <Link
                 href="/profile"
@@ -490,7 +463,6 @@ const Navbar = () => {
                       href="/special"
                       onClick={(e) => {
                         e.preventDefault();
-                        // handleNavigation("/special", "shop-by-special");
                         router.push("/special");
                         setIsMenuOpen(false);
                       }}
@@ -519,20 +491,32 @@ const Navbar = () => {
                     </button>
                     {activeDropdown === "category" && (
                       <div className="mx-2 space-y-2 mt-2">
-                        {categories.map((category) => (
-                          <Link
-                            key={category.name}
-                            href={category.href}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleNavigation(category.href, category.section);
-                            }}
-                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
-                          >
-                            <ChevronRight size={14} className="mx-2" />
-                            {category.name}
-                          </Link>
-                        ))}
+                        {Array.isArray(categories) &&
+                          categories.map((category) => (
+                            <Link
+                              key={category}
+                              href={`/products#shop-by-categories?category=${category
+                                .toLowerCase()
+                                .replace(/\s*&\s*/g, "-")
+                                .replace(/\//g, "-")
+                                .replace(/\s+/g, "-")}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigation(
+                                  `/products#shop-by-categories?category=${category
+                                    .toLowerCase()
+                                    .replace(/\s*&\s*/g, "-")
+                                    .replace(/\//g, "-")
+                                    .replace(/\s+/g, "-")}`,
+                                  "shop-by-categories"
+                                );
+                              }}
+                              className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
+                            >
+                              <ChevronRight size={14} className="mx-2" />
+                              {category}
+                            </Link>
+                          ))}
                       </div>
                     )}
                   </div>
@@ -556,20 +540,28 @@ const Navbar = () => {
                     </button>
                     {activeDropdown === "occasion" && (
                       <div className="mx-2 space-y-2 mt-2">
-                        {occasions.map((occasion) => (
-                          <Link
-                            key={occasion.name}
-                            href={occasion.href}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleNavigation(occasion.href, occasion.section);
-                            }}
-                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
-                          >
-                            <ChevronRight size={14} className="mx-2" />
-                            {occasion.name}
-                          </Link>
-                        ))}
+                        {Array.isArray(occasions) &&
+                          occasions.map((occasion) => (
+                            <Link
+                              key={occasion}
+                              href={`/products#shop-by-occasion?occasion=${occasion
+                                .toLowerCase()
+                                .replace(/\s+/g, "-")}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigation(
+                                  `/products#shop-by-occasion?occasion=${occasion
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")}`,
+                                  "shop-by-occasion"
+                                );
+                              }}
+                              className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
+                            >
+                              <ChevronRight size={14} className="mx-2" />
+                              {occasion}
+                            </Link>
+                          ))}
                       </div>
                     )}
                   </div>
@@ -601,7 +593,7 @@ const Navbar = () => {
                               e.preventDefault();
                               handleNavigation(range.href, range.section);
                             }}
-                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
+                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
                             {range.name}

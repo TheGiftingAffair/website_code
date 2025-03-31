@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { createOrder, createGuestOrder } from '@/utils/orderService';
+import { updateOrderStatus } from '@/utils/orderService';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -16,10 +16,8 @@ const PaymentSuccessPage = () => {
         const reference = searchParams.get('reference');
         const status = searchParams.get('status');
 
-        console.log('Payment status:', status);
-        console.log('Reference:', reference);
+        console.log('Payment callback received:', { reference, status });
 
-        // Check payment status first
         if (status !== 'completed') {
           console.log('Payment was not completed:', status);
           toast.error('Payment was not successful. Please try again.');
@@ -44,34 +42,42 @@ const PaymentSuccessPage = () => {
           return;
         }
 
-        const { orderData } = JSON.parse(storedData);
+        const { orderData, orderId } = JSON.parse(storedData);
 
-        // Create the order only if payment was completed
-        let orderId;
+        // Update order with HitPay reference
         try {
-          if (orderData.customerType === 'registered' && orderData.userId) {
-            orderId = await createOrder(orderData);
-          } else {
-            orderId = await createGuestOrder(orderData);
-          }
-
-          // Clear storage after successful order creation
-          localStorage.removeItem('pendingOrderData');
-          sessionStorage.removeItem('pendingOrderData');
+          // Update order status and add HitPay reference
+          await updateOrderStatus(orderId, 'confirmed', {
+            hitpayReference: reference,
+            paymentStatus: {
+              userConfirmed: true,
+              adminConfirmed: true,
+              confirmedAt: new Date()
+            }
+          });
 
           // Send confirmation email
           await fetch('/api/send-order-confirmation', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderId, orderData }),
+            body: JSON.stringify({ 
+              orderId,
+              orderData,
+              hitpayReference: reference 
+            }),
           });
 
-          // Redirect to success page
+          // Clear storage after confirmation
+          localStorage.removeItem('pendingOrderData');
+          sessionStorage.removeItem('pendingOrderData');
+
+          // Redirect to success page with our order ID
           router.push(`/order-success?orderId=${orderId}`);
         } catch (error) {
-          console.error('Error creating order:', error);
+          console.error('Error updating order:', error);
           throw error;
         }
+
       } catch (error) {
         console.error('Error processing order:', error);
         toast.error('Failed to process order. Please try again.');

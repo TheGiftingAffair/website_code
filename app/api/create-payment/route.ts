@@ -3,47 +3,60 @@ import { createPaymentRequest } from '@/utils/hitpayService';
 
 export async function POST(request: Request) {
   try {
-    const { amount, currency, email, name, orderData } = await request.json();
+    const { amount, currency, email, name, orderData, orderId } = await request.json();
+    console.log('Received payment request:', { amount, currency, email, name, orderId });
 
-    // Generate a unique reference number
-    const referenceNumber = `TGA-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Validate required fields
+    if (!amount || !currency || !email || !name || !orderId) {
+      console.error('Missing required fields:', { amount, currency, email, name, orderId });
+      return NextResponse.json(
+        { message: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
 
-    // Get the correct base URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-    // Create URL-encoded body
     const formData = new URLSearchParams();
     formData.append('email', email);
     formData.append('redirect_url', `${baseUrl}/payment/success`);
     formData.append('webhook', `${baseUrl}/api/payment-webhook`);
-    formData.append('reference_number', referenceNumber);
+    formData.append('reference_number', orderId); // Use our orderId
     formData.append('currency', currency);
-    formData.append('amount', amount.toFixed(2));
+    formData.append('amount', amount.toString()); // Ensure amount is string
     formData.append('name', name);
-    formData.append('purpose', 'Order payment');
-    formData.append('payment_methods[]', 'paynow_online');
-    formData.append('send_email', 'true');
+    formData.append('purpose', `Order ${orderId}`);
 
     try {
-      console.log('Making payment request with data:', Object.fromEntries(formData));
+      console.log('Creating payment request with data:', Object.fromEntries(formData));
       const paymentRequest = await createPaymentRequest(formData);
 
       if (!paymentRequest || !paymentRequest.url) {
-        console.error('Invalid payment request response:', paymentRequest);
+        console.error('Invalid payment response:', paymentRequest);
         throw new Error('Invalid payment response from HitPay');
       }
+
+      console.log('Payment request created successfully:', {
+        url: paymentRequest.url,
+        id: paymentRequest.id,
+        referenceNumber: paymentRequest.reference_number
+      });
 
       return NextResponse.json({
         url: paymentRequest.url,
         paymentId: paymentRequest.id,
-        referenceNumber
+        orderId: paymentRequest.reference_number
       });
 
     } catch (paymentError: any) {
       console.error('Payment creation error details:', paymentError);
       return NextResponse.json(
-        { message: paymentError.message || 'Payment creation failed' },
+        { 
+          message: 'Payment creation failed',
+          error: paymentError.message,
+          details: paymentError.response?.data 
+        },
         { status: 500 }
       );
     }

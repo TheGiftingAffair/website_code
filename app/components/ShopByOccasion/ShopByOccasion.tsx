@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Occasion =
@@ -30,18 +30,36 @@ interface Hamper {
 
 const ShopByOccasion = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
-  const [selectedOccasion, setSelectedOccasion] =
-    useState<Occasion>("Birthday");
-  const occasions: Occasion[] = [
-    "Birthday",
-    "Anniversary",
-    "Farewell",
-    "Congratulations",
-    "Housewarming",
-    "Graduation",
-    "Special Day",
-    "Get Well Soon",
-  ];
+  const [selectedOccasion, setSelectedOccasion] = useState<Occasion>("Birthday");
+  const [occasions, setOccasions] = useState<Occasion[]>([]);
+
+  useEffect(() => {
+    const fetchOccasions = async () => {
+      try {
+        const docRef = doc(db, "variables", "ShopByOccasion");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists() && docSnap.data()?.valuearray) { // Changed from valueArray
+          const rawOccasions = docSnap.data().valuearray;
+          // Convert first letter to uppercase for display
+          const formattedOccasions = rawOccasions.map((occ: string) => 
+            occ.split(' ').map(word => 
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' ') as Occasion
+          );
+          console.log("Formatted occasions:", formattedOccasions);
+          setOccasions(formattedOccasions);
+          if (formattedOccasions.length > 0) {
+            setSelectedOccasion(formattedOccasions[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching occasions:", error);
+      }
+    };
+
+    fetchOccasions();
+  }, []);
 
   useEffect(() => {
     const handleUrlParamsChanged = (event: CustomEvent) => {
@@ -75,7 +93,7 @@ const ShopByOccasion = () => {
         handleUrlParamsChanged as EventListener
       );
     };
-  }, []);
+  }, [occasions]);
 
   const handleOccasionChange = (occasion: Occasion) => {
     setSelectedOccasion(occasion);
@@ -94,6 +112,8 @@ const ShopByOccasion = () => {
 
   useEffect(() => {
     const fetchHampers = async () => {
+      if (!selectedOccasion) return; // Don't fetch if no occasion is selected
+      
       try {
         const q = query(
           collection(db, "Products"),
@@ -103,16 +123,15 @@ const ShopByOccasion = () => {
 
         const querySnapshot = await getDocs(q);
         const hampers: Hamper[] = querySnapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Hamper)
+          (doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          } as Hamper)
         );
 
         setHampersData(hampers);
       } catch (error) {
-        console.error("Error fetching hampers from Firestore:", error);
+        console.error("Error fetching hampers:", error);
       }
     };
 
@@ -142,7 +161,7 @@ const ShopByOccasion = () => {
         </p>
         {/* Occasion Navigation */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 lg:mt-">
-          {occasions.map((occasion) => (
+          {Array.isArray(occasions) && occasions.map((occasion) => (
             <button
               key={occasion}
               onClick={() => handleOccasionChange(occasion)}
