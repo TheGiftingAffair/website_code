@@ -1,47 +1,43 @@
 import { NextResponse } from 'next/server';
 import { createPaymentRequest } from '@/utils/hitpayService';
+import { generateOrderId } from '@/utils/orderService';
 
 export async function POST(request: Request) {
   try {
     const { amount, currency, email, name, orderData } = await request.json();
 
-    // Generate a unique reference number
-    const referenceNumber = `TGA-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate synchronized order ID
+    const orderId = await generateOrderId();
 
-    // Get the correct base URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-    // Create URL-encoded body
     const formData = new URLSearchParams();
     formData.append('email', email);
     formData.append('redirect_url', `${baseUrl}/payment/success`);
     formData.append('webhook', `${baseUrl}/api/payment-webhook`);
-    formData.append('reference_number', referenceNumber);
+    formData.append('reference_number', orderId);
     formData.append('currency', currency);
     formData.append('amount', amount.toFixed(2));
     formData.append('name', name);
-    formData.append('purpose', 'Order payment');
-    formData.append('payment_methods[]', 'paynow_online');
-    formData.append('send_email', 'true');
+    formData.append('purpose', `Order ${orderId}`);
 
     try {
-      console.log('Making payment request with data:', Object.fromEntries(formData));
+      console.log('Creating payment for order:', orderId);
       const paymentRequest = await createPaymentRequest(formData);
 
       if (!paymentRequest || !paymentRequest.url) {
-        console.error('Invalid payment request response:', paymentRequest);
         throw new Error('Invalid payment response from HitPay');
       }
 
       return NextResponse.json({
         url: paymentRequest.url,
         paymentId: paymentRequest.id,
-        referenceNumber
+        orderId: orderId
       });
 
     } catch (paymentError: any) {
-      console.error('Payment creation error details:', paymentError);
+      console.error('Payment creation error:', paymentError);
       return NextResponse.json(
         { message: paymentError.message || 'Payment creation failed' },
         { status: 500 }
@@ -51,7 +47,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Request processing error:', error);
     return NextResponse.json(
-      { message: 'Failed to process request', error: error.message },
+      { message: 'Failed to process request' },
       { status: 400 }
     );
   }

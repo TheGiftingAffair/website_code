@@ -5,6 +5,18 @@ const HITPAY_API_KEY = process.env.HITPAY_API_KEY || '';
 const HITPAY_SALT = process.env.HITPAY_SALT || '';
 const HITPAY_API_URL = process.env.NEXT_PUBLIC_HITPAY_API_URL || 'https://api.sandbox.hit-pay.com/v1';
 
+const PAYMENT_METHODS = [
+  'paynow_online',
+  'card',
+  'wechat',
+  'alipay',
+  'grabpay',
+  'shopback',
+  'fpx',
+  'zip',
+  'atome'
+];
+
 interface CreatePaymentRequestParams {
   amount: number;
   currency: string;
@@ -18,23 +30,21 @@ interface CreatePaymentRequestParams {
 export const createPaymentRequest = async (formData: URLSearchParams) => {
   try {
     console.log('Making request to:', `${HITPAY_API_URL}/payment-requests`);
-    console.log('With data:', Object.fromEntries(formData));
     
-    // Convert formData to plain object to handle arrays properly
-    const data = new URLSearchParams();
-    for (const [key, value] of formData) {
-      if (key.endsWith('[]')) {
-        // Handle array parameters
-        data.append(key, value);
-      } else {
-        data.append(key, value);
-      }
-    }
+    // Ensure all payment methods are included
+    PAYMENT_METHODS.forEach(method => {
+      formData.append('payment_methods[]', method);
+    });
+
+    // Add additional required parameters
+    formData.append('send_email', 'true');
+    formData.append('send_sms', 'false');
+    formData.append('allow_repeated_payments', 'false');
 
     const response = await axios({
       method: 'POST',
       url: `${HITPAY_API_URL}/payment-requests`,
-      data: data,
+      data: formData,
       headers: {
         'X-BUSINESS-API-KEY': HITPAY_API_KEY,
         'Content-Type': 'application/x-www-form-urlencoded',
