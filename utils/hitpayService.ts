@@ -29,8 +29,10 @@ interface CreatePaymentRequestParams {
 
 export const createPaymentRequest = async (formData: URLSearchParams) => {
   try {
-    console.log('Making request to:', `${HITPAY_API_URL}/payment-requests`);
-    
+    if (!HITPAY_API_KEY) {
+      throw new Error('HitPay API key not configured');
+    }
+
     // Ensure all payment methods are included
     PAYMENT_METHODS.forEach(method => {
       formData.append('payment_methods[]', method);
@@ -40,6 +42,12 @@ export const createPaymentRequest = async (formData: URLSearchParams) => {
     formData.append('send_email', 'true');
     formData.append('send_sms', 'false');
     formData.append('allow_repeated_payments', 'false');
+
+    console.log('Making HitPay request:', {
+      url: `${HITPAY_API_URL}/payment-requests`,
+      data: Object.fromEntries(formData),
+      apiKey: HITPAY_API_KEY ? 'Present' : 'Missing'
+    });
 
     const response = await axios({
       method: 'POST',
@@ -54,9 +62,19 @@ export const createPaymentRequest = async (formData: URLSearchParams) => {
     });
 
     console.log('HitPay response:', response.data);
+    
+    if (!response.data || !response.data.url) {
+      throw new Error('Invalid response from HitPay');
+    }
+
     return response.data;
+
   } catch (error: any) {
-    console.error('HitPay error details:', error.response?.data || error.message);
+    console.error('HitPay error:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
     throw new Error(error.response?.data?.message || error.message);
   }
 };
