@@ -309,7 +309,8 @@ const CheckoutPage = () => {
         });
 
         if (!paymentResponse.ok) {
-          throw new Error("Payment request failed");
+          const errorData = await paymentResponse.json();
+          throw new Error(errorData.message || "Payment request failed");
         }
 
         const paymentData = await paymentResponse.json();
