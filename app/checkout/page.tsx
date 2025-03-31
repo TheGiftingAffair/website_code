@@ -4,7 +4,6 @@ import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserData } from "@/utils/userService";
-import { createOrder, createGuestOrder } from "@/utils/orderService";
 import { getProductById } from "@/utils/productService";
 import { getPlaceholderImage } from "@/utils/placeholderService";
 import { validateCoupon, applyCoupon } from "@/utils/couponService";
@@ -288,13 +287,10 @@ const CheckoutPage = () => {
         total: total,
       };
 
-      // Create temporary order first
-      let temporaryOrderId;
-      if (user) {
-        temporaryOrderId = await createOrder(orderData);
-      } else {
-        temporaryOrderId = await createGuestOrder(orderData);
-      }
+      // Store order data temporarily
+      const storageData = JSON.stringify({ orderData });
+      localStorage.setItem("pendingOrderData", storageData);
+      sessionStorage.setItem("pendingOrderData", storageData);
 
       // Create payment with HitPay
       try {
@@ -309,7 +305,6 @@ const CheckoutPage = () => {
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
             orderData: orderData,
-            temporaryOrderId: temporaryOrderId,
           }),
         });
 
@@ -321,19 +316,6 @@ const CheckoutPage = () => {
 
         if (!paymentData.url) {
           throw new Error("Payment URL not received in response");
-        }
-
-        // Store order data in both localStorage and sessionStorage
-        const storageData = JSON.stringify({
-          orderData,
-          paymentReference: paymentData.referenceNumber,
-        });
-
-        try {
-          localStorage.setItem("pendingOrderData", storageData);
-          sessionStorage.setItem("pendingOrderData", storageData);
-        } catch (storageError) {
-          console.error("Storage error:", storageError);
         }
 
         // Clear cart before redirecting

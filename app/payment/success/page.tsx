@@ -17,7 +17,7 @@ const PaymentSuccessPage = () => {
         const status = searchParams.get('status');
 
         console.log('Payment status:', status);
-        console.log('Reference:', reference);
+        console.log('Reference:', reference); // This is HitPay's order ID
 
         // Check payment status first
         if (status !== 'completed') {
@@ -46,13 +46,12 @@ const PaymentSuccessPage = () => {
 
         const { orderData } = JSON.parse(storedData);
 
-        // Create the order only if payment was completed
-        let orderId;
+        // Create the order with HitPay's reference number as the order ID
         try {
           if (orderData.customerType === 'registered' && orderData.userId) {
-            orderId = await createOrder(orderData);
+            await createOrder({ ...orderData, id: reference });
           } else {
-            orderId = await createGuestOrder(orderData);
+            await createGuestOrder({ ...orderData, id: reference });
           }
 
           // Clear storage after successful order creation
@@ -63,11 +62,11 @@ const PaymentSuccessPage = () => {
           await fetch('/api/send-order-confirmation', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderId, orderData }),
+            body: JSON.stringify({ orderId: reference, orderData }),
           });
 
           // Redirect to success page
-          router.push(`/order-success?orderId=${orderId}`);
+          router.push(`/order-success?orderId=${reference}`);
         } catch (error) {
           console.error('Error creating order:', error);
           throw error;
