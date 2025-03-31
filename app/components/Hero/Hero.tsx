@@ -30,18 +30,16 @@ export default function Hero() {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const querySnapshot = await getDocs(
-          collection(db, "PlaceHolderImages")
-        );
-        const imageUrls = querySnapshot.docs
-          .filter((doc) => {
-            const data = doc.data();
-            return doc.id !== "qrcode" && data.visibility === true;
-          })
+        const querySnapshot = await getDocs(collection(db, "PlaceHolderImages"));
+        const filteredImages = querySnapshot.docs
+          .filter(
+            (doc) =>
+              doc.id.startsWith("HeroSection") && doc.data().visibility === true
+          )
           .map((doc) => doc.data().link);
 
-        console.log("Fetched image URLs:", imageUrls); // Debug log
-        setImages(imageUrls);
+        console.log("Filtered Hero images:", filteredImages);
+        setImages(filteredImages);
       } catch (error) {
         console.error("Error fetching images:", error);
       }
@@ -90,14 +88,16 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (images.length === 0) return;
+    if (images.length <= 1) return; // Don't start timer if there's only one or no images
 
-    // Image slider timer
     const imageTimer = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 5000);
 
-    // Typewriter reset timer
+    return () => clearInterval(imageTimer);
+  }, [images.length]); // Depend on images.length instead of images array
+
+  useEffect(() => {
     const typewriterTimer = setInterval(() => {
       setShowFirstLine(false);
       setShowSecondLine(false);
@@ -108,10 +108,9 @@ export default function Hero() {
     }, 15000);
 
     return () => {
-      clearInterval(imageTimer);
       clearInterval(typewriterTimer);
     };
-  }, [images]);
+  }, []);
 
   return (
     <section className="relative w-full overflow-hidden h-[calc(100vh-100px)] 2xl:h-[calc(100vh-135px)]">
