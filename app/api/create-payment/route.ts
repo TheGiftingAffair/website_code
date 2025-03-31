@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server';
 import { createPaymentRequest } from '@/utils/hitpayService';
-import { generateOrderId } from '@/utils/orderService';
 
 export async function POST(request: Request) {
   try {
     const { amount, currency, email, name, orderData } = await request.json();
     console.log('Received payment request:', { amount, currency, email, name });
 
-    // Generate synchronized order ID
-    const orderId = await generateOrderId();
+    // Use existing orderId from orderData instead of generating a new one
+    const orderId = orderData.orderId; // This will be passed from the checkout page
 
     // Validate required fields
-    if (!amount || !currency || !email || !name) {
-      console.error('Missing required fields:', { amount, currency, email, name });
+    if (!amount || !currency || !email || !name || !orderId) {
+      console.error('Missing required fields:', { amount, currency, email, name, orderId });
       return NextResponse.json(
         { message: 'Missing required fields' },
         { status: 400 }
@@ -26,7 +25,7 @@ export async function POST(request: Request) {
     formData.append('email', email);
     formData.append('redirect_url', `${baseUrl}/payment/success`);
     formData.append('webhook', `${baseUrl}/api/payment-webhook`);
-    formData.append('reference_number', orderId);
+    formData.append('reference_number', orderId); // Use the same orderId
     formData.append('currency', currency);
     formData.append('amount', amount.toString()); // Ensure amount is string
     formData.append('name', name);

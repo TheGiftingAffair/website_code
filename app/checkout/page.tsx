@@ -288,7 +288,15 @@ const CheckoutPage = () => {
         total: total,
       };
 
-      // Create HitPay payment request
+      // Create order first to get the orderId
+      let orderId;
+      if (user) {
+        orderId = await createOrder(orderData);
+      } else {
+        orderId = await createGuestOrder(orderData);
+      }
+
+      // Add orderId to the payment request
       try {
         const paymentResponse = await fetch("/api/create-payment", {
           method: "POST",
@@ -300,7 +308,7 @@ const CheckoutPage = () => {
             currency: "SGD",
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
-            orderData: orderData, // Pass the complete orderData
+            orderData: { ...orderData, orderId }, // Include orderId
           }),
         });
 

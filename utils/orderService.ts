@@ -54,12 +54,12 @@ export const generateOrderId = async (): Promise<string> => {
                    (date.getMonth() + 1).toString().padStart(2, '0') +
                    date.getFullYear().toString().slice(-2);
   
-  // Add timestamp for uniqueness
-  const timestamp = date.getTime().toString().slice(-4);
+  // Use milliseconds for unique timestamp (last 4 digits)
+  const timestamp = date.getMilliseconds().toString().padStart(4, '0');
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let randomPart = '';
   
-  // Generate random letters
+  // Generate exactly 3 random letters
   for (let i = 0; i < 3; i++) {
     randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -71,7 +71,8 @@ export const generateOrderId = async (): Promise<string> => {
   const orderDoc = await getDoc(orderRef);
   
   if (orderDoc.exists()) {
-    // If exists, recursively try again
+    // If exists, recursively try again with small delay
+    await new Promise(resolve => setTimeout(resolve, 10));
     return generateOrderId();
   }
   
