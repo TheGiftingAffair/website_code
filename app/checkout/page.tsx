@@ -288,7 +288,7 @@ const CheckoutPage = () => {
         total: total,
       };
 
-      // Create order first to get our order ID
+      // Create order first and get our order ID
       let orderId;
       if (user) {
         orderId = await createOrder(orderData);
@@ -296,15 +296,16 @@ const CheckoutPage = () => {
         orderId = await createGuestOrder(orderData);
       }
 
-      // Store order data with our orderId
+      // Store our order ID and order data temporarily
       const storageData = JSON.stringify({
-        orderData: { ...orderData, id: orderId },
-        orderId, // Store orderId separately for easy access
+        orderData,
+        orderId,
+        status: 'pending' // Add status to track payment state
       });
       localStorage.setItem("pendingOrderData", storageData);
       sessionStorage.setItem("pendingOrderData", storageData);
 
-      // Create payment with HitPay using our orderId
+      // Create payment with HitPay
       try {
         const paymentResponse = await fetch("/api/create-payment", {
           method: "POST",
@@ -317,7 +318,7 @@ const CheckoutPage = () => {
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
             orderData: orderData,
-            orderId: orderId, // Pass our orderId to HitPay
+            orderId: orderId
           }),
         });
 

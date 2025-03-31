@@ -16,7 +16,8 @@ const PaymentSuccessPage = () => {
         const reference = searchParams.get('reference');
         const status = searchParams.get('status');
 
-        // Check payment status first
+        console.log('Payment callback received:', { reference, status });
+
         if (status !== 'completed') {
           console.log('Payment was not completed:', status);
           toast.error('Payment was not successful. Please try again.');
@@ -43,30 +44,39 @@ const PaymentSuccessPage = () => {
 
         const { orderData, orderId } = JSON.parse(storedData);
 
-        // Verify the reference from HitPay matches our orderId
-        if (reference !== orderId) {
-          console.error('Order ID mismatch:', { reference, orderId });
-          toast.error('Order verification failed');
-          router.push('/checkout');
-          return;
+        // Update order with HitPay reference
+        try {
+          // Update order status and add HitPay reference
+          await updateOrderStatus(orderId, 'confirmed', {
+            hitpayReference: reference,
+            paymentStatus: {
+              userConfirmed: true,
+              adminConfirmed: true,
+              confirmedAt: new Date()
+            }
+          });
+
+          // Send confirmation email
+          await fetch('/api/send-order-confirmation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              orderId,
+              orderData,
+              hitpayReference: reference 
+            }),
+          });
+
+          // Clear storage after confirmation
+          localStorage.removeItem('pendingOrderData');
+          sessionStorage.removeItem('pendingOrderData');
+
+          // Redirect to success page with our order ID
+          router.push(`/order-success?orderId=${orderId}`);
+        } catch (error) {
+          console.error('Error updating order:', error);
+          throw error;
         }
-
-        // Update order status to confirmed
-        await updateOrderStatus(orderId, 'confirmed');
-
-        // Send confirmation email
-        await fetch('/api/send-order-confirmation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId, orderData }),
-        });
-
-        // Clear storage after confirmation
-        localStorage.removeItem('pendingOrderData');
-        sessionStorage.removeItem('pendingOrderData');
-
-        // Redirect to success page
-        router.push(`/order-success?orderId=${orderId}`);
 
       } catch (error) {
         console.error('Error processing order:', error);
