@@ -3,15 +3,12 @@ import { createPaymentRequest } from '@/utils/hitpayService';
 
 export async function POST(request: Request) {
   try {
-    const { amount, currency, email, name, orderData } = await request.json();
-    console.log('Received payment request:', { amount, currency, email, name });
-
-    // Use existing orderId from orderData instead of generating a new one
-    const orderId = orderData.orderId; // This will be passed from the checkout page
+    const { amount, currency, email, name, orderData, temporaryOrderId } = await request.json();
+    console.log('Processing payment for temporary order:', temporaryOrderId);
 
     // Validate required fields
-    if (!amount || !currency || !email || !name || !orderId) {
-      console.error('Missing required fields:', { amount, currency, email, name, orderId });
+    if (!amount || !currency || !email || !name || !temporaryOrderId) {
+      console.error('Missing required fields:', { amount, currency, email, name, temporaryOrderId });
       return NextResponse.json(
         { message: 'Missing required fields' },
         { status: 400 }
@@ -25,11 +22,11 @@ export async function POST(request: Request) {
     formData.append('email', email);
     formData.append('redirect_url', `${baseUrl}/payment/success`);
     formData.append('webhook', `${baseUrl}/api/payment-webhook`);
-    formData.append('reference_number', orderId); // Use the same orderId
+    formData.append('reference_number', temporaryOrderId); // Use the temporary order ID
     formData.append('currency', currency);
     formData.append('amount', amount.toString()); // Ensure amount is string
     formData.append('name', name);
-    formData.append('purpose', `Order ${orderId}`);
+    formData.append('purpose', `Order ${temporaryOrderId}`);
 
     try {
       console.log('Creating payment request with data:', Object.fromEntries(formData));
@@ -43,13 +40,29 @@ export async function POST(request: Request) {
       console.log('Payment request created successfully:', {
         url: paymentRequest.url,
         id: paymentRequest.id,
-        orderId
+        referenceNumber: paymentRequest.reference_number
       });
+
+      // Update order ID to match HitPay's reference number
+      try {
+        await fetch('/api/update-order-id', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            temporaryOrderId,
+            newOrderId: paymentRequest.reference_number,
+          }),
+        });
+      } catch (updateError) {
+        console.error('Failed to update order ID:', updateError);
+      }
 
       return NextResponse.json({
         url: paymentRequest.url,
         paymentId: paymentRequest.id,
-        orderId: orderId
+        orderId: paymentRequest.reference_number
       });
 
     } catch (paymentError: any) {
