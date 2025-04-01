@@ -7,7 +7,7 @@ const benefits = [
     icon: <FaGift className="w-8 h-8" />,
     title: "Premium Quality",
     description:
-      "Our gift boxes are crafted with the finest materials for a luxurious experience.",
+      "Our gift hampers are crafted with the finest materials for a luxurious experience.",
   },
   {
     icon: <FaRecycle className="w-8 h-8" />,
@@ -24,7 +24,8 @@ const benefits = [
   {
     icon: <FaPencilAlt className="w-8 h-8" />,
     title: "Customizable Options",
-    description: "Add a personal touch to every box with easy customization.",
+    description:
+      "Add a personal touch to every hamper with easy customization.",
   },
 ];
 
@@ -42,7 +43,7 @@ export default function WhyChooseUs() {
             Why Choose The Gifting Affair?
           </h2>
           <p className="text-base md:text-lg 2xl:text-xl text-bg4 font-mont font-bold px-4">
-            Delivering joy, one beautifully curated box at a time
+            Delivering joy, one beautifully curated hamper at a time
           </p>
         </div>
 
