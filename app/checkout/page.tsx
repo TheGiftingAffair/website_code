@@ -300,7 +300,7 @@ const CheckoutPage = () => {
       const storageData = JSON.stringify({
         orderData,
         orderId,
-        status: 'pending' // Add status to track payment state
+        status: "pending", // Add status to track payment state
       });
       localStorage.setItem("pendingOrderData", storageData);
       sessionStorage.setItem("pendingOrderData", storageData);
@@ -318,7 +318,7 @@ const CheckoutPage = () => {
             email: shippingDetails.email,
             name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
             orderData: orderData,
-            orderId: orderId
+            orderId: orderId,
           }),
         });
 
@@ -436,9 +436,9 @@ const CheckoutPage = () => {
                 className="object-cover brightness-110"
               />
             </div>
-            <span className="font-macondo font-bold text-xl text-bg3 hover:text-bg4 transition-colors">
+            {/* <span className="font-macondo font-bold text-xl text-bg3 hover:text-bg4 transition-colors">
               The Gifting Affair
-            </span>
+            </span> */}
           </Link>
         </div>
 
@@ -774,10 +774,11 @@ const CheckoutPage = () => {
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-600 flex-wrap gap-1">
                     <span className="break-all">
-                      {appliedCoupon.code} 
-                      ({appliedCoupon.type === 'Flat' 
-                        ? `$${appliedCoupon.value}` 
-                        : `${appliedCoupon.value}%`} off)
+                      {appliedCoupon.code}(
+                      {appliedCoupon.type === "Flat"
+                        ? `$${appliedCoupon.value}`
+                        : `${appliedCoupon.value}%`}{" "}
+                      off)
                     </span>
                     <span>-${appliedCoupon.discount.toFixed(2)}</span>
                   </div>

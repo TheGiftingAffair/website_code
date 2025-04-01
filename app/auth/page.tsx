@@ -234,9 +234,9 @@ const AuthPage = () => {
           className="object-cover brightness-110"
         />
       </div>
-      <span className="font-macondo font-bold text-2xl text-bg3 hover:text-bg4 transition-colors">
+      {/* <span className="font-macondo font-bold text-2xl text-bg3 hover:text-bg4 transition-colors">
         The Gifting Affair
-      </span>
+      </span> */}
     </Link>
   );
 
