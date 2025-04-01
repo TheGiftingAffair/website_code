@@ -116,11 +116,11 @@ const ShopByOccasion = () => {
     const newUrl = `${baseUrl}?occasion=${encodedOccasion}`;
     window.history.pushState({}, "", newUrl);
 
-    // Scroll to section
+    // Remove smooth scrolling, just update the URL
     const section = document.getElementById("shop-by-occasion");
     if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-      window.scrollBy(0, -80); // Adjust for navbar
+      section.scrollIntoView();
+      window.scrollBy(0, -80);
     }
   };
 
@@ -205,8 +205,8 @@ const ShopByOccasion = () => {
                   transition={{ duration: 0.3 }}
                   className="bg-red-900/90 hover:bg-red-900 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
                 >
-                  <div className="aspect-square overflow-hidden">
-                    {/* <div className="h-52 overflow-hidden"> */}
+                  <div className="aspect-[square] overflow-hidden">
+                    {/* Updated from aspect-square to aspect-[square] to match categories */}
                     <img
                       src={hamper.image}
                       alt={hamper.name}

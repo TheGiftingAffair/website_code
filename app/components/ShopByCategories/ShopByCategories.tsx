@@ -2,7 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Category =
@@ -32,7 +39,8 @@ interface Hamper {
 
 const ShopByCategories = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Category>("For Him/Her");
+  const [selectedCategory, setSelectedCategory] =
+    useState<Category>("For Him/Her");
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -40,21 +48,29 @@ const ShopByCategories = () => {
       try {
         const docRef = doc(db, "variables", "ShopByCategories");
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists() && docSnap.data()?.valuearray) {
           const rawCategories = docSnap.data().valuearray;
           // Convert the format: first letter uppercase, handle special cases
           const formattedCategories = rawCategories.map((cat: string) => {
-            const words = cat.split(' ');
-            return words.map(word => {
-              if (word.includes('/')) {
-                return word.split('/').map(w => 
-                  w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
-                ).join('/');
-              }
-              if (word === '&') return '&';
-              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            }).join(' ') as Category;
+            const words = cat.split(" ");
+            return words
+              .map((word) => {
+                if (word.includes("/")) {
+                  return word
+                    .split("/")
+                    .map(
+                      (w) =>
+                        w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                    )
+                    .join("/");
+                }
+                if (word === "&") return "&";
+                return (
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                );
+              })
+              .join(" ") as Category;
           });
           setCategories(formattedCategories);
           // Set the initial selected category
@@ -88,7 +104,10 @@ const ShopByCategories = () => {
         const validCategory = categories.find(
           (cat) =>
             cat.toLowerCase().replace(/[/&]/g, "").replace(/\s+/g, "") ===
-            decodedCategory.toLowerCase().replace(/[/&]/g, "").replace(/\s+/g, "")
+            decodedCategory
+              .toLowerCase()
+              .replace(/[/&]/g, "")
+              .replace(/\s+/g, "")
         );
 
         if (validCategory) {
@@ -150,7 +169,6 @@ const ShopByCategories = () => {
   // Update URL when category changes
   const handleCategoryChange = (category: Category) => {
     setSelectedCategory(category);
-    // Convert category name to URL-friendly format
     const encodedCategory = category
       .toLowerCase()
       .replace(/\s*&\s*/g, "-")
@@ -160,13 +178,13 @@ const ShopByCategories = () => {
     const baseUrl = window.location.pathname + "#shop-by-categories";
     const newUrl = `${baseUrl}?category=${encodedCategory}`;
     window.history.pushState({}, "", newUrl);
-    window.dispatchEvent(new Event("urlChanged")); // Dispatch event to ensure state updates
+    window.dispatchEvent(new Event("urlChanged"));
   };
 
   useEffect(() => {
     const fetchHampers = async () => {
       if (!selectedCategory) return; // Don't fetch if no category is selected
-      
+
       try {
         const q = query(
           collection(db, "Products"),
@@ -176,10 +194,11 @@ const ShopByCategories = () => {
 
         const querySnapshot = await getDocs(q);
         const hampers: Hamper[] = querySnapshot.docs.map(
-          (doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          } as Hamper)
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data(),
+            } as Hamper)
         );
 
         setHampersData(hampers);
@@ -213,19 +232,20 @@ const ShopByCategories = () => {
 
         {/* Category Navigation */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 lg:mt-">
-          {Array.isArray(categories) && categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => handleCategoryChange(category)}
-              className={`px-4 py-2 mt-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
-                selectedCategory === category
-                  ? "bg-bg4/90 text-white shadow-md hover:scale-105"
-                  : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+          {Array.isArray(categories) &&
+            categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={`px-4 py-2 mt-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
+                  selectedCategory === category
+                    ? "bg-bg4/90 text-white shadow-md hover:scale-105"
+                    : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
         </div>
 
         {/* Hamper Cards */}
