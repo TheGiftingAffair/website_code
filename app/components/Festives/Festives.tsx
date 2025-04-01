@@ -125,7 +125,7 @@ const Festives = () => {
                     ))}
                   </ul>
                   {hamper.description && (
-                    <p className="text-sm font-medium text-gray-600 mb-2">
+                    <p className="text-xs font-medium text-gray-600 mb-2">
                       {hamper.description}*
                     </p>
                   )}
