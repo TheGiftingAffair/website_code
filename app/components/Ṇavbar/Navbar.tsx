@@ -211,7 +211,9 @@ const Navbar = () => {
                     .join("/");
                 }
                 if (word === "&") return "&";
-                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                return (
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                );
               })
               .join(" ");
           });
@@ -251,9 +253,9 @@ const Navbar = () => {
                   className="object-cover brightness-110"
                 />
               </div>
-              <span className="hidden md:block font-macondo font-bold text-xl 2xl:text-3xl text-bg2 hover:text-bg3   transition-colors">
+              {/* <span className="hidden md:block font-macondo font-bold text-xl 2xl:text-3xl text-bg2 hover:text-bg3   transition-colors">
                 The Gifting Affair
-              </span>
+              </span> */}
             </Link>
 
             {/* Desktop Navigation */}
