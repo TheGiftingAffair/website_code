@@ -2,7 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Category =
@@ -30,7 +37,9 @@ interface Hamper {
 }
 
 const HomeCategories = () => {
-  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
+  const [categoryImages, setCategoryImages] = useState<Record<string, string>>(
+    {}
+  );
   const [categories, setCategories] = useState<Category[]>([]); // Initialize with empty array
 
   useEffect(() => {
@@ -38,21 +47,30 @@ const HomeCategories = () => {
       try {
         const docRef = doc(db, "variables", "ShopByCategories");
         const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists() && docSnap.data()?.valuearray) { // Changed valueArray to valuearray
+
+        if (docSnap.exists() && docSnap.data()?.valuearray) {
+          // Changed valueArray to valuearray
           const rawCategories = docSnap.data().valuearray;
           // Convert the format: first letter uppercase, handle special cases
           const formattedCategories = rawCategories.map((cat: string) => {
-            const words = cat.split(' ');
-            return words.map(word => {
-              if (word.includes('/')) {
-                return word.split('/').map(w => 
-                  w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
-                ).join('/');
-              }
-              if (word === '&') return '&';
-              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            }).join(' ') as Category;
+            const words = cat.split(" ");
+            return words
+              .map((word) => {
+                if (word.includes("/")) {
+                  return word
+                    .split("/")
+                    .map(
+                      (w) =>
+                        w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+                    )
+                    .join("/");
+                }
+                if (word === "&") return "&";
+                return (
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                );
+              })
+              .join(" ") as Category;
           });
           setCategories(formattedCategories || []);
         }
@@ -127,7 +145,7 @@ const HomeCategories = () => {
   return (
     <section
       id="shop-by-categories"
-      className="relative py-8 px-4 md:px-8 bg-gradient-to-r from-bg3/10 to-bg1/40 overflow-hidden min-h-[calc(100vh-50px)] 2xl:min-h-[calc(100vh-65px)]"
+      className="relative py-8 px-4 md:px-8 bg-gradient-to-r from-bg3/10 to-bg1/40 overflow-hidden"
     >
       <div className="relative z-10 max-w-7xl 2xl:max-w-[1536px] mx-auto">
         <h2 className="text-3xl md:text-5xl 2xl:text-6xl font-alegreya text-headline font-bold text-center mb-2">
@@ -138,25 +156,26 @@ const HomeCategories = () => {
         </p>
 
         {/* Category Cards Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 2xl:gap-6 px-4">
-          {Array.isArray(categories) && categories.map((category) => (
-            <div
-              key={category}
-              onClick={() => handleCategoryClick(category)}
-              className="bg-white border-headline border border-opacity-30 rounded-md shadow-md p-1.5 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
-            >
-              <div className="aspect-square md:aspect-[10/9] rounded-md overflow-hidden mb-1 2xl:mb-2">
-                <img
-                  src={categoryImages[category] || "/images/temp.jpg"}
-                  alt={category}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 2xl:gap-6 px-4">
+          {Array.isArray(categories) &&
+            categories.map((category) => (
+              <div
+                key={category}
+                onClick={() => handleCategoryClick(category)}
+                className="bg-white border-headline border border-opacity-30 rounded-md shadow-md p-1.5 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              >
+                <div className="aspect-square md:aspect-[10/9] rounded-md overflow-hidden mb-1 2xl:mb-2">
+                  <img
+                    src={categoryImages[category] || "/images/temp.jpg"}
+                    alt={category}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+                <h3 className="text-center text-lg 2xl:text-xl font-alegreya text-headline font-semibold">
+                  {category}
+                </h3>
               </div>
-              <h3 className="text-center text-lg 2xl:text-xl font-alegreya text-headline font-semibold">
-                {category}
-              </h3>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </section>

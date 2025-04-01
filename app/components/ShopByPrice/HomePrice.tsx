@@ -86,7 +86,6 @@ const HomePrice = () => {
     <section
       id="shop-by-price"
       className="relative py-8 2xl:py-12 px-4 md:px-8 2xl:px-12 bg-gradient-to-r from-bg3/10 to-bg1/40 overflow-hidden"
-      style={{ minHeight: "calc(100vh - 300px)" }}
     >
       <div className="relative z-10 max-w-7xl 2xl:max-w-[1536px] mx-auto">
         <h2 className="text-3xl md:text-5xl 2xl:text-6xl font-alegreya text-headline font-bold text-center mb-2">
@@ -103,7 +102,7 @@ const HomePrice = () => {
               onClick={() => handlePriceClick(range.id)}
               className="bg-white border-headline border border-opacity-30 rounded-md shadow-md p-1.5 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
-              <div className="aspect-square md:aspect-[7/11.5] rounded-md overflow-hidden mb-1 2xl:mb-2">
+              <div className="aspect-square md:aspect-[10/9] rounded-md overflow-hidden mb-1 2xl:mb-2">
                 <img
                   src={rangeImages[range.id] || "/images/temp.jpg"}
                   alt={range.label}
