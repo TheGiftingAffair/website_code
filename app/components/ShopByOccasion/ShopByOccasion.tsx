@@ -2,7 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 
 type Occasion =
@@ -30,7 +37,8 @@ interface Hamper {
 
 const ShopByOccasion = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
-  const [selectedOccasion, setSelectedOccasion] = useState<Occasion>("Birthday");
+  const [selectedOccasion, setSelectedOccasion] =
+    useState<Occasion>("Birthday");
   const [occasions, setOccasions] = useState<Occasion[]>([]);
 
   useEffect(() => {
@@ -38,14 +46,20 @@ const ShopByOccasion = () => {
       try {
         const docRef = doc(db, "variables", "ShopByOccasion");
         const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists() && docSnap.data()?.valuearray) { // Changed from valueArray
+
+        if (docSnap.exists() && docSnap.data()?.valuearray) {
+          // Changed from valueArray
           const rawOccasions = docSnap.data().valuearray;
           // Convert first letter to uppercase for display
-          const formattedOccasions = rawOccasions.map((occ: string) => 
-            occ.split(' ').map(word => 
-              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            ).join(' ') as Occasion
+          const formattedOccasions = rawOccasions.map(
+            (occ: string) =>
+              occ
+                .split(" ")
+                .map(
+                  (word) =>
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                )
+                .join(" ") as Occasion
           );
           console.log("Formatted occasions:", formattedOccasions);
           setOccasions(formattedOccasions);
@@ -113,7 +127,7 @@ const ShopByOccasion = () => {
   useEffect(() => {
     const fetchHampers = async () => {
       if (!selectedOccasion) return; // Don't fetch if no occasion is selected
-      
+
       try {
         const q = query(
           collection(db, "Products"),
@@ -123,10 +137,11 @@ const ShopByOccasion = () => {
 
         const querySnapshot = await getDocs(q);
         const hampers: Hamper[] = querySnapshot.docs.map(
-          (doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          } as Hamper)
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data(),
+            } as Hamper)
         );
 
         setHampersData(hampers);
@@ -161,19 +176,20 @@ const ShopByOccasion = () => {
         </p>
         {/* Occasion Navigation */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 lg:mt-">
-          {Array.isArray(occasions) && occasions.map((occasion) => (
-            <button
-              key={occasion}
-              onClick={() => handleOccasionChange(occasion)}
-              className={`px-4 py-2 mt-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
-                selectedOccasion === occasion
-                  ? "bg-bg4/90 text-white shadow-md hover:scale-105"
-                  : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"
-              }`}
-            >
-              {occasion}
-            </button>
-          ))}
+          {Array.isArray(occasions) &&
+            occasions.map((occasion) => (
+              <button
+                key={occasion}
+                onClick={() => handleOccasionChange(occasion)}
+                className={`px-4 py-2 mt-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
+                  selectedOccasion === occasion
+                    ? "bg-bg4/90 text-white shadow-md hover:scale-105"
+                    : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"
+                }`}
+              >
+                {occasion}
+              </button>
+            ))}
         </div>
         {/* Hamper Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 gap-4 lg:mt-4 hover:cursor-pointer">

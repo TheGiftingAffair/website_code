@@ -393,7 +393,7 @@ const Navbar = () => {
                         e.preventDefault();
                         handleNavigation(range.href, range.section);
                       }}
-                      className="block px-4 py-2 hover:bg-bg1 hover:text-bg3 transition-colors"
+                      className="block px-4 py-2 text-gray-950 hover:bg-bg1 hover:text-bg3 transition-colors"
                     >
                       {range.name}
                     </Link>
