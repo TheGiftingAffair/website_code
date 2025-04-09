@@ -42,6 +42,7 @@ export interface Order {
   };
   subtotal: number; // Add this
   total: number;
+  orderCancelled : boolean;
   paymentStatus: {
     userConfirmed: boolean;
     adminConfirmed: boolean;

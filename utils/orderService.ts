@@ -127,10 +127,12 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       } : null,
       subtotal: Number(orderData.subtotal) || 0,
       total: Number(orderData.total) || 0,
+      orderCancelled : false ,
       specialInstructions: orderData.specialInstructions || null,
+
       paymentStatus: {
         userConfirmed: true,
-        adminConfirmed: false,
+        adminConfirmed: true,
       },
       tracking: {
         isDelivered: false
@@ -160,8 +162,13 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
         body: JSON.stringify({
           orderId: orderId,
           total: orderData.total,
+          subtotal: orderData.subtotal,
           customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
           customerEmail: orderData.shippingAddress.email,
+          items: orderData.items,
+          deliveryDate: orderData.deliveryDate,
+          shippingAddress: orderData.shippingAddress,
+          specialInstructions: orderData.specialInstructions
         }),
       });
     } catch (error) {
@@ -202,10 +209,11 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
       } : null,
       subtotal: Number(orderData.subtotal) || 0,
       total: Number(orderData.total) || 0,
+      orderCancelled : false ,
       specialInstructions: orderData.specialInstructions || null,
       paymentStatus: {
         userConfirmed: true,
-        adminConfirmed: false,
+        adminConfirmed: true,
       },
       tracking: {
         isDelivered: false
@@ -227,8 +235,13 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
         body: JSON.stringify({
           orderId: customOrderId,
           total: orderData.total,
+          subtotal: orderData.subtotal,
           customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
           customerEmail: orderData.shippingAddress.email,
+          items: orderData.items,
+          deliveryDate: orderData.deliveryDate,
+          shippingAddress: orderData.shippingAddress,
+          specialInstructions: orderData.specialInstructions
         }),
       });
     } catch (error) {
@@ -330,12 +343,44 @@ export const updateOrderStatus = async (
 export const confirmPayment = async (orderId: string) => {
   try {
     const orderRef = doc(db, 'orders', orderId);
+    const orderDoc = await getDoc(orderRef);
+    
+    if (!orderDoc.exists()) {
+      throw new Error('Order not found');
+    }
+
+    const orderData = orderDoc.data();
+
     await updateDoc(orderRef, {
       'paymentStatus.adminConfirmed': true,
       'paymentStatus.confirmedAt': getSingaporeTime(),
       status: 'processing',
       updatedAt: getSingaporeTime()
     });
+
+    // Send admin notification about payment confirmation
+    try {
+      await fetch('/api/send-admin-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          total: orderData.total,
+          subtotal: orderData.subtotal,
+          customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
+          customerEmail: orderData.shippingAddress.email,
+          items: orderData.items,
+          deliveryDate: orderData.deliveryDate,
+          shippingAddress: orderData.shippingAddress,
+          specialInstructions: orderData.specialInstructions,
+          paymentStatus: 'Payment Confirmed'
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to send admin payment confirmation notification:', error);
+    }
   } catch (error) {
     console.error('Error confirming payment:', error);
     throw error;
