@@ -130,7 +130,7 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       specialInstructions: orderData.specialInstructions || null,
       paymentStatus: {
         userConfirmed: true,
-        adminConfirmed: false,
+        adminConfirmed: true,
       },
       tracking: {
         isDelivered: false
@@ -160,8 +160,13 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
         body: JSON.stringify({
           orderId: orderId,
           total: orderData.total,
+          subtotal: orderData.subtotal,
           customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
           customerEmail: orderData.shippingAddress.email,
+          items: orderData.items,
+          deliveryDate: orderData.deliveryDate,
+          shippingAddress: orderData.shippingAddress,
+          specialInstructions: orderData.specialInstructions
         }),
       });
     } catch (error) {
@@ -205,7 +210,7 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
       specialInstructions: orderData.specialInstructions || null,
       paymentStatus: {
         userConfirmed: true,
-        adminConfirmed: false,
+        adminConfirmed: true,
       },
       tracking: {
         isDelivered: false
@@ -227,8 +232,13 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
         body: JSON.stringify({
           orderId: customOrderId,
           total: orderData.total,
+          subtotal: orderData.subtotal,
           customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
           customerEmail: orderData.shippingAddress.email,
+          items: orderData.items,
+          deliveryDate: orderData.deliveryDate,
+          shippingAddress: orderData.shippingAddress,
+          specialInstructions: orderData.specialInstructions
         }),
       });
     } catch (error) {
