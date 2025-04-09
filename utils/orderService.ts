@@ -127,7 +127,9 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       } : null,
       subtotal: Number(orderData.subtotal) || 0,
       total: Number(orderData.total) || 0,
+      orderCancelled : false ,
       specialInstructions: orderData.specialInstructions || null,
+
       paymentStatus: {
         userConfirmed: true,
         adminConfirmed: true,
@@ -207,6 +209,7 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
       } : null,
       subtotal: Number(orderData.subtotal) || 0,
       total: Number(orderData.total) || 0,
+      orderCancelled : false ,
       specialInstructions: orderData.specialInstructions || null,
       paymentStatus: {
         userConfirmed: true,
