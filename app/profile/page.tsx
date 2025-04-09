@@ -149,6 +149,13 @@ export default function ProfilePage() {
   };
 
   const getStatusDisplay = (order: any) => {
+    if (order.orderCancelled) {
+      return {
+        color: "red",
+        text: "Cancelled",
+      };
+    }
+
     if (!order.paymentStatus?.adminConfirmed) {
       return {
         color: "yellow",
