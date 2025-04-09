@@ -106,11 +106,17 @@ export async function sendAdminNotification(data: {
   };
   specialInstructions?: string;
   subtotal: number;
+  paymentStatus?: string;
 }) {
   try {
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>New Order Received</h1>
+        <h1>${data.paymentStatus ? 'Payment Confirmed' : 'New Order Received'}</h1>
+        ${data.paymentStatus ? `
+          <div style="background-color: #e6ffe6; padding: 15px; margin: 20px 0;">
+            <h2 style="color: #008000;">Payment Status: ${data.paymentStatus}</h2>
+          </div>
+        ` : ''}
         <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
           <h2>Order Details</h2>
           <p><strong>Order ID:</strong> ${data.orderId}</p>
@@ -161,7 +167,7 @@ export async function sendAdminNotification(data: {
           </div>
         ` : ''}
 
-        <p>Please verify the payment for this order.</p>
+    
         <p>Access your admin dashboard to process this order.</p>
       </div>
     `;
@@ -169,7 +175,9 @@ export async function sendAdminNotification(data: {
     await addDoc(collection(db, 'mail'), {
       to: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
       message: {
-        subject: `New Order Received - ${data.orderId}`,
+        subject: data.paymentStatus 
+          ? `Payment Confirmed - Order ${data.orderId}`
+          : `New Order Received - ${data.orderId}`,
         html: adminEmailHtml,
       },
     });

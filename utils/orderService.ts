@@ -340,12 +340,44 @@ export const updateOrderStatus = async (
 export const confirmPayment = async (orderId: string) => {
   try {
     const orderRef = doc(db, 'orders', orderId);
+    const orderDoc = await getDoc(orderRef);
+    
+    if (!orderDoc.exists()) {
+      throw new Error('Order not found');
+    }
+
+    const orderData = orderDoc.data();
+
     await updateDoc(orderRef, {
       'paymentStatus.adminConfirmed': true,
       'paymentStatus.confirmedAt': getSingaporeTime(),
       status: 'processing',
       updatedAt: getSingaporeTime()
     });
+
+    // Send admin notification about payment confirmation
+    try {
+      await fetch('/api/send-admin-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          total: orderData.total,
+          subtotal: orderData.subtotal,
+          customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
+          customerEmail: orderData.shippingAddress.email,
+          items: orderData.items,
+          deliveryDate: orderData.deliveryDate,
+          shippingAddress: orderData.shippingAddress,
+          specialInstructions: orderData.specialInstructions,
+          paymentStatus: 'Payment Confirmed'
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to send admin payment confirmation notification:', error);
+    }
   } catch (error) {
     console.error('Error confirming payment:', error);
     throw error;
