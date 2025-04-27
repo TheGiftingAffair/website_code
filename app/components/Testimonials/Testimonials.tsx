@@ -45,7 +45,7 @@ const testimonials = [
     location: "",
     image: "/images/user4.png",
     quote:
-      "I had the opportunity to buy my first hamper for our distant relative from Monika Bansal. She went all the way to customise my hamper as per my requirement. Am sure our relatives will surely like it too. Thanks for arranging all the things at the last minute. I would surely recommend her for all your gifting needs.",
+      "I had the opportunity to buy my first hamper for our distant relative from The Gifting Affair. She went all the way to customise my hamper as per my requirement. Am sure our relatives will surely like it too. Thanks for arranging all the things at the last minute. I would surely recommend her for all your gifting needs.",
     rating: 5,
   },
 ];
