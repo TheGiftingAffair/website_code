@@ -130,9 +130,9 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       orderCancelled : false ,
       specialInstructions: orderData.specialInstructions || null,
 
-      paymentStatus: {
+      orderStatus: {
         userConfirmed: true,
-        adminConfirmed: true,
+        adminConfirmed: false,
       },
       tracking: {
         isDelivered: false
@@ -152,7 +152,7 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       });
     }
 
-    // Send admin notification email
+    // Only send admin notification, comment out user notification for now
     try {
       await fetch('/api/send-admin-notification', {
         method: 'POST',
@@ -173,7 +173,6 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
       });
     } catch (error) {
       console.error('Failed to send admin notification:', error);
-      // Don't throw error as order is already created
     }
 
     return orderId;
@@ -211,9 +210,9 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
       total: Number(orderData.total) || 0,
       orderCancelled : false ,
       specialInstructions: orderData.specialInstructions || null,
-      paymentStatus: {
+      orderStatus: {
         userConfirmed: true,
-        adminConfirmed: true,
+        adminConfirmed: false,
       },
       tracking: {
         isDelivered: false
@@ -225,7 +224,7 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
     const orderRef = doc(db, 'orders', customOrderId);
     await setDoc(orderRef, orderDoc);
     
-    // Send admin notification email
+    // Only send admin notification, comment out user notification for now
     try {
       await fetch('/api/send-admin-notification', {
         method: 'POST',
@@ -246,7 +245,6 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
       });
     } catch (error) {
       console.error('Failed to send admin notification:', error);
-      // Don't throw error as order is already created
     }
 
     return customOrderId;
@@ -352,8 +350,8 @@ export const confirmPayment = async (orderId: string) => {
     const orderData = orderDoc.data();
 
     await updateDoc(orderRef, {
-      'paymentStatus.adminConfirmed': true,
-      'paymentStatus.confirmedAt': getSingaporeTime(),
+      'orderStatus.adminConfirmed': false,
+      'orderStatus.confirmedAt': getSingaporeTime(),
       status: 'processing',
       updatedAt: getSingaporeTime()
     });

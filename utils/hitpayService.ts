@@ -7,7 +7,7 @@ const HITPAY_API_URL =
   process.env.NEXT_PUBLIC_HITPAY_API_URL ||
   "https://api.sandbox.hit-pay.com/v1";
 
-const PAYMENT_METHODS = ["paynow_online", "card"];
+const PAYMENT_METHODS = ["paynow_online","card"];
 
 interface CreatePaymentRequestParams {
   amount: number;
