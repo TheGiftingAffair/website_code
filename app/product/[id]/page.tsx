@@ -953,7 +953,7 @@ export default function ProductPage({
 
               {/* Categories and Occasions */}
               <div className="space-y-4 2xl:space-y-6 pt-4 2xl:pt-6">
-                {product.category &&
+                {/* {product.category &&
                   product.category.filter((cat) => cat.trim() !== "").length >
                     0 && (
                     <div>
@@ -973,7 +973,7 @@ export default function ProductPage({
                           ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                 {product.occasion &&
                   product.occasion.filter((occ) => occ.trim() !== "").length >
