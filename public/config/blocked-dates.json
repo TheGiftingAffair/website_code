@@ -1,0 +1,9 @@
+{
+  "blockedRanges": [
+    {
+      "start": "2025-05-30",
+      "end": "2025-06-15"
+    }
+  ],
+  "blockedSingleDates": ["2025-05-29"]
+}
