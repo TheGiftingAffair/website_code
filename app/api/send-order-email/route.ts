@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { sendOrderConfirmationEmail } from "@/utils/emailService";
 
 export async function POST(request: Request) {
+  // Temporarily return success without sending email
+  return NextResponse.json({ success: true });
+
+  /* Commented out for now - to be used later
   try {
     const data = await request.json();
 
@@ -30,10 +34,10 @@ export async function POST(request: Request) {
         success: false,
         error: "Server error",
         details:
-          //@ts-ignore
           process.env.NODE_ENV === "development" ? error.message : undefined,
       },
       { status: 500 }
     );
   }
+  */
 }

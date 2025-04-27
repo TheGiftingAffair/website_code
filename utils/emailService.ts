@@ -168,7 +168,7 @@ export async function sendAdminNotification(data: {
         ` : ''}
 
     
-        <p>Access your admin dashboard to process this order.</p>
+        <p>Access your Google Sheets to process this order.</p>
       </div>
     `;
 
