@@ -7,11 +7,9 @@ import { getOrderById } from '@/utils/orderService';
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    console.log('Received webhook payload:', payload); // Add logging
+    console.log('Received webhook payload:', payload);
 
     const hmac = payload.hmac;
-    
-    // Add logging for webhook validation
     console.log('Validating webhook with HMAC:', hmac);
 
     // Validate webhook signature
@@ -39,39 +37,54 @@ export async function POST(request: Request) {
         const order = await getOrderById(orderId);
         
         if (order) {
+          console.log('Sending email notifications for order:', orderId);
+          
           // Send customer confirmation email
-          await sendOrderConfirmationEmail({
-            orderNumber: orderId,
-            customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-            customerEmail: order.shippingAddress.email,
-            total: order.total,
-            items: order.items.map(item => ({
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            })),
-            shippingAddress: {
-              address: order.shippingAddress.address,
-              city: order.shippingAddress.city,
-              state: order.shippingAddress.state,
-              pincode: order.shippingAddress.pincode
-            }
-          });
+          try {
+            const customerEmailResult = await sendOrderConfirmationEmail({
+              orderNumber: orderId,
+              customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+              customerEmail: order.shippingAddress.email,
+              total: order.total,
+              items: order.items.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+              })),
+              shippingAddress: {
+                address: order.shippingAddress.address,
+                city: order.shippingAddress.city,
+                state: order.shippingAddress.state,
+                pincode: order.shippingAddress.pincode
+              },
+              paymentStatus: 'confirmed'
+            });
+            console.log('Customer email sent result:', customerEmailResult);
+          } catch (emailError) {
+            console.error('Failed to send customer email:', emailError);
+          }
           
           // Send admin notification with payment confirmation
-          await sendAdminNotification({
-            orderId: orderId,
-            total: order.total,
-            subtotal: order.subtotal,
-            customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-            customerEmail: order.shippingAddress.email,
-            items: order.items,
-            deliveryDate: order.deliveryDate,
-            shippingAddress: order.shippingAddress,
-            specialInstructions: order.specialInstructions,
-            subtotal: order.subtotal,
-            paymentStatus: 'Payment Confirmed'
-          });
+          try {
+            const adminEmailResult = await sendAdminNotification({
+              orderId: orderId,
+              total: order.total,
+              subtotal: order.subtotal,
+              customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+              customerEmail: order.shippingAddress.email,
+              items: order.items,
+              deliveryDate: order.deliveryDate,
+              shippingAddress: order.shippingAddress,
+              specialInstructions: order.specialInstructions,
+              subtotal: order.subtotal,
+              paymentStatus: 'Payment Confirmed'
+            });
+            console.log('Admin email sent result:', adminEmailResult);
+          } catch (adminEmailError) {
+            console.error('Failed to send admin notification:', adminEmailError);
+          }
+        } else {
+          console.error('Order not found:', orderId);
         }
         
         // Log successful payment

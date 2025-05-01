@@ -70,17 +70,21 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
       </div>
     `;
 
-    await addDoc(collection(db, 'mail'), {
+    const emailDoc = {
       to: data.customerEmail,
       message: {
         subject: `Order Confirmation #${data.orderNumber}${isPaymentConfirmed ? ' - Payment Confirmed' : ''}`,
         html: emailHtml,
       },
-    });
+    };
+    
+    console.log('Sending customer email to:', data.customerEmail);
+    const docRef = await addDoc(collection(db, 'mail'), emailDoc);
+    console.log('Customer email document created with ID:', docRef.id);
 
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending customer email:', error);
     return false;
   }
 }
@@ -176,15 +180,25 @@ export async function sendAdminNotification(data: {
       </div>
     `;
 
-    await addDoc(collection(db, 'mail'), {
-      to: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+    if (!adminEmail) {
+      console.error('Admin email not configured');
+      return false;
+    }
+
+    const emailDoc = {
+      to: adminEmail,
       message: {
         subject: data.paymentStatus 
           ? `Payment Confirmed - Order ${data.orderId}`
           : `New Order Received - ${data.orderId}`,
         html: adminEmailHtml,
       },
-    });
+    };
+
+    console.log('Sending admin notification email to:', adminEmail);
+    const docRef = await addDoc(collection(db, 'mail'), emailDoc);
+    console.log('Admin notification created with ID:', docRef.id);
 
     return true;
   } catch (error) {
