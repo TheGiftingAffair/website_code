@@ -17,20 +17,26 @@ export interface OrderEmailData {
     state: string;
     pincode: string;
   };
+  paymentStatus?: string; // Add optional payment status
 }
 
 export async function sendOrderConfirmationEmail(data: OrderEmailData) {
   try {
+    const isPaymentConfirmed = data.paymentStatus === 'confirmed';
+    
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #333; text-align: center;">Order Confirmation</h1>
         <p>Dear ${data.customerName},</p>
-        <p>Thank you for your order! We have received your order and it is currently pending payment verification.</p>
+        <p>Thank you for your order! ${isPaymentConfirmed 
+          ? 'Your payment has been successfully processed.' 
+          : 'We have received your order and it is currently being processed.'}</p>
         
         <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
           <h2 style="color: #333; margin-top: 0;">Order Details</h2>
           <p><strong>Order Number:</strong> ${data.orderNumber}</p>
           <p><strong>Total Amount:</strong> $${data.total.toFixed(2)}</p>
+          ${isPaymentConfirmed ? '<p style="color: green; font-weight: bold;">Payment Status: Confirmed</p>' : ''}
         </div>
 
         <h3 style="color: #333;">Items Ordered</h3>
@@ -56,8 +62,6 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
           <p style="margin: 0;">${data.shippingAddress.pincode}</p>
         </div>
 
-        <p style="color: #666;">Please note that your order is pending payment verification. We will process your order once the payment is confirmed.</p>
-        
         <p style="color: #666;">If you have any questions, please contact our customer support.</p>
         
         <div style="text-align: center; margin-top: 30px; color: #666;">
@@ -69,7 +73,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
     await addDoc(collection(db, 'mail'), {
       to: data.customerEmail,
       message: {
-        subject: `Order Confirmation #${data.orderNumber} - Payment Pending`,
+        subject: `Order Confirmation #${data.orderNumber}${isPaymentConfirmed ? ' - Payment Confirmed' : ''}`,
         html: emailHtml,
       },
     });

@@ -48,6 +48,7 @@ export interface Order {
     adminConfirmed: boolean;
     confirmedAt?: Date;
     hitpayReference?: string; // Add this field
+    paymentStatus?: 'pending' | 'completed' | 'failed' | 'abandoned'; // Add payment status
   };
   tracking: {
     isDelivered: boolean;

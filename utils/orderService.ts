@@ -40,7 +40,7 @@ const cleanItemsData = (items: any[]) => {
     quantity: item.quantity,
     price: item.price,
     giftMessage: item.giftMessage || null,
-    specialRequest: item.specialRequest || null  // Ensure this is included
+    specialRequest: item.specialRequest || null
   }));
 };
 
@@ -54,24 +54,20 @@ export const generateOrderId = async (): Promise<string> => {
                    (date.getMonth() + 1).toString().padStart(2, '0') +
                    date.getFullYear().toString().slice(-2);
   
-  // Use milliseconds for unique timestamp (last 4 digits)
   const timestamp = date.getMilliseconds().toString().padStart(4, '0');
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let randomPart = '';
   
-  // Generate exactly 3 random letters
   for (let i = 0; i < 3; i++) {
     randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   
   const orderId = `TGA${datePart}${timestamp}${randomPart}`;
   
-  // Ensure uniqueness by checking database
   const orderRef = doc(db, 'orders', orderId);
   const orderDoc = await getDoc(orderRef);
   
   if (orderDoc.exists()) {
-    // If exists, recursively try again with small delay
     await new Promise(resolve => setTimeout(resolve, 10));
     return generateOrderId();
   }
@@ -114,7 +110,7 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
     
     const orderDoc = cleanDataForFirestore({
       userId: orderData.userId,
-      items: cleanItemsData(orderData.items), // Use cleanItemsData function
+      items: cleanItemsData(orderData.items),
       deliveryDate,
       shippingAddress: orderData.shippingAddress,
       billingAddress: orderData.billingAddress,
@@ -123,16 +119,16 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
         type: orderData.coupon.type,
         value: orderData.coupon.value,
         discount: orderData.coupon.discount,
-        name: orderData.coupon.name, // Add this line
+        name: orderData.coupon.name,
       } : null,
       subtotal: Number(orderData.subtotal) || 0,
       total: Number(orderData.total) || 0,
-      orderCancelled : false ,
+      orderCancelled: false,
       specialInstructions: orderData.specialInstructions || null,
-
       orderStatus: {
-        userConfirmed: true,
+        userConfirmed: false,
         adminConfirmed: false,
+        paymentStatus: 'pending'
       },
       tracking: {
         isDelivered: false
@@ -144,35 +140,13 @@ export const createOrder = async (orderData: Omit<Order, 'id' | 'createdAt' | 'u
     const orderRef = doc(db, 'orders', orderId);
     await setDoc(orderRef, orderDoc);
 
-    // Update user's orderIds
-    const userData = await getUserData(orderData.userId);
-    if (userData) {
-      await updateUserData(orderData.userId, {
-        orderIds: [...(userData.orderIds || []), orderId]
-      });
-    }
-
-    // Only send admin notification, comment out user notification for now
-    try {
-      await fetch('/api/send-admin-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: orderId,
-          total: orderData.total,
-          subtotal: orderData.subtotal,
-          customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
-          customerEmail: orderData.shippingAddress.email,
-          items: orderData.items,
-          deliveryDate: orderData.deliveryDate,
-          shippingAddress: orderData.shippingAddress,
-          specialInstructions: orderData.specialInstructions
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to send admin notification:', error);
+    if (orderData.userId && orderData.userId !== 'guest') {
+      const userData = await getUserData(orderData.userId);
+      if (userData) {
+        await updateUserData(orderData.userId, {
+          orderIds: [...(userData.orderIds || []), orderId]
+        });
+      }
     }
 
     return orderId;
@@ -194,7 +168,7 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
     
     const orderDoc = cleanDataForFirestore({
       userId: 'guest',
-      customerType: 'guest', // Add this field to identify guest orders
+      customerType: 'guest',
       items: cleanItemsData(orderData.items),
       deliveryDate,
       shippingAddress: orderData.shippingAddress,
@@ -204,15 +178,16 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
         type: orderData.coupon.type,
         value: orderData.coupon.value,
         discount: orderData.coupon.discount,
-        name: orderData.coupon.name, // Add this line
+        name: orderData.coupon.name,
       } : null,
       subtotal: Number(orderData.subtotal) || 0,
       total: Number(orderData.total) || 0,
-      orderCancelled : false ,
+      orderCancelled: false,
       specialInstructions: orderData.specialInstructions || null,
       orderStatus: {
-        userConfirmed: true,
+        userConfirmed: false,
         adminConfirmed: false,
+        paymentStatus: 'pending'
       },
       tracking: {
         isDelivered: false
@@ -224,29 +199,6 @@ export const createGuestOrder = async (orderData: Omit<Order, 'id' | 'createdAt'
     const orderRef = doc(db, 'orders', customOrderId);
     await setDoc(orderRef, orderDoc);
     
-    // Only send admin notification, comment out user notification for now
-    try {
-      await fetch('/api/send-admin-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: customOrderId,
-          total: orderData.total,
-          subtotal: orderData.subtotal,
-          customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
-          customerEmail: orderData.shippingAddress.email,
-          items: orderData.items,
-          deliveryDate: orderData.deliveryDate,
-          shippingAddress: orderData.shippingAddress,
-          specialInstructions: orderData.specialInstructions
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to send admin notification:', error);
-    }
-
     return customOrderId;
   } catch (error) {
     console.error('Error creating guest order:', error);
@@ -279,7 +231,6 @@ export const getOrdersByUser = async (userId: string): Promise<Order[]> => {
       return [];
     }
 
-    // First try with the indexed query
     try {
       const ordersQuery = query(
         collection(db, 'orders'),
@@ -292,7 +243,6 @@ export const getOrdersByUser = async (userId: string): Promise<Order[]> => {
         ...doc.data()
       } as Order));
     } catch (error: any) {
-      // If index doesn't exist yet, fallback to simple query
       if (error.code === 'failed-precondition') {
         console.warn('Index not ready yet, falling back to simple query');
         const simpleQuery = query(
@@ -306,7 +256,6 @@ export const getOrdersByUser = async (userId: string): Promise<Order[]> => {
             ...doc.data()
           } as Order))
           .sort((a, b) => {
-            // Client-side sorting as fallback
             const dateA = (a.createdAt as any)?.toDate?.() || new Date(a.createdAt);
             const dateB = (b.createdAt as any)?.toDate?.() || new Date(b.createdAt);
             return dateB.getTime() - dateA.getTime();
@@ -347,40 +296,46 @@ export const confirmPayment = async (orderId: string) => {
       throw new Error('Order not found');
     }
 
-    const orderData = orderDoc.data();
-
     await updateDoc(orderRef, {
-      'orderStatus.adminConfirmed': false,
+      'orderStatus.userConfirmed': true,
+      'orderStatus.paymentStatus': 'completed',
       'orderStatus.confirmedAt': getSingaporeTime(),
-      status: 'processing',
       updatedAt: getSingaporeTime()
     });
 
-    // Send admin notification about payment confirmation
-    try {
-      await fetch('/api/send-admin-notification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: orderId,
-          total: orderData.total,
-          subtotal: orderData.subtotal,
-          customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
-          customerEmail: orderData.shippingAddress.email,
-          items: orderData.items,
-          deliveryDate: orderData.deliveryDate,
-          shippingAddress: orderData.shippingAddress,
-          specialInstructions: orderData.specialInstructions,
-          paymentStatus: 'Payment Confirmed'
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to send admin payment confirmation notification:', error);
-    }
+    return true;
   } catch (error) {
     console.error('Error confirming payment:', error);
     throw error;
+  }
+};
+
+export const cleanupAbandonedOrders = async () => {
+  try {
+    const cutoffTime = new Date();
+    cutoffTime.setHours(cutoffTime.getHours() - 24);
+    
+    const ordersQuery = query(
+      collection(db, 'orders'),
+      where('orderStatus.paymentStatus', '==', 'pending'),
+      where('createdAt', '<', cutoffTime)
+    );
+    
+    const pendingOrders = await getDocs(ordersQuery);
+    
+    const batch = db.batch();
+    pendingOrders.forEach(doc => {
+      const orderRef = doc.ref;
+      batch.update(orderRef, { 
+        'orderStatus.paymentStatus': 'abandoned',
+        'orderCancelled': true,
+        updatedAt: getSingaporeTime()
+      });
+    });
+    
+    await batch.commit();
+    console.log(`Marked ${pendingOrders.size} orders as abandoned`);
+  } catch (error) {
+    console.error('Error cleaning up abandoned orders:', error);
   }
 };
