@@ -10,7 +10,7 @@ const TermsAndConditions = () => {
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-headline">
               Terms and Conditions
             </h1>
             <Link href="/" className="text-bg4 hover:text-bg3">
@@ -19,13 +19,15 @@ const TermsAndConditions = () => {
           </div>
 
           <div className="prose max-w-none">
-            <h2 className="text-xl font-semibold mb-4">1. Introduction</h2>
+            <h2 className="text-xl font-semibold mb-4 text-headline">
+              1. Introduction
+            </h2>
             <p className="mb-4">
               www.thegiftingaffair.com website is operated by The Gifting
               Affair. Throughout the site, the terms "we", "us" and "our" refer
               to The Gifting Affair. We are registered in Singapore under the
               Business Registration Number 53487618L and registered office
-              address is 12Woodlands Square #13-79 Woods Square, Singapore
+              address is 12 Woodlands Square #13-79 Woods Square, Singapore
               737715.
             </p>
             <p className="mb-4">
@@ -38,7 +40,9 @@ const TermsAndConditions = () => {
               from the website or use any of our services.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">2. Definitions</h2>
+            <h2 className="text-xl font-semibold mb-4 text-headline">
+              2. Definitions
+            </h2>
             <ul className="list-disc pl-5 mb-4">
               <li>
                 "Customer" refers to any individual or entity who purchases
@@ -54,7 +58,7 @@ const TermsAndConditions = () => {
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               3. Ordering and Payment
             </h2>
             <ul className="list-disc pl-5 mb-4">
@@ -88,7 +92,7 @@ const TermsAndConditions = () => {
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               4. Product Descriptions and Availability
             </h2>
             <ul className="list-disc pl-5 mb-4">
@@ -110,7 +114,7 @@ const TermsAndConditions = () => {
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               5. Purchase of Alcohol
             </h2>
             <p className="mb-4">
@@ -120,7 +124,7 @@ const TermsAndConditions = () => {
               eligibility for any purchase containing alcohol.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               6. Shipping and Delivery
             </h2>
             <ul className="list-disc pl-5 mb-4">
@@ -147,21 +151,57 @@ const TermsAndConditions = () => {
                 contact the recipient. A redelivery fee may apply for subsequent
                 delivery attempts.
               </li>
+              <li className="mb-2">
+                <strong>Shipping Policy:</strong> We ship to Singapore only.
+                Delivery times may vary depending on the shipping address. You
+                will be provided with an estimated delivery date at checkout. We
+                will make reasonable efforts to meet delivery deadlines, but
+                some delays may occur due to unforeseen circumstances.
+              </li>
+              <li className="mb-2">
+                <strong>Shipping Charges:</strong> Most of our hampers come with
+                free delivery where no shipping charges are applied. However, in
+                case of hampers having shipping charges, shipping costs will be
+                calculated during checkout and will be added to the total price
+                of your order. You will see the applicable charges before
+                finalizing your purchase.
+              </li>
+              <li>
+                <strong>Risk of Loss:</strong> Once the product is delivered to
+                the shipping address, the risk of any loss passes to the
+                customer. We are not responsible for any lost, stolen, or
+                damaged items once they are delivered.
+              </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">7. Returns Policy</h2>
+            <h2 className="text-xl font-semibold mb-4 text-headline">
+              7. Returns, Refunds, and Cancellations
+            </h2>
             <ul className="list-disc pl-5 mb-4">
               <li className="mb-2">
-                Due to the perishable nature of our products, we do not accept
-                returns unless the products are damaged upon delivery.
+                <strong>Return Policy:</strong> Your purchase is final and
+                non-refundable. Subject to the other Term and Conditions, no
+                product or service may be refundable.
               </li>
               <li className="mb-2">
-                Any damage or issue must be reported within 24 hours of delivery
-                with clear photographs for our assessment.
+                <strong>Damaged/Defective Products:</strong> Incase your hamper
+                or its contents arrive damaged or faulty, we accept returns only
+                within 3 days of receipt of the hamper. We will require
+                photos/videos so that we can better understand the extent of the
+                damage or issues with the product.
+              </li>
+              <li className="mb-2">
+                Please contact our customer support team @ +65 87430520 to
+                initiate a return. You'll also need the receipt or proof of
+                purchase. To start a return, you can contact us at
+                info@thegiftingaffair.com. If your return is accepted, we'll
+                send instructions on how and where to send your package.
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">8. Refund Policy</h2>
+            <h2 className="text-xl font-semibold mb-4 text-headline">
+              8. Refund Policy
+            </h2>
             <ul className="list-disc pl-5 mb-4">
               <li className="mb-2">
                 Refunds will only be processed for damaged items or orders
@@ -173,7 +213,7 @@ const TermsAndConditions = () => {
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               9. Order Cancellation
             </h2>
             <ul className="list-disc pl-5 mb-4">
@@ -187,7 +227,7 @@ const TermsAndConditions = () => {
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               10. Privacy and Data Protection
             </h2>
             <p className="mb-4">
@@ -196,7 +236,7 @@ const TermsAndConditions = () => {
               personal information.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               11. Intellectual Property
             </h2>
             <p className="mb-4">
@@ -205,7 +245,7 @@ const TermsAndConditions = () => {
               protected by copyright laws.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               12. Limitation of Liability
             </h2>
             <p className="mb-4">
@@ -214,7 +254,7 @@ const TermsAndConditions = () => {
               from your use of our services.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               13. Governing Law and Jurisdiction
             </h2>
             <p className="mb-4">
@@ -223,7 +263,7 @@ const TermsAndConditions = () => {
               subject to the exclusive jurisdiction of the courts of Singapore.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               14. Modifications to Terms
             </h2>
             <p className="mb-4">
@@ -233,21 +273,18 @@ const TermsAndConditions = () => {
               modified terms.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               15. Contact Information
             </h2>
             <p className="mb-4">
               For any questions, concerns, or inquiries regarding these Terms
               and Conditions, please contact us at:
-              <br />
-              Email: thegiftingaffair24@gmail.com
+            </p>
+            <p className="mb-4 font-semibold">
+              Email: info@thegiftingaffair.com
               <br />
               Phone: +65 87430520
             </p>
-
-            {/* <div className="mt-8 text-sm text-gray-600">
-              <p>Last updated: {new Date().toLocaleDateString()}</p>
-            </div> */}
           </div>
         </div>
       </div>
