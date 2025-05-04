@@ -30,10 +30,7 @@ const AboutUs = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-2 text-headline text-center">
-              <span className="relative">
-                About Us
-                <span className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-primary/60 rounded-full"></span>
-              </span>
+              <span className="relative">About Us</span>
             </h1>
             <h1 className="text-xl md:text-3xl font-semibold italic text-bg4 mb-12 text-center">
               <span className="relative">
