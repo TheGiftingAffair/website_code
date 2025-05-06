@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { validateWebhook } from '@/utils/hitpayService';
-import { confirmPayment } from '@/utils/orderService';
+import { confirmPayment, getOrderById } from '@/utils/orderService';
 import { sendOrderConfirmationEmail, sendAdminNotification } from '@/utils/emailService';
-import { getOrderById } from '@/utils/orderService';
 
 export async function POST(request: Request) {
   try {
+    // Parse the payload
     const payload = await request.json();
     console.log('Received webhook payload:', payload);
 
@@ -21,27 +21,27 @@ export async function POST(request: Request) {
       );
     }
 
-    // Log successful validation
     console.log('Webhook signature validated successfully');
     console.log('Payment status:', payload.status);
 
     if (payload.status === 'completed') {
       // Get reference number which is our orderId
       const orderId = payload.reference;
+      const paymentId = payload.payment_id;
       
       try {
         // Process the successful payment
-        await confirmPayment(orderId);
+        await confirmPayment(orderId, paymentId);
         
         // Get complete order details for email notifications
         const order = await getOrderById(orderId);
         
         if (order) {
-          console.log('Sending email notifications for order:', orderId);
+          console.log('Payment confirmed for order:', orderId, 'Sending emails now.');
           
           // Send customer confirmation email
           try {
-            const customerEmailResult = await sendOrderConfirmationEmail({
+            await sendOrderConfirmationEmail({
               orderNumber: orderId,
               customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
               customerEmail: order.shippingAddress.email,
@@ -59,14 +59,14 @@ export async function POST(request: Request) {
               },
               paymentStatus: 'confirmed'
             });
-            console.log('Customer email sent result:', customerEmailResult);
+            console.log('Customer email sent successfully for order:', orderId);
           } catch (emailError) {
             console.error('Failed to send customer email:', emailError);
           }
           
-          // Send admin notification with payment confirmation
+          // Send admin notification with payment confirmation and all order details
           try {
-            const adminEmailResult = await sendAdminNotification({
+            await sendAdminNotification({
               orderId: orderId,
               total: order.total,
               subtotal: order.subtotal,
@@ -76,10 +76,9 @@ export async function POST(request: Request) {
               deliveryDate: order.deliveryDate,
               shippingAddress: order.shippingAddress,
               specialInstructions: order.specialInstructions,
-              subtotal: order.subtotal,
               paymentStatus: 'Payment Confirmed'
             });
-            console.log('Admin email sent result:', adminEmailResult);
+            console.log('Admin notification sent successfully for order:', orderId);
           } catch (adminEmailError) {
             console.error('Failed to send admin notification:', adminEmailError);
           }
@@ -88,7 +87,7 @@ export async function POST(request: Request) {
         }
         
         // Log successful payment
-        console.log('Payment completed successfully for reference:', orderId);
+        console.log('Payment processed successfully for reference:', orderId);
         return NextResponse.json({ message: 'Payment processed successfully' });
       } catch (error) {
         console.error('Error processing payment confirmation:', error);

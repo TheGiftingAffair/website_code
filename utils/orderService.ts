@@ -287,7 +287,38 @@ export const updateOrderStatus = async (
   }
 };
 
-export const confirmPayment = async (orderId: string) => {
+export const confirmPayment = async (orderId: string, paymentId?: string) => {
+  try {
+    const orderRef = doc(db, 'orders', orderId);
+    const orderDoc = await getDoc(orderRef);
+    
+    if (!orderDoc.exists()) {
+      throw new Error('Order not found');
+    }
+
+    const updateData: any = {
+      'orderStatus.userConfirmed': true,
+      'orderStatus.paymentStatus': 'completed',
+      'orderStatus.confirmedAt': getSingaporeTime(),
+      updatedAt: getSingaporeTime()
+    };
+    
+    // Add payment reference if provided
+    if (paymentId) {
+      updateData['orderStatus.hitpayReference'] = paymentId;
+    }
+
+    await updateDoc(orderRef, updateData);
+    console.log(`Payment confirmed for order: ${orderId}`);
+
+    return true;
+  } catch (error) {
+    console.error('Error confirming payment:', error);
+    throw error;
+  }
+};
+
+export const updateOrderPaymentReference = async (orderId: string, paymentId: string) => {
   try {
     const orderRef = doc(db, 'orders', orderId);
     const orderDoc = await getDoc(orderRef);
@@ -297,15 +328,14 @@ export const confirmPayment = async (orderId: string) => {
     }
 
     await updateDoc(orderRef, {
-      'orderStatus.userConfirmed': true,
-      'orderStatus.paymentStatus': 'completed',
-      'orderStatus.confirmedAt': getSingaporeTime(),
+      'orderStatus.hitpayReference': paymentId,
       updatedAt: getSingaporeTime()
     });
 
+    console.log(`Updated order ${orderId} with payment reference ${paymentId}`);
     return true;
   } catch (error) {
-    console.error('Error confirming payment:', error);
+    console.error('Error updating payment reference:', error);
     throw error;
   }
 };

@@ -75,26 +75,6 @@ const OrderSuccessPage = () => {
         };
 
         setOrder(orderWithProducts);
-
-        // Send confirmation email
-        await fetch("/api/send-order-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            orderNumber: orderData.id,
-            customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
-            customerEmail: orderData.shippingAddress.email,
-            total: orderData.total,
-            items: itemsWithProducts.map((item) => ({
-              name: item.productDetails?.name || item.name,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-            shippingAddress: orderData.shippingAddress,
-          }),
-        });
       } catch (error) {
         console.error("Error:", error);
       } finally {

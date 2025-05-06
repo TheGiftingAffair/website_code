@@ -1,94 +1,6 @@
 import { db } from '@/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 
-export interface OrderEmailData {
-  orderNumber: string;
-  customerName: string;
-  customerEmail: string;
-  total: number;
-  items: Array<{
-    name: string;
-    quantity: number;
-    price: number;
-  }>;
-  shippingAddress: {
-    address: string;
-    city: string;
-    state: string;
-    pincode: string;
-  };
-  paymentStatus?: string; // Add optional payment status
-}
-
-export async function sendOrderConfirmationEmail(data: OrderEmailData) {
-  try {
-    const isPaymentConfirmed = data.paymentStatus === 'confirmed';
-    
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #333; text-align: center;">Order Confirmation</h1>
-        <p>Dear ${data.customerName},</p>
-        <p>Thank you for your order! ${isPaymentConfirmed 
-          ? 'Your payment has been successfully processed.' 
-          : 'We have received your order and it is currently being processed.'}</p>
-        
-        <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
-          <h2 style="color: #333; margin-top: 0;">Order Details</h2>
-          <p><strong>Order Number:</strong> ${data.orderNumber}</p>
-          <p><strong>Total Amount:</strong> $${data.total.toFixed(2)}</p>
-          ${isPaymentConfirmed ? '<p style="color: green; font-weight: bold;">Payment Status: Confirmed</p>' : ''}
-        </div>
-
-        <h3 style="color: #333;">Items Ordered</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr style="background-color: #f5f5f5;">
-            <th style="padding: 8px; text-align: left;">Item</th>
-            <th style="padding: 8px; text-align: right;">Quantity</th>
-            <th style="padding: 8px; text-align: right;">Price</th>
-          </tr>
-          ${data.items.map(item => `
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">${item.quantity}</td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${item.price.toFixed(2)}</td>
-            </tr>
-          `).join('')}
-        </table>
-
-        <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
-          <h3 style="color: #333; margin-top: 0;">Shipping Address</h3>
-          <p style="margin: 0;">${data.shippingAddress.address}</p>
-          <p style="margin: 0;">${data.shippingAddress.city}, ${data.shippingAddress.state}</p>
-          <p style="margin: 0;">${data.shippingAddress.pincode}</p>
-        </div>
-
-        <p style="color: #666;">If you have any questions, please contact our customer support.</p>
-        
-        <div style="text-align: center; margin-top: 30px; color: #666;">
-          <p>Thank you for shopping with us!</p>
-        </div>
-      </div>
-    `;
-
-    const emailDoc = {
-      to: data.customerEmail,
-      message: {
-        subject: `Order Confirmation #${data.orderNumber}${isPaymentConfirmed ? ' - Payment Confirmed' : ''}`,
-        html: emailHtml,
-      },
-    };
-    
-    console.log('Sending customer email to:', data.customerEmail);
-    const docRef = await addDoc(collection(db, 'mail'), emailDoc);
-    console.log('Customer email document created with ID:', docRef.id);
-
-    return true;
-  } catch (error) {
-    console.error('Error sending customer email:', error);
-    return false;
-  }
-}
-
 export async function sendAdminNotification(data: {
   orderId: string;
   total: number;
@@ -130,7 +42,7 @@ export async function sendAdminNotification(data: {
           <p><strong>Order ID:</strong> ${data.orderId}</p>
           <p><strong>Customer Name:</strong> ${data.customerName}</p>
           <p><strong>Customer Email:</strong> ${data.customerEmail}</p>
-          <p><strong>Delivery Date:</strong> ${data.deliveryDate.toLocaleDateString()}</p>
+          <p><strong>Delivery Date:</strong> ${new Date(data.deliveryDate).toLocaleDateString()}</p>
           <p><strong>Subtotal:</strong> $${data.subtotal.toFixed(2)}</p>
           <p><strong>Total Amount:</strong> $${data.total.toFixed(2)}</p>
         </div>
@@ -175,34 +87,31 @@ export async function sendAdminNotification(data: {
           </div>
         ` : ''}
 
-    
-        <p>Access your Google Sheets to process this order.</p>
+        <p>Access your admin panel to process this order.</p>
       </div>
     `;
 
+    // Get admin email from environment variable
     const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
     if (!adminEmail) {
-      console.error('Admin email not configured');
+      console.error('Admin email not configured in environment variables');
       return false;
     }
 
     const emailDoc = {
       to: adminEmail,
       message: {
-        subject: data.paymentStatus 
-          ? `Payment Confirmed - Order ${data.orderId}`
-          : `New Order Received - ${data.orderId}`,
+        subject: `Payment Confirmed - Order ${data.orderId}`,
         html: adminEmailHtml,
-      },
+      }
     };
 
-    console.log('Sending admin notification email to:', adminEmail);
+    console.log(`Sending admin notification for order ${data.orderId} to ${adminEmail}`);
     const docRef = await addDoc(collection(db, 'mail'), emailDoc);
-    console.log('Admin notification created with ID:', docRef.id);
-
+    
     return true;
   } catch (error) {
-    console.error('Error sending admin notification:', error);
+    console.error(`Error sending admin notification for order ${data.orderId}:`, error);
     return false;
   }
 }
