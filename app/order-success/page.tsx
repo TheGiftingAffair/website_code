@@ -75,6 +75,7 @@ const OrderSuccessPage = () => {
         };
 
         setOrder(orderWithProducts);
+        // No email sending from here
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -83,7 +84,7 @@ const OrderSuccessPage = () => {
     };
 
     fetchOrderAndProducts();
-  }, [orderId]);
+  }, [orderId, router]);
 
   if (loading) {
     return (

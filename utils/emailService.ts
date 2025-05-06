@@ -1,5 +1,5 @@
 import { db } from '@/firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export async function sendAdminNotification(data: {
   orderId: string;
@@ -31,12 +31,10 @@ export async function sendAdminNotification(data: {
   try {
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>${data.paymentStatus ? 'Payment Confirmed' : 'New Order Received'}</h1>
-        ${data.paymentStatus ? `
-          <div style="background-color: #e6ffe6; padding: 15px; margin: 20px 0;">
-            <h2 style="color: #008000;">Payment Status: ${data.paymentStatus}</h2>
-          </div>
-        ` : ''}
+        <h1>Payment Confirmed - New Order</h1>
+        <div style="background-color: #e6ffe6; padding: 15px; margin: 20px 0;">
+          <h2 style="color: #008000;">Payment Status: Confirmed</h2>
+        </div>
         <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
           <h2>Order Details</h2>
           <p><strong>Order ID:</strong> ${data.orderId}</p>
@@ -98,18 +96,49 @@ export async function sendAdminNotification(data: {
       return false;
     }
 
+    // Create a proper mail document for the Firebase extension
     const emailDoc = {
       to: adminEmail,
       message: {
-        subject: `Payment Confirmed - Order ${data.orderId}`,
+        subject: `New Order with Payment - ${data.orderId}`,
         html: adminEmailHtml,
-      }
+      },
+      // Add timestamp to ensure the document gets processed
+      created: serverTimestamp()
     };
 
-    console.log(`Sending admin notification for order ${data.orderId} to ${adminEmail}`);
-    const docRef = await addDoc(collection(db, 'mail'), emailDoc);
+    console.log(`Creating email document for admin notification:`, data.orderId);
     
-    return true;
+    // Create the document in the mail collection
+    try {
+      const mailCollection = collection(db, 'mail');
+      const docRef = await addDoc(mailCollection, emailDoc);
+      console.log('Admin notification document created with ID:', docRef.id);
+      
+      // Also create a log entry for debugging
+      await addDoc(collection(db, 'emailLogs'), {
+        type: 'admin-notification',
+        orderId: data.orderId,
+        emailSent: true,
+        documentId: docRef.id,
+        timestamp: new Date(),
+        recipient: adminEmail
+      });
+      
+      return true;
+    } catch (error) {
+      console.error(`Error creating email document:`, error);
+      
+      // Log the error for debugging
+      await addDoc(collection(db, 'emailErrors'), {
+        type: 'admin-notification',
+        orderId: data.orderId,
+        error: error.message,
+        timestamp: new Date()
+      }).catch(e => console.error('Failed to log error:', e));
+      
+      return false;
+    }
   } catch (error) {
     console.error(`Error sending admin notification for order ${data.orderId}:`, error);
     return false;

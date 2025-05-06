@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/firebaseConfig';
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, addDoc } from 'firebase/firestore';
 
 export async function GET(request: Request) {
   try {
@@ -45,15 +45,60 @@ export async function GET(request: Request) {
       timestamp: doc.data().timestamp?.toDate?.().toISOString() || null
     }));
     
+    // Get recent email logs
+    const emailLogsQuery = query(
+      collection(db, 'emailLogs'),
+      orderBy('timestamp', 'desc'),
+      limit(maxLimit)
+    );
+    
+    const emailLogsSnapshot = await getDocs(emailLogsQuery);
+    const emailLogs = emailLogsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      timestamp: doc.data().timestamp?.toDate?.().toISOString() || null
+    }));
+    
+    // Test mail collection write (if testMode is enabled)
+    const testMode = url.searchParams.get('test') === 'true';
+    let testResult = null;
+    
+    if (testMode) {
+      try {
+        const testDoc = await addDoc(collection(db, 'mail'), {
+          to: process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'test@example.com',
+          message: {
+            subject: 'Test Email from Debug Endpoint',
+            html: '<p>This is a test email to verify Firebase Extensions email sending.</p>'
+          },
+          created: new Date()
+        });
+        
+        testResult = {
+          success: true,
+          documentId: testDoc.id,
+          timestamp: new Date().toISOString()
+        };
+      } catch (testError) {
+        testResult = {
+          success: false,
+          error: testError.message,
+          timestamp: new Date().toISOString()
+        };
+      }
+    }
+    
     return NextResponse.json({
       webhookLogs: logs,
       emailErrors: errors,
+      emailLogs: emailLogs,
+      testEmailResult: testResult,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('Debug webhook error:', error);
     return NextResponse.json({ 
-      error: 'Failed to retrieve webhook logs',
+      error: 'Failed to retrieve debug information',
       message: error.message || String(error)
     }, { status: 500 });
   }
