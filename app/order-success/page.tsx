@@ -75,7 +75,19 @@ const OrderSuccessPage = () => {
         };
 
         setOrder(orderWithProducts);
-        // No email sending from here
+        
+        // Send order confirmation email through our fixed endpoint
+        // This is optional and can be removed if emails are only sent from the payment webhook
+        try {
+          await fetch(`/api/send-order-email?orderId=${orderId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        } catch (emailError) {
+          console.error("Error sending confirmation email:", emailError);
+        }
       } catch (error) {
         console.error("Error:", error);
       } finally {

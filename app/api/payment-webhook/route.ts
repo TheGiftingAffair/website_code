@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateWebhook } from '@/utils/hitpayService';
 import { confirmPayment, getOrderById } from '@/utils/orderService';
-import { sendAdminNotification } from '@/utils/emailService';
+import { sendAdminNotification, sendDirectEmail } from '@/utils/emailService';
 import { db } from '@/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     // Parse the payload
     const payload = await request.json();
     
-    // Log webhook receipt to a debug collection for troubleshooting
+    // Log webhook receipt
     try {
       await addDoc(collection(db, 'webhookLogs'), {
         payload,
@@ -40,44 +40,89 @@ export async function POST(request: Request) {
         // Process the successful payment
         await confirmPayment(orderId, paymentId);
         
-        // Get complete order details for email notifications
+        // Get complete order details
         const order = await getOrderById(orderId);
         
         if (order) {
-          // Send admin notification directly with payment confirmation
-          const adminEmailResult = await sendAdminOrderEmail(order, paymentId);
+          // Try multiple approaches to ensure email is sent
+          let emailSent = false;
           
-          if (!adminEmailResult) {
-            console.error('Failed to send admin email through normal channels, attempting direct write');
+          // 1. Try standard admin notification
+          try {
+            emailSent = await sendAdminNotification({
+              orderId: order.id,
+              total: order.total,
+              subtotal: order.subtotal,
+              customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+              customerEmail: order.shippingAddress.email,
+              items: order.items,
+              deliveryDate: order.deliveryDate,
+              shippingAddress: order.shippingAddress,
+              specialInstructions: order.specialInstructions || '',
+              subtotal: order.subtotal,
+              paymentStatus: 'Payment Confirmed'
+            });
             
-            // Fallback - Try to manually insert into mail collection
+            if (emailSent) {
+              console.log('Admin notification sent successfully');
+            } else {
+              console.warn('Admin notification function returned false');
+            }
+          } catch (emailError) {
+            console.error('Error sending admin notification:', emailError);
+          }
+          
+          // 2. If standard notification failed, try direct email
+          if (!emailSent) {
+            try {
+              const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+              if (adminEmail) {
+                emailSent = await sendDirectEmail(
+                  adminEmail,
+                  `URGENT: New Order Payment - ${order.id}`,
+                  `<div style="font-family: Arial, sans-serif;">
+                    <h2>New Order Payment Received</h2>
+                    <p><strong>Order ID:</strong> ${order.id}</p>
+                    <p><strong>Customer:</strong> ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</p>
+                    <p><strong>Amount:</strong> $${order.total.toFixed(2)}</p>
+                    <p>This is a fallback email notification. Please check your admin panel for complete details.</p>
+                  </div>`
+                );
+                
+                if (emailSent) {
+                  console.log('Fallback admin email sent successfully');
+                }
+              }
+            } catch (fallbackError) {
+              console.error('Error sending fallback email:', fallbackError);
+            }
+          }
+          
+          // 3. Last resort - try a direct document insert
+          if (!emailSent) {
             try {
               const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
               if (adminEmail) {
                 await addDoc(collection(db, 'mail'), {
                   to: adminEmail,
                   message: {
-                    subject: `URGENT: Payment Confirmed - Order ${orderId}`,
-                    html: `<div>
-                      <h1>Payment Confirmed</h1>
-                      <p>Order ID: ${orderId}</p>
-                      <p>Customer: ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</p>
-                      <p>This is a fallback email. Please check your order admin panel.</p>
-                    </div>`
-                  },
-                  timestamp: new Date()
+                    subject: `URGENT: Order ${order.id} - Direct Insert`,
+                    text: `New order received: ${order.id}`,
+                    html: `<p>New order with payment: ${order.id}</p>`
+                  }
                 });
-                console.log('Fallback admin email queued');
+                console.log('Direct mail document created');
               }
-            } catch (fallbackError) {
-              console.error('Even fallback email failed:', fallbackError);
+            } catch (directError) {
+              console.error('Error with direct document insert:', directError);
             }
           }
-        } else {
-          console.error('Order not found:', orderId);
         }
         
-        return NextResponse.json({ message: 'Payment processed successfully' });
+        return NextResponse.json({ 
+          message: 'Payment processed successfully',
+          orderId: orderId
+        });
       } catch (error) {
         console.error('Error processing payment confirmation:', error);
         return NextResponse.json(
@@ -98,26 +143,5 @@ export async function POST(request: Request) {
       { message: 'Webhook processing failed' },
       { status: 500 }
     );
-  }
-}
-
-// Helper function to send admin email directly
-async function sendAdminOrderEmail(order: any, paymentId: string) {
-  try {
-    return await sendAdminNotification({
-      orderId: order.id,
-      total: order.total,
-      subtotal: order.subtotal,
-      customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-      customerEmail: order.shippingAddress.email,
-      items: order.items,
-      deliveryDate: order.deliveryDate,
-      shippingAddress: order.shippingAddress,
-      specialInstructions: order.specialInstructions,
-      paymentStatus: 'Payment Confirmed'
-    });
-  } catch (error) {
-    console.error('Error in admin email helper:', error);
-    return false;
   }
 }
