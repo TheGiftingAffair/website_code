@@ -7,6 +7,8 @@ import Image from "next/image";
 import { getOrderById } from "@/utils/orderService";
 import { getProductById } from "@/utils/productService";
 import { Order } from "@/types/order";
+import { db } from "@/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 interface OrderWithProductDetails extends Order {
   items: Array<{
@@ -75,7 +77,75 @@ const OrderSuccessPage = () => {
         };
 
         setOrder(orderWithProducts);
-        // No email sending from here
+
+        // Send admin notification email directly from here
+        try {
+          // Only send if payment is confirmed
+          if (orderData.orderStatus?.paymentStatus === "completed") {
+            const adminEmail = "pranay.rajvanshi@gmail.com";
+
+            // Create admin email content
+            const emailHtml = `
+              <div style="font-family: Arial, sans-serif;">
+                <h1>New Order Received - Payment Confirmed</h1>
+                <p><strong>Order ID:</strong> ${orderData.id}</p>
+                <p><strong>Customer:</strong> ${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}</p>
+                <p><strong>Email:</strong> ${orderData.shippingAddress.email}</p>
+                <p><strong>Phone:</strong> ${orderData.shippingAddress.phone}</p>
+                <p><strong>Delivery Date:</strong> ${new Date(orderData.deliveryDate).toLocaleDateString()}</p>
+                <p><strong>Total Amount:</strong> $${orderData.total.toFixed(2)}</p>
+                
+                <h2>Items Ordered</h2>
+                <ul>
+                  ${orderData.items
+                    .map(
+                      (item) => `
+                    <li>
+                      ${item.name} - Qty: ${item.quantity} - $${item.price.toFixed(2)}
+                      ${
+                        item.giftMessage
+                          ? `<br><strong>Gift Message:</strong> ${item.giftMessage}`
+                          : ""
+                      }
+                      ${
+                        item.specialRequest
+                          ? `<br><strong>Special Request:</strong> ${item.specialRequest}`
+                          : ""
+                      }
+                    </li>
+                  `
+                    )
+                    .join("")}
+                </ul>
+                
+                <h2>Shipping Address</h2>
+                <p>${orderData.shippingAddress.address}</p>
+                <p>${orderData.shippingAddress.city}, ${orderData.shippingAddress.state} ${orderData.shippingAddress.pincode}</p>
+                
+                ${
+                  orderData.specialInstructions
+                    ? `
+                  <h2>Special Instructions</h2>
+                  <p>${orderData.specialInstructions}</p>
+                `
+                    : ""
+                }
+              </div>
+            `;
+
+            // Add email document directly to mail collection
+            await addDoc(collection(db, "mail"), {
+              to: adminEmail,
+              message: {
+                subject: `New Order: ${orderData.id} - Payment Confirmed`,
+                html: emailHtml,
+              },
+            });
+            console.log("Admin notification email sent for order:", orderData.id);
+          }
+        } catch (emailError) {
+          console.error("Failed to send admin notification:", emailError);
+        }
       } catch (error) {
         console.error("Error:", error);
       } finally {

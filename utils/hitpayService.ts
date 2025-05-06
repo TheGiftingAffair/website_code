@@ -1,23 +1,11 @@
 import axios from "axios";
-import crypto from "crypto";
 
 const HITPAY_API_KEY = process.env.HITPAY_API_KEY || "";
-const HITPAY_SALT = process.env.HITPAY_SALT || "";
 const HITPAY_API_URL =
   process.env.NEXT_PUBLIC_HITPAY_API_URL ||
   "https://api.sandbox.hit-pay.com/v1";
 
 const PAYMENT_METHODS = ["paynow_online"];
-
-interface CreatePaymentRequestParams {
-  amount: number;
-  currency: string;
-  email: string;
-  name: string;
-  reference_number: string;
-  redirect_url: string;
-  webhook: string;
-}
 
 export const createPaymentRequest = async (formData: URLSearchParams) => {
   try {
@@ -68,22 +56,4 @@ export const createPaymentRequest = async (formData: URLSearchParams) => {
     });
     throw new Error(error.response?.data?.message || error.message);
   }
-};
-
-export const validateWebhook = (payload: any, hmac: string): boolean => {
-  // Remove hmac from payload
-  const { hmac: _, ...payloadWithoutHmac } = payload;
-
-  // Sort and concatenate
-  const hmacSource = Object.keys(payloadWithoutHmac)
-    .sort()
-    .reduce((str, key) => `${str}${key}${payloadWithoutHmac[key]}`, "");
-
-  // Calculate signature
-  const calculatedHmac = crypto
-    .createHmac("sha256", HITPAY_SALT)
-    .update(hmacSource)
-    .digest("hex");
-
-  return calculatedHmac === hmac;
 };

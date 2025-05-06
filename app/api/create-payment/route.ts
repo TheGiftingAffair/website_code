@@ -20,11 +20,10 @@ export async function POST(request: Request) {
 
     const formData = new URLSearchParams();
     formData.append('email', email);
-    formData.append('redirect_url', `${baseUrl}/payment/success`);
-    formData.append('webhook', `${baseUrl}/api/payment-webhook`);
-    formData.append('reference_number', orderId); // Use our orderId
+    formData.append('redirect_url', `${baseUrl}/order-success?orderId=${orderId}`);
+    formData.append('reference_number', orderId);
     formData.append('currency', currency);
-    formData.append('amount', amount.toString()); // Ensure amount is string
+    formData.append('amount', amount.toString());
     formData.append('name', name);
     formData.append('purpose', `Order ${orderId}`);
 
