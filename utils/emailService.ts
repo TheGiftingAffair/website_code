@@ -1,7 +1,7 @@
 import { db } from '@/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 
-// Only keep the admin notification function
+// Simple function to send admin notifications
 export async function sendAdminNotification(data: {
   orderId: string;
   total: number;
@@ -30,12 +30,14 @@ export async function sendAdminNotification(data: {
   paymentStatus?: string;
 }) {
   try {
+    // Get admin email from env
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'pranay.rajvanshi@gmail.com';
+    
+    // Create HTML email content with all order details
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>Payment Confirmed - New Order</h1>
-        <div style="background-color: #e6ffe6; padding: 15px; margin: 20px 0;">
-          <h2 style="color: #008000;">Payment Status: Confirmed</h2>
-        </div>
+        <h1>New Order Received - Payment Confirmed</h1>
+        
         <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0;">
           <h2>Order Details</h2>
           <p><strong>Order ID:</strong> ${data.orderId}</p>
@@ -58,8 +60,8 @@ export async function sendAdminNotification(data: {
               <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd;">
                   ${item.name}
-                  ${item.specialRequest ? `<br><small>Special Request: ${item.specialRequest}</small>` : ''}
-                  ${item.giftMessage ? `<br><small>Gift Message: ${item.giftMessage}</small>` : ''}
+                  ${item.specialRequest ? `<br><small><strong>Special Request:</strong> ${item.specialRequest}</small>` : ''}
+                  ${item.giftMessage ? `<br><small><strong>Gift Message:</strong> ${item.giftMessage}</small>` : ''}
                 </td>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">${item.quantity}</td>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${item.price.toFixed(2)}</td>
@@ -86,67 +88,29 @@ export async function sendAdminNotification(data: {
           </div>
         ` : ''}
 
-        <p>Access your admin panel to process this order.</p>
+        <p>Please process this order at your earliest convenience.</p>
       </div>
     `;
 
-    // Get admin email from environment variable
-    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-    if (!adminEmail) {
-      console.error('Admin email not configured in environment variables');
-      return false;
-    }
-
-    // Create mail document for admin ONLY
+    // Create email document directly in Firebase mail collection
     const emailDoc = {
       to: adminEmail,
       message: {
-        subject: `New Order with Payment - ${data.orderId}`,
-        text: `Payment confirmed for order ${data.orderId}. Customer: ${data.customerName}`,
+        subject: `New Order: ${data.orderId} - Payment Confirmed`,
+        text: `New order received from ${data.customerName}. Order ID: ${data.orderId}. Total: $${data.total.toFixed(2)}`,
         html: adminEmailHtml,
       }
     };
 
-    console.log(`Creating ADMIN-ONLY email document for order:`, data.orderId);
-    console.log(`Sending to admin email:`, adminEmail);
+    console.log(`Sending admin notification to ${adminEmail} for order ${data.orderId}`);
     
-    const mailCollection = collection(db, 'mail');
-    const docRef = await addDoc(mailCollection, emailDoc);
-    console.log('Admin notification document created with ID:', docRef.id);
-    
-    return true;
-  } catch (error) {
-    console.error(`Error sending admin notification for order ${data.orderId}:`, error);
-    return false;
-  }
-}
-
-// Simple test function for direct admin emails (for debugging only)
-export async function sendDirectEmail(to: string, subject: string, htmlContent: string) {
-  try {
-    // Ensure we're only sending to the admin email
-    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-    if (!adminEmail || to !== adminEmail) {
-      console.error('Only admin emails are allowed');
-      return false;
-    }
-
-    const emailDoc = {
-      to: adminEmail,
-      message: {
-        subject: subject,
-        text: subject,
-        html: htmlContent,
-      }
-    };
-
-    const mailCollection = collection(db, 'mail');
-    const docRef = await addDoc(mailCollection, emailDoc);
-    console.log('Test admin email document created with ID:', docRef.id);
+    // Add document to mail collection
+    const mailRef = await addDoc(collection(db, 'mail'), emailDoc);
+    console.log(`Created admin email document: ${mailRef.id}`);
     
     return true;
   } catch (error) {
-    console.error('Error sending direct test email:', error);
+    console.error(`Failed to send admin notification for order ${data.orderId}:`, error);
     return false;
   }
 }

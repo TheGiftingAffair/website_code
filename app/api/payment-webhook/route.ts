@@ -7,128 +7,87 @@ import { collection, addDoc } from 'firebase/firestore';
 
 export async function POST(request: Request) {
   try {
-    // Parse the payload
     const payload = await request.json();
     
-    // Log webhook receipt
-    try {
-      await addDoc(collection(db, 'webhookLogs'), {
-        payload,
-        timestamp: new Date()
-      });
-    } catch (logError) {
-      console.error('Failed to log webhook:', logError);
-    }
+    // Log webhook for debugging
+    await addDoc(collection(db, 'webhookLogs'), {
+      payload,
+      timestamp: new Date()
+    }).catch(err => console.error('Failed to log webhook:', err));
     
+    // Extract hmac for validation
     const hmac = payload.hmac;
 
     // Validate webhook signature
     if (!validateWebhook(payload, hmac)) {
       console.error('Invalid webhook signature');
-      return NextResponse.json(
-        { message: 'Invalid signature' },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Invalid signature' }, { status: 400 });
     }
 
+    // Only process completed payments
     if (payload.status === 'completed') {
-      // Get reference number which is our orderId
       const orderId = payload.reference;
       const paymentId = payload.payment_id;
       
-      try {
-        // Process the successful payment
-        await confirmPayment(orderId, paymentId);
+      // Update order status to paid
+      await confirmPayment(orderId, paymentId);
+      
+      // Get order details
+      const order = await getOrderById(orderId);
+      
+      if (order) {
+        console.log(`Payment confirmed for order ${orderId}. Sending admin notification.`);
         
-        // Get complete order details
-        const order = await getOrderById(orderId);
-        
-        if (order) {
-          console.log('Payment confirmed for order:', orderId, 'Sending ADMIN-ONLY notification');
+        // Send notification to admin email
+        try {
+          await sendAdminNotification({
+            orderId: order.id,
+            total: order.total,
+            subtotal: order.subtotal,
+            customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+            customerEmail: order.shippingAddress.email,
+            items: order.items,
+            deliveryDate: order.deliveryDate,
+            shippingAddress: order.shippingAddress,
+            specialInstructions: order.specialInstructions || '',
+            subtotal: order.subtotal,
+            paymentStatus: 'Payment Confirmed'
+          });
           
-          // ONLY send admin notification - no customer emails
-          try {
-            const adminEmailSent = await sendAdminNotification({
-              orderId: order.id,
-              total: order.total,
-              subtotal: order.subtotal,
-              customerName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-              customerEmail: order.shippingAddress.email,
-              items: order.items,
-              deliveryDate: order.deliveryDate,
-              shippingAddress: order.shippingAddress,
-              specialInstructions: order.specialInstructions || '',
-              subtotal: order.subtotal,
-              paymentStatus: 'Payment Confirmed'
-            });
-            
-            if (adminEmailSent) {
-              console.log('Admin notification sent successfully for order:', orderId);
-              
-              // Log successful admin email
-              await addDoc(collection(db, 'adminEmailLogs'), {
-                orderId: order.id,
-                timestamp: new Date(),
-                success: true
-              });
-            } else {
-              console.error('Failed to send admin notification for order:', orderId);
-              
-              // Try fallback direct method as last resort
-              const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-              if (adminEmail) {
-                const mailDoc = {
-                  to: adminEmail,
-                  message: {
-                    subject: `URGENT: New Order Payment - ${order.id}`,
-                    text: `New order with payment confirmed: ${order.id}`,
-                    html: `
-                      <div style="font-family: Arial, sans-serif;">
-                        <h1>New Order with Payment Confirmed</h1>
-                        <p><strong>Order ID:</strong> ${order.id}</p>
-                        <p><strong>Customer:</strong> ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</p>
-                        <p><strong>Email:</strong> ${order.shippingAddress.email}</p>
-                        <p><strong>Amount:</strong> $${order.total.toFixed(2)}</p>
-                        <p>Please check your admin panel for complete order details.</p>
-                      </div>
-                    `
-                  }
-                };
-                
-                await addDoc(collection(db, 'mail'), mailDoc);
-                console.log('Fallback admin notification attempt for order:', orderId);
-              }
+          // Also create direct admin email as backup
+          const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'pranay.rajvanshi@gmail.com';
+          await addDoc(collection(db, 'mail'), {
+            to: adminEmail,
+            message: {
+              subject: `IMPORTANT: New Order ${order.id}`,
+              text: `New order received: ${order.id}. Amount: $${order.total.toFixed(2)}`,
+              html: `<div>
+                <h1>New Order Notification</h1>
+                <p>Order ID: ${order.id}</p>
+                <p>Customer: ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</p>
+                <p>Total: $${order.total.toFixed(2)}</p>
+                <p>This is a backup notification. Check your admin panel for details.</p>
+              </div>`
             }
-          } catch (emailError) {
-            console.error('Error during admin email notification:', emailError);
-          }
-        } else {
-          console.error('Order not found:', orderId);
+          });
+          
+          console.log(`Admin notification sent for order ${orderId}`);
+        } catch (emailError) {
+          console.error('Failed to send admin notification:', emailError);
         }
-        
-        return NextResponse.json({ 
-          message: 'Payment processed successfully',
-          orderId: orderId
-        });
-      } catch (error) {
-        console.error('Error processing payment confirmation:', error);
-        return NextResponse.json(
-          { message: 'Error processing payment confirmation' },
-          { status: 500 }
-        );
+      } else {
+        console.error(`Order not found: ${orderId}`);
       }
+      
+      return NextResponse.json({ 
+        message: 'Payment processed successfully',
+        orderId: orderId
+      });
     } else {
-      console.log('Payment not completed. Status:', payload.status);
-      return NextResponse.json(
-        { message: 'Payment not completed' },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Payment not completed' }, { status: 400 });
     }
   } catch (error) {
     console.error('Webhook processing error:', error);
-    return NextResponse.json(
-      { message: 'Webhook processing failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Webhook processing failed' }, { status: 500 });
   }
 }
