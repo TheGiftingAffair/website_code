@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateWebhook } from '@/utils/hitpayService';
 import { confirmPayment, getOrderById } from '@/utils/orderService';
-import { sendAdminNotification, sendDirectEmail } from '@/utils/emailService';
+import { sendAdminNotification } from '@/utils/emailService';
 import { db } from '@/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 
@@ -44,12 +44,11 @@ export async function POST(request: Request) {
         const order = await getOrderById(orderId);
         
         if (order) {
-          // Try multiple approaches to ensure email is sent
-          let emailSent = false;
+          console.log('Payment confirmed for order:', orderId, 'Sending ADMIN-ONLY notification');
           
-          // 1. Try standard admin notification
+          // ONLY send admin notification - no customer emails
           try {
-            emailSent = await sendAdminNotification({
+            const adminEmailSent = await sendAdminNotification({
               orderId: order.id,
               total: order.total,
               subtotal: order.subtotal,
@@ -63,60 +62,48 @@ export async function POST(request: Request) {
               paymentStatus: 'Payment Confirmed'
             });
             
-            if (emailSent) {
-              console.log('Admin notification sent successfully');
+            if (adminEmailSent) {
+              console.log('Admin notification sent successfully for order:', orderId);
+              
+              // Log successful admin email
+              await addDoc(collection(db, 'adminEmailLogs'), {
+                orderId: order.id,
+                timestamp: new Date(),
+                success: true
+              });
             } else {
-              console.warn('Admin notification function returned false');
-            }
-          } catch (emailError) {
-            console.error('Error sending admin notification:', emailError);
-          }
-          
-          // 2. If standard notification failed, try direct email
-          if (!emailSent) {
-            try {
+              console.error('Failed to send admin notification for order:', orderId);
+              
+              // Try fallback direct method as last resort
               const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
               if (adminEmail) {
-                emailSent = await sendDirectEmail(
-                  adminEmail,
-                  `URGENT: New Order Payment - ${order.id}`,
-                  `<div style="font-family: Arial, sans-serif;">
-                    <h2>New Order Payment Received</h2>
-                    <p><strong>Order ID:</strong> ${order.id}</p>
-                    <p><strong>Customer:</strong> ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</p>
-                    <p><strong>Amount:</strong> $${order.total.toFixed(2)}</p>
-                    <p>This is a fallback email notification. Please check your admin panel for complete details.</p>
-                  </div>`
-                );
-                
-                if (emailSent) {
-                  console.log('Fallback admin email sent successfully');
-                }
-              }
-            } catch (fallbackError) {
-              console.error('Error sending fallback email:', fallbackError);
-            }
-          }
-          
-          // 3. Last resort - try a direct document insert
-          if (!emailSent) {
-            try {
-              const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-              if (adminEmail) {
-                await addDoc(collection(db, 'mail'), {
+                const mailDoc = {
                   to: adminEmail,
                   message: {
-                    subject: `URGENT: Order ${order.id} - Direct Insert`,
-                    text: `New order received: ${order.id}`,
-                    html: `<p>New order with payment: ${order.id}</p>`
+                    subject: `URGENT: New Order Payment - ${order.id}`,
+                    text: `New order with payment confirmed: ${order.id}`,
+                    html: `
+                      <div style="font-family: Arial, sans-serif;">
+                        <h1>New Order with Payment Confirmed</h1>
+                        <p><strong>Order ID:</strong> ${order.id}</p>
+                        <p><strong>Customer:</strong> ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</p>
+                        <p><strong>Email:</strong> ${order.shippingAddress.email}</p>
+                        <p><strong>Amount:</strong> $${order.total.toFixed(2)}</p>
+                        <p>Please check your admin panel for complete order details.</p>
+                      </div>
+                    `
                   }
-                });
-                console.log('Direct mail document created');
+                };
+                
+                await addDoc(collection(db, 'mail'), mailDoc);
+                console.log('Fallback admin notification attempt for order:', orderId);
               }
-            } catch (directError) {
-              console.error('Error with direct document insert:', directError);
             }
+          } catch (emailError) {
+            console.error('Error during admin email notification:', emailError);
           }
+        } else {
+          console.error('Order not found:', orderId);
         }
         
         return NextResponse.json({ 
