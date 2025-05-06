@@ -1,7 +1,6 @@
 import { db } from '@/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 
-// Simple function to send admin notifications
 export async function sendAdminNotification(data: {
   orderId: string;
   total: number;
@@ -30,10 +29,8 @@ export async function sendAdminNotification(data: {
   paymentStatus?: string;
 }) {
   try {
-    // Get admin email from env
     const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'pranay.rajvanshi@gmail.com';
     
-    // Create HTML email content with all order details
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1>New Order Received - Payment Confirmed</h1>
@@ -92,7 +89,6 @@ export async function sendAdminNotification(data: {
       </div>
     `;
 
-    // Create email document directly in Firebase mail collection
     const emailDoc = {
       to: adminEmail,
       message: {
@@ -101,13 +97,8 @@ export async function sendAdminNotification(data: {
         html: adminEmailHtml,
       }
     };
-
-    console.log(`Sending admin notification to ${adminEmail} for order ${data.orderId}`);
     
-    // Add document to mail collection
     const mailRef = await addDoc(collection(db, 'mail'), emailDoc);
-    console.log(`Created admin email document: ${mailRef.id}`);
-    
     return true;
   } catch (error) {
     console.error(`Failed to send admin notification for order ${data.orderId}:`, error);
