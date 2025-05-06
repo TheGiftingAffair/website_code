@@ -119,7 +119,7 @@ const HomeOccasion = () => {
       "scrollTarget",
       `#shop-by-occasion?occasion=${encodedOccasion}`
     );
-    window.location.href = `/products#shop-by-occasion?occasion=${encodedOccasion}`;
+    window.location.href = `/shop-by-occasion#shop-by-occasion?occasion=${encodedOccasion}`;
   };
 
   return (

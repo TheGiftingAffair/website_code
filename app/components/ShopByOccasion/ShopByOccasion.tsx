@@ -76,6 +76,26 @@ const ShopByOccasion = () => {
   }, []);
 
   useEffect(() => {
+    // Get occasion from URL params when component mounts
+    const params = new URLSearchParams(window.location.search);
+    const occasionParam = params.get("occasion");
+    if (occasionParam) {
+      const decodedOccasion = decodeURIComponent(occasionParam)
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+      const validOccasion = occasions.find(
+        (occ) => occ.toLowerCase() === decodedOccasion.toLowerCase()
+      );
+
+      if (validOccasion) {
+        setSelectedOccasion(validOccasion);
+      }
+    }
+  }, [occasions]);
+
+  useEffect(() => {
     const handleUrlParamsChanged = (event: CustomEvent) => {
       const { section, params } = event.detail;
       if (section === "shop-by-occasion") {
@@ -112,16 +132,8 @@ const ShopByOccasion = () => {
   const handleOccasionChange = (occasion: Occasion) => {
     setSelectedOccasion(occasion);
     const encodedOccasion = occasion.toLowerCase().replace(/\s+/g, "-");
-    const baseUrl = window.location.pathname + "#shop-by-occasion";
-    const newUrl = `${baseUrl}?occasion=${encodedOccasion}`;
+    const newUrl = `/shop-by-occasion?occasion=${encodedOccasion}`;
     window.history.pushState({}, "", newUrl);
-
-    // Remove smooth scrolling, just update the URL
-    const section = document.getElementById("shop-by-occasion");
-    if (section) {
-      section.scrollIntoView();
-      window.scrollBy(0, -80);
-    }
   };
 
   useEffect(() => {
@@ -181,7 +193,7 @@ const ShopByOccasion = () => {
               <button
                 key={occasion}
                 onClick={() => handleOccasionChange(occasion)}
-                className={`px-4 py-2 mt-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
+                className={`px-3 md:px-4 py-1 md:py-2 mt-2 rounded-full text-sm md:text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
                   selectedOccasion === occasion
                     ? "bg-bg4/90 text-white shadow-md hover:scale-105"
                     : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"

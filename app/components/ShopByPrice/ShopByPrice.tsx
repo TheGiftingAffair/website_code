@@ -61,6 +61,18 @@ const ShopByPrice = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Get price from URL params when component mounts
+    const params = new URLSearchParams(window.location.search);
+    const priceParam = params.get("price");
+    if (priceParam) {
+      const validRange = priceRanges.find((range) => range.id === priceParam);
+      if (validRange) {
+        setSelectedPriceRange(validRange.id as PriceRange);
+      }
+    }
+  }, []);
+
   const handlePriceRangeChange = (range: PriceRange) => {
     setSelectedPriceRange(range);
     const baseUrl = window.location.pathname + "#shop-by-price";
@@ -154,7 +166,7 @@ const ShopByPrice = () => {
             <button
               key={range.id}
               onClick={() => handlePriceRangeChange(range.id as PriceRange)}
-              className={`px-4 py-2 rounded-full text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
+              className={`px-3 md:px-4 py-1 md:py-2 rounded-full text-sm md:text-md 2xl:text-xl transition-all font-alegreya font-semibold ${
                 selectedPriceRange === range.id
                   ? "bg-bg4/90 text-white shadow-md hover:scale-105"
                   : "bg-white/90 border hover:scale-105 border-bg4/90 text-bg4/90 hover:bg-white"

@@ -139,7 +139,7 @@ const HomeCategories = () => {
       "scrollTarget",
       `#shop-by-categories?category=${encodedCategory}`
     );
-    window.location.href = `/products#shop-by-categories?category=${encodedCategory}`;
+    window.location.href = `/shop-by-categories#shop-by-categories?category=${encodedCategory}`;
   };
 
   return (

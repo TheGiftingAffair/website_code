@@ -763,14 +763,14 @@ export default function ProductPage({
               </div>
 
               {/* Payment and Delivery Disclaimers */}
-              <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-4">
-                <div className="bg-white shadow-sm py-2 px-4 rounded-full border border-gray-100 flex items-center gap-2">
+              <div className="flex flex-row items-center justify-center gap-4 mt-4">
+                <div className="bg-white shadow-sm py-1 md:py-2 px-2 md:px-4 rounded-full border border-gray-100 flex items-center gap-2">
                   <IoShieldCheckmark className="text-gray-600 text-xl" />
                   <p className="text-gray-700 font-mont text-xs 2xl:text-base">
                     100% secure payment
                   </p>
                 </div>
-                <div className="bg-white shadow-sm py-2 px-4 rounded-full border border-gray-100 flex items-center gap-2">
+                <div className="bg-white shadow-sm py-1 md:py-2 px-2 md:px-4 rounded-full border border-gray-100 flex items-center gap-2">
                   <IoTimeOutline className="text-gray-600 text-xl" />
                   <p className="text-gray-700 font-mont text-xs 2xl:text-base">
                     On time delivery
@@ -786,7 +786,7 @@ export default function ProductPage({
                   {product.name}
                 </h1>
                 <div
-                  className={`flex justify-center items-center text-sm 2xl:text-base ml-6 px-4 my-1 rounded-lg ${getStockStatus(
+                  className={`flex justify-center items-center text-sm 2xl:text-base ml-6 px-4 my-1 py-1 rounded-lg ${getStockStatus(
                     product.stock
                   )}`}
                 >

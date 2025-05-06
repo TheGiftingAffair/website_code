@@ -66,29 +66,29 @@ const Navbar = () => {
       window.location.hash = hash;
     } else {
       sessionStorage.setItem("scrollTarget", `#${hash}`);
-      window.location.href = `/products#${hash}`;
+      window.location.href = `${path}`;
     }
   };
 
   const priceRanges = [
     {
       name: "Below $100",
-      href: "/products#shop-by-price?price=below100",
+      href: "/shop-by-price#shop-by-price?price=below100",
       section: "shop-by-price",
     },
     {
       name: "$100 - $150",
-      href: "/products#shop-by-price?price=100to150",
+      href: "/shop-by-price#shop-by-price?price=100to150",
       section: "shop-by-price",
     },
     {
       name: "$150 - $200",
-      href: "/products#shop-by-price?price=150to200",
+      href: "/shop-by-price#shop-by-price?price=150to200",
       section: "shop-by-price",
     },
     {
       name: "$200 & Above",
-      href: "/products#shop-by-price?price=above200",
+      href: "/shop-by-price#shop-by-price?price=above200",
       section: "shop-by-price",
     },
   ];
@@ -299,7 +299,7 @@ const Navbar = () => {
                     categories.map((category) => (
                       <Link
                         key={category}
-                        href={`/products#shop-by-categories?category=${category
+                        href={`/shop-by-categories#shop-by-categories?category=${category
                           .toLowerCase()
                           .replace(/\s*&\s*/g, "-")
                           .replace(/\//g, "-")
@@ -307,7 +307,7 @@ const Navbar = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           handleNavigation(
-                            `/products#shop-by-categories?category=${category
+                            `/shop-by-categories#shop-by-categories?category=${category
                               .toLowerCase()
                               .replace(/\s*&\s*/g, "-")
                               .replace(/\//g, "-")
@@ -346,13 +346,13 @@ const Navbar = () => {
                     occasions.map((occasion) => (
                       <Link
                         key={occasion}
-                        href={`/products#shop-by-occasion?occasion=${occasion
+                        href={`/shop-by-occasion#shop-by-occasion?occasion=${occasion
                           .toLowerCase()
                           .replace(/\s+/g, "-")}`}
                         onClick={(e) => {
                           e.preventDefault();
                           handleNavigation(
-                            `/products#shop-by-occasion?occasion=${occasion
+                            `/shop-by-occasion#shop-by-occasion?occasion=${occasion
                               .toLowerCase()
                               .replace(/\s+/g, "-")}`,
                             "shop-by-occasion"
@@ -497,7 +497,7 @@ const Navbar = () => {
                           categories.map((category) => (
                             <Link
                               key={category}
-                              href={`/products#shop-by-categories?category=${category
+                              href={`/shop-by-categories#shop-by-categories?category=${category
                                 .toLowerCase()
                                 .replace(/\s*&\s*/g, "-")
                                 .replace(/\//g, "-")
@@ -505,7 +505,7 @@ const Navbar = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 handleNavigation(
-                                  `/products#shop-by-categories?category=${category
+                                  `/shop-by-categories#shop-by-categories?category=${category
                                     .toLowerCase()
                                     .replace(/\s*&\s*/g, "-")
                                     .replace(/\//g, "-")
@@ -546,13 +546,13 @@ const Navbar = () => {
                           occasions.map((occasion) => (
                             <Link
                               key={occasion}
-                              href={`/products#shop-by-occasion?occasion=${occasion
+                              href={`/shop-by-occasion#shop-by-occasion?occasion=${occasion
                                 .toLowerCase()
                                 .replace(/\s+/g, "-")}`}
                               onClick={(e) => {
                                 e.preventDefault();
                                 handleNavigation(
-                                  `/products#shop-by-occasion?occasion=${occasion
+                                  `/shop-by-occasion#shop-by-occasion?occasion=${occasion
                                     .toLowerCase()
                                     .replace(/\s+/g, "-")}`,
                                   "shop-by-occasion"
@@ -595,7 +595,7 @@ const Navbar = () => {
                               e.preventDefault();
                               handleNavigation(range.href, range.section);
                             }}
-                            className="flex items-center py-2 hover:text-bg3 transition-colors border-b border-bg2/50"
+                            className="flex items-center py-2 text-gray-200 hover:text-bg2 transition-colors border-b border-gray-200/50"
                           >
                             <ChevronRight size={14} className="mx-2" />
                             {range.name}

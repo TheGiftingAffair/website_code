@@ -10,7 +10,7 @@ const PrivacyPolicy = () => {
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Privacy Policy</h1>
+            <h1 className="text-3xl font-bold text-headline">Privacy Policy</h1>
             <Link href="/" className="text-bg4 hover:text-bg3">
               Back to Home
             </Link>
@@ -35,7 +35,7 @@ const PrivacyPolicy = () => {
               Protection Act (PDPA) of Singapore.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               1. Information We Collect
             </h2>
             <p className="mb-4">
@@ -52,18 +52,26 @@ const PrivacyPolicy = () => {
                 <strong>Non-Personal Information:</strong> We may collect
                 non-personal information about your use of our website, such as
                 IP addresses, browser type, operating system, and browsing
-                activity.
+                activity. This helps us improve the functionality and
+                performance of our website.
               </li>
               <li>
                 <strong>Cookies and Tracking Technologies:</strong> We use
                 cookies and similar technologies to enhance your experience on
-                our website.
+                our website. Cookies are small text files that are placed on
+                your device to track usage patterns and store preferences. You
+                can manage your cookie settings through your browser, but
+                disabling cookies may impact your ability to use certain
+                features of our website.
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               2. How We Use Your Information
             </h2>
+            <p className="mb-4">
+              We use the information we collect for the following purposes:
+            </p>
             <ul className="list-disc pl-5 mb-4">
               <li>
                 To process and fulfill your orders, including payment processing
@@ -81,9 +89,10 @@ const PrivacyPolicy = () => {
                 To improve our website and services through analytics and
                 feedback.
               </li>
+              <li>To comply with legal obligations and protect our rights.</li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               3. How We Protect Your Information
             </h2>
             <p className="mb-4">
@@ -99,7 +108,7 @@ const PrivacyPolicy = () => {
               guarantee absolute security.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               4. Sharing Your Information
             </h2>
             <p className="mb-4">
@@ -112,7 +121,7 @@ const PrivacyPolicy = () => {
                 <strong>Service Providers:</strong> We may share your
                 information with trusted service providers who help us fulfill
                 orders, process payments, or perform other necessary functions,
-                such as shipping carriers and payment processors. These
+                such as delivery companies and payment processors. These
                 providers are obligated to protect your information and use it
                 only for the purpose of providing services to us.
               </li>
@@ -125,7 +134,7 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-headline">
               5. Your Rights and Choices
             </h2>
             <ul className="list-disc pl-5 mb-4">
@@ -150,7 +159,9 @@ const PrivacyPolicy = () => {
               </li>
             </ul>
 
-            <h2 className="text-xl font-semibold mb-4">6. Third-Party Links</h2>
+            <h2 className="text-xl font-semibold mb-4 text-headline">
+              6. Third-Party Links
+            </h2>
             <p className="mb-4">
               Our website may contain links to third-party websites that are not
               operated by us. We are not responsible for the privacy practices
@@ -158,19 +169,8 @@ const PrivacyPolicy = () => {
               privacy policies of any third-party websites you visit.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">
-              7. Children's Privacy
-            </h2>
-            <p className="mb-4">
-              Our website is not intended for use by children under the age of
-              13. We do not knowingly collect personal information from
-              children. If you believe that we have inadvertently collected
-              information from a child under 13, please contact us immediately,
-              and we will take steps to delete such information.
-            </p>
-
-            <h2 className="text-xl font-semibold mb-4">
-              8. Changes to This Privacy Policy
+            <h2 className="text-xl font-semibold mb-4 text-headline">
+              7. Changes to This Privacy Policy
             </h2>
             <p className="mb-4">
               We may update this Privacy Policy from time to time to reflect
@@ -179,27 +179,23 @@ const PrivacyPolicy = () => {
               encourage you to review this Privacy Policy periodically.
             </p>
 
-            <h2 className="text-xl font-semibold mb-4">9. Contact Us</h2>
+            <h2 className="text-xl font-semibold mb-4 text-headline">
+              8. Contact Us
+            </h2>
             <p className="mb-4">
               If you have any questions or concerns about this Privacy Policy or
               how we handle your personal information, please contact us at:
             </p>
-            <p className="mb-4">
-              Name: Monika Bansal
-              <br />
+            <p className="mb-4 font-semibold">
               Email: info@thegiftingaffair.com
               <br />
               Contact Number: +65 87430520
             </p>
 
-            <p className="mt-4">
-              By using our website and services, you consent to the practices
+            <p className="mt-4 font-xs font-semibold italic">
+              *By using our website and services, you consent to the practices
               described in this Privacy Policy.
             </p>
-
-            {/* <div className="mt-8 text-sm text-gray-600">
-              <p>Last updated: {new Date().toLocaleDateString()}</p>
-            </div> */}
           </div>
         </div>
       </div>
