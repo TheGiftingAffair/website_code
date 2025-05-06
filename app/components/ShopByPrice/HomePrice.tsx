@@ -79,7 +79,7 @@ const HomePrice = () => {
   const handlePriceClick = (priceId: string) => {
     // Store target section and navigate
     sessionStorage.setItem("scrollTarget", `#shop-by-price?price=${priceId}`);
-    window.location.href = `/products#shop-by-price?price=${priceId}`;
+    window.location.href = `/shop-by-price#shop-by-price?price=${priceId}`;
   };
 
   return (
