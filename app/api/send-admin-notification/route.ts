@@ -5,6 +5,12 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
     
+    // Ensure we have payment status before sending admin notification
+    if (!data.paymentStatus) {
+      console.warn('No payment status provided for admin notification');
+      return NextResponse.json({ warning: 'No payment status provided' }, { status: 200 });
+    }
+    
     const success = await sendAdminNotification({
       orderId: data.orderId,
       total: data.total,
@@ -14,7 +20,8 @@ export async function POST(request: Request) {
       items: data.items,
       deliveryDate: new Date(data.deliveryDate),
       shippingAddress: data.shippingAddress,
-      specialInstructions: data.specialInstructions
+      specialInstructions: data.specialInstructions,
+      paymentStatus: data.paymentStatus
     });
 
     if (!success) {
