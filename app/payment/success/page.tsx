@@ -56,14 +56,23 @@ const PaymentSuccessPage = () => {
             }
           });
 
-          // Send confirmation email
-          await fetch('/api/send-order-confirmation', {
+          // Send admin notification only (not customer email)
+          await fetch('/api/send-admin-notification', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               orderId,
               orderData,
-              hitpayReference: reference 
+              hitpayReference: reference,
+              paymentStatus: 'Completed',  // Add payment status for admin email
+              total: orderData.total,
+              subtotal: orderData.subtotal,
+              customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
+              customerEmail: orderData.shippingAddress.email,
+              items: orderData.items,
+              deliveryDate: orderData.deliveryDate,
+              shippingAddress: orderData.shippingAddress,
+              specialInstructions: orderData.specialInstructions
             }),
           });
 
