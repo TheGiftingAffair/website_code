@@ -6,6 +6,7 @@ export interface Coupon {
   maxUses: number;
   minordervalue: number;
   name: string;
-  type: string;  // Changed from union type to string
+  type: "Flat" | "Percentage";
   usersused: string[];
+  product?: string[]; // Add product array for product-specific coupons
 }

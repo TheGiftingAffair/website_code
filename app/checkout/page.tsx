@@ -362,10 +362,14 @@ const CheckoutPage = () => {
     }
 
     try {
+      // Get product IDs from cart items
+      const productIds = items.map(item => item.productId);
+      
       const result = await validateCoupon(
         couponCode,
         subtotal,
-        shippingDetails.email || user?.email
+        shippingDetails.email || user?.email,
+        productIds // Pass product IDs for product-specific coupon validation
       );
 
       if (result.isValid && result.couponDetails) {

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { updateOrderStatus } from '@/utils/orderService';
+import { updateOrderStatus, applyCouponUsage } from '@/utils/orderService';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -55,6 +55,12 @@ const PaymentSuccessPage = () => {
               confirmedAt: new Date()
             }
           });
+
+          // Apply coupon usage if a coupon was used
+          if (orderData.coupon && orderData.coupon.code) {
+            const userEmail = orderData.shippingAddress.email;
+            await applyCouponUsage(orderData.coupon.code, userEmail);
+          }
 
           // Send admin notification only (not customer email)
           await fetch('/api/send-admin-notification', {

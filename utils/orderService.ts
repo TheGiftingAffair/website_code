@@ -1,5 +1,5 @@
 import { db } from '@/firebaseConfig';
-import { collection, addDoc, updateDoc, doc, getDoc, getDocs, query, where, orderBy, setDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, getDoc, getDocs, query, where, orderBy, setDoc, arrayUnion } from 'firebase/firestore';
 import { Order } from '@/types/order';
 import { updateUserData, getUserData } from './userService';
 
@@ -338,6 +338,28 @@ export const updateOrderStatus = async (
   }
 };
 
+// Add a new function to apply coupon usage
+export const applyCouponUsage = async (couponCode: string, userEmail: string) => {
+  if (!couponCode || !userEmail) return;
+  
+  try {
+    const couponRef = doc(db, 'coupons', couponCode.toUpperCase());
+    const couponSnap = await getDoc(couponRef);
+    
+    if (couponSnap.exists()) {
+      // Add the user's email to the usersused array
+      await updateDoc(couponRef, {
+        usersused: arrayUnion(userEmail)
+      });
+      console.log(`Coupon ${couponCode} applied for user ${userEmail}`);
+    } else {
+      console.error(`Coupon ${couponCode} not found`);
+    }
+  } catch (error) {
+    console.error('Error applying coupon usage:', error);
+  }
+};
+
 export const confirmPayment = async (orderId: string) => {
   try {
     const orderRef = doc(db, 'orders', orderId);
@@ -355,6 +377,15 @@ export const confirmPayment = async (orderId: string) => {
       status: 'processing',
       updatedAt: getSingaporeTime()
     });
+
+    // Apply coupon usage if a coupon was used
+    if (orderData.coupon && orderData.coupon.code) {
+      // Get user email from shipping address or user data
+      const userEmail = orderData.shippingAddress?.email || '';
+      if (userEmail) {
+        await applyCouponUsage(orderData.coupon.code, userEmail);
+      }
+    }
 
     // Send admin notification about payment confirmation
     try {

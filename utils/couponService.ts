@@ -5,7 +5,8 @@ import { Coupon } from '@/types/coupon';
 export const validateCoupon = async (
   code: string, 
   cartTotal: number, 
-  userEmail?: string
+  userEmail?: string,
+  productIds?: string[] // New parameter for product-specific coupons
 ): Promise<{
   isValid: boolean;
   discount: number;
@@ -37,7 +38,7 @@ export const validateCoupon = async (
     }
 
     // Check if user cap is reached - This limits total number of users
-    if (couponData.usersused.filter(email => email !== "").length >= couponData.Userscap) {
+    if (couponData.usersused && couponData.usersused.filter(email => email !== "").length >= couponData.Userscap) {
       return {
         isValid: false,
         discount: 0,
@@ -45,10 +46,27 @@ export const validateCoupon = async (
       };
     }
 
+    // Check if coupon is limited to specific products
+    if (productIds && couponData.product && couponData.product.length > 0) {
+      // Check if any of the cart items match the allowed products
+      const hasValidProduct = productIds.some(id => 
+        couponData.product.includes(id)
+      );
+      
+      if (!hasValidProduct) {
+        return {
+          isValid: false,
+          discount: 0,
+          message: 'This coupon is only valid for specific products',
+        };
+      }
+    }
+
     // Check if user email is provided
     if (userEmail) {
       // Only check limitedToUsers if there are actual email addresses in the array
-      const hasLimitedUsers = couponData.limitedToUsers.some(email => email.trim() !== "");
+      const hasLimitedUsers = couponData.limitedToUsers && 
+                             couponData.limitedToUsers.some(email => email.trim() !== "");
       
       if (hasLimitedUsers && !couponData.limitedToUsers.includes(userEmail)) {
         return {
@@ -59,9 +77,8 @@ export const validateCoupon = async (
       }
 
       // Check individual user usage limit
-      const userUseCount = couponData.usersused.filter(
-        email => email === userEmail
-      ).length;
+      const userUseCount = couponData.usersused ? 
+        couponData.usersused.filter(email => email === userEmail).length : 0;
 
       if (userUseCount >= couponData.maxUses) {
         return {
@@ -91,10 +108,12 @@ export const validateCoupon = async (
       couponDetails: couponData,
     };
   } catch (error) {
+    console.error('Error validating coupon:', error);
     return { isValid: false, discount: 0, message: 'Error validating coupon' };
   }
 };
 
+// This function will be handled by the applyCouponUsage in orderService.ts now
 export const applyCoupon = async (code: string, userEmail: string) => {
   try {
     const couponRef = doc(db, 'coupons', code.toUpperCase());
@@ -102,6 +121,7 @@ export const applyCoupon = async (code: string, userEmail: string) => {
       usersused: arrayUnion(userEmail)
     });
   } catch (error) {
+    console.error('Error applying coupon:', error);
     throw new Error('Error applying coupon');
   }
 };
