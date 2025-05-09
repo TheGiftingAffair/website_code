@@ -37,13 +37,24 @@ export const validateCoupon = async (
       };
     }
 
-    // Check if user cap is reached - This limits total number of users
-    if (couponData.usersused && couponData.usersused.filter(email => email !== "").length >= couponData.Userscap) {
-      return {
-        isValid: false,
-        discount: 0,
-        message: 'This coupon has reached its maximum usage limit',
-      };
+    // Fix: Check if user cap is reached - Count UNIQUE emails, not total usage
+    if (couponData.usersused && couponData.usersused.length > 0) {
+      // Get unique emails that have used this coupon
+      const uniqueUsersUsed = [...new Set(couponData.usersused)];
+      
+      if (uniqueUsersUsed.length >= couponData.Userscap) {
+        // If user is already in the list, they can still use it up to maxUses
+        if (userEmail && uniqueUsersUsed.includes(userEmail)) {
+          // Continue to the next checks - will check individual usage limit below
+        } else {
+          // New user trying to use the coupon when user cap is reached
+          return {
+            isValid: false,
+            discount: 0,
+            message: 'This coupon has reached its maximum number of unique users',
+          };
+        }
+      }
     }
 
     // Check if coupon is limited to specific products
