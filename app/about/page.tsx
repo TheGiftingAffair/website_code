@@ -8,7 +8,7 @@ const AboutUs = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-bg1/50 py-12 relative overflow-hidden">
+      <div className="min-h-screen bg-gray-50 py-12 relative overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-[0.03] z-0">
           <div className="grid grid-cols-3 md:grid-cols-4 gap-8 p-4">
