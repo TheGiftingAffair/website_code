@@ -1005,11 +1005,11 @@ export default function ProductPage({
           <h2 className="text-4xl 2xl:text-5xl font-alegreya font-bold text-headline mb-8 text-center">
             You May Also Like
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1  md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-6">
             {similarProducts.map((product) => (
               <div
                 key={product.id}
-                className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                className="border rounded-lg bg-red-900/90 hover:bg-red-900 overflow-hidden shadow-md hover:shadow-lg transition-shadow"
               >
                 <div
                   className="h-72 relative hover:cursor-pointer"
@@ -1021,20 +1021,14 @@ export default function ProductPage({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-4 bg-[#f9f9f9]">
-                  <h3 className="font-alegreya font-bold text-xl mb-2">
+                <div className="p-1.5  hover:cursor-pointer px-2 md:p-3 flex flex-row text-[#f9f9f9]">
+                  <h3 className="text-lg md:text-xl 2xl:text-2xl font-alegreya font-semibold">
                     {product.name}
                   </h3>
-                  <div className="flex justify-between items-center">
-                    <span className="font-mont font-semibold text-lg text-bg4">
+                  <div className="flex items-center ml-auto">
+                    <span className="text-lg md:text-xl 2xl:text-2xl font-semibold text-[#f9f9f9]">
                       ${product.price}
                     </span>
-                    <button
-                      onClick={() => router.push(`/product/${product.id}`)}
-                      className="bg-bg4/90 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-bg4"
-                    >
-                      View Details
-                    </button>
                   </div>
                 </div>
               </div>
