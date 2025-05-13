@@ -13,6 +13,13 @@ interface ImageData {
   visibility: boolean;
 }
 
+interface Coupon {
+  Active: boolean;
+  public: boolean;
+  name: string;
+  description: string;
+}
+
 export default function Hero() {
   const [images, setImages] = useState<string[]>([]);
   const [currentImage, setCurrentImage] = useState(0);
@@ -26,11 +33,15 @@ export default function Hero() {
   const [bodyText2, setBodyText2] = useState(
     "handcrafted with love and delivered with care."
   );
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [currentCoupon, setCurrentCoupon] = useState(0);
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "PlaceHolderImages"));
+        const querySnapshot = await getDocs(
+          collection(db, "PlaceHolderImages")
+        );
         const filteredImages = querySnapshot.docs
           .filter(
             (doc) =>
@@ -112,6 +123,34 @@ export default function Hero() {
     };
   }, []);
 
+  useEffect(() => {
+    // Fetch and filter coupons
+    const fetchCoupons = async () => {
+      try {
+        const response = await fetch("/data/coupons.json");
+        const allCoupons = await response.json();
+        const activeCoupons = allCoupons.filter(
+          (coupon: Coupon) => coupon.Active && coupon.public
+        );
+        setCoupons(activeCoupons);
+      } catch (error) {
+        console.error("Error fetching coupons:", error);
+      }
+    };
+
+    fetchCoupons();
+  }, []);
+
+  useEffect(() => {
+    if (coupons.length <= 1) return;
+
+    const couponTimer = setInterval(() => {
+      setCurrentCoupon((prev) => (prev + 1) % coupons.length);
+    }, 4000);
+
+    return () => clearInterval(couponTimer);
+  }, [coupons.length]);
+
   return (
     <section className="relative w-full overflow-hidden h-[calc(100vh-100px)] 2xl:h-[calc(100vh-135px)]">
       <div className="absolute inset-0">
@@ -189,6 +228,24 @@ export default function Hero() {
             Personalized Hampers
           </a>
         </div>
+
+        {/* Coupon Slider */}
+        {coupons.length > 0 && (
+          <div className="mt-8 h-16 overflow-hidden">
+            <div
+              className={`transition-opacity duration-500 ${
+                coupons.length > 0 ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <p className="text-bg1 font-bold text-xl mb-1">
+                Use code: {coupons[currentCoupon]?.name}
+              </p>
+              <p className="text-white text-sm">
+                {coupons[currentCoupon]?.description}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Slider Navigation Dots */}
         {images.length > 1 && (
