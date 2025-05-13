@@ -9,9 +9,9 @@
     "name": "$10OFF",
     "type": "Flat",
     "usersused": ["pranay.rajvanshi@gmail.com"],
-    "product": "general",
+    "product": "hampers",
     "public": false,
-    "description": "Flat $10 off on any order above $1."
+    "description": "Flat $10 off on any hamper order above $1."
   },
   {
     "Active": true,
@@ -23,9 +23,9 @@
     "name": "CAR",
     "type": "flat",
     "usersused": [],
-    "product": "automobile",
+    "product": "corporate hampers",
     "public": false,
-    "description": "Get $66 off on automobile products over $70."
+    "description": "Get $66 off on corporate hamper orders above $70."
   },
   {
     "Active": true,
@@ -37,9 +37,9 @@
     "name": "COUPONS",
     "type": "percentage",
     "usersused": [],
-    "product": "groceries",
+    "product": "gift hampers",
     "public": false,
-    "description": "Save 5% on grocery orders above $50."
+    "description": "Save 5% on gift hampers above $50."
   },
   {
     "Active": true,
@@ -51,9 +51,9 @@
     "name": "RAIN",
     "type": "percentage",
     "usersused": [],
-    "product": "fashion",
+    "product": "festive hampers",
     "public": false,
-    "description": "5% off on fashion items for orders over $80."
+    "description": "5% off on festive hampers for orders over $80."
   },
   {
     "Active": true,
@@ -65,12 +65,12 @@
     "name": "SPRING15",
     "type": "flat",
     "usersused": ["test1@example.com"],
-    "product": "seasonal",
+    "product": "seasonal hampers",
     "public": false,
-    "description": "Flat $15 off on seasonal collections. Limited users only."
+    "description": "Flat $15 off on seasonal hampers. Limited to selected users."
   },
   {
-    "Active": false,
+    "Active": true,
     "Userscap": 10,
     "discountvalue": 20,
     "limitedToUsers": ["user@example.com"],
@@ -79,9 +79,9 @@
     "name": "BIGSAVE",
     "type": "percentage",
     "usersused": [],
-    "product": "electronics",
+    "product": "premium hampers",
     "public": false,
-    "description": "Get 20% off electronics on orders above $150. Limited access."
+    "description": "Get 20% off premium hampers on orders above $150."
   },
   {
     "Active": false,
@@ -93,8 +93,8 @@
     "name": "EXCLUSIVE",
     "type": "flat",
     "usersused": [],
-    "product": "luxury",
+    "product": "luxury hampers",
     "public": false,
-    "description": "Exclusive $100 off for high-value luxury orders above $500."
+    "description": "Exclusive $100 off for luxury hamper orders above $500."
   }
 ]
