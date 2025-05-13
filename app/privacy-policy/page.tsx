@@ -11,12 +11,12 @@ const PrivacyPolicy = () => {
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-headline">Privacy Policy</h1>
-            <Link href="/" className="text-bg4 hover:text-bg3">
+            <Link href="/" className="text-bg4 hidden md:block hover:text-bg3">
               Back to Home
             </Link>
           </div>
 
-          <div className="prose max-w-none">
+          <div className="prose max-w-none text-justify">
             <p className="text-sm text-gray-600 mb-6">
               Effective Date: 14/03/2025
             </p>

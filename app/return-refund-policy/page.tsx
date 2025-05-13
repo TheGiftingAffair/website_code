@@ -11,14 +11,14 @@ const ReturnRefundPolicy = () => {
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-headline">
-              Returns, Refunds, and Cancellations
+              Returns, Refunds and Cancellations
             </h1>
-            <Link href="/" className="text-bg4 hover:text-bg3">
+            <Link href="/" className="text-bg4 hidden md:block hover:text-bg3">
               Back to Home
             </Link>
           </div>
 
-          <div className="prose max-w-none">
+          <div className="prose max-w-none text-justify">
             <h3 className="text-lg font-medium mb-2 text-headline">
               Return Policy:
             </h3>

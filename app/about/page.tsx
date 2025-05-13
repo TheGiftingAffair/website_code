@@ -8,7 +8,7 @@ const AboutUs = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gray-50 py-12 relative overflow-hidden">
+      <div className="min-h-screen bg-gray-50 py-8 md:py-12 relative overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-[0.03] z-0">
           <div className="grid grid-cols-3 md:grid-cols-4 gap-8 p-4">
@@ -32,14 +32,14 @@ const AboutUs = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-2 text-headline text-center">
               <span className="relative">About Us</span>
             </h1>
-            <h1 className="text-xl md:text-3xl font-semibold italic text-bg4 mb-12 text-center">
+            <h1 className="text-xl md:text-3xl font-semibold italic text-bg4 mb-8 md:mb-12 text-center">
               <span className="relative">
                 Unwrap Happiness
                 <span className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-primary/60 rounded-full"></span>
               </span>
             </h1>
 
-            <div className="bg-white/90 backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-xl font-mont">
+            <div className="bg-white/90 text-justify backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-xl font-mont">
               <div className="space-y-8">
                 <div>
                   <h2 className="text-2xl font-bold text-primary mb-4 text-headline">
