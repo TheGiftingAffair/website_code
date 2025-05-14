@@ -18,7 +18,7 @@ const TermsAndConditions = () => {
             </Link>
           </div>
 
-          <div className="prose max-w-none text-justify">
+          <div className="prose max-w-none text-justify text-sm">
             <h2 className="text-xl font-semibold mb-4 text-headline">
               1. Introduction
             </h2>

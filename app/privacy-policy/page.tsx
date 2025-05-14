@@ -16,7 +16,7 @@ const PrivacyPolicy = () => {
             </Link>
           </div>
 
-          <div className="prose max-w-none text-justify">
+          <div className="prose max-w-none text-justify text-sm">
             <p className="text-sm text-gray-600 mb-6">
               Effective Date: 14/03/2025
             </p>

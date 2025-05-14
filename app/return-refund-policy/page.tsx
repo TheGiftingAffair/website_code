@@ -18,7 +18,7 @@ const ReturnRefundPolicy = () => {
             </Link>
           </div>
 
-          <div className="prose max-w-none text-justify">
+          <div className="prose max-w-none text-justify text-sm">
             <h3 className="text-lg font-medium mb-2 text-headline">
               Return Policy:
             </h3>
