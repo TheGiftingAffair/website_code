@@ -62,9 +62,10 @@ const AboutUs = () => {
                     At The Gifting Affair, we're passionate about creating
                     moments of happiness. We carefully select high- quality
                     products, source locally where possible, and beautifully
-                    arrange them to create memorable gifts. Our tagline, 'Unwrap
-                    Happiness,' encapsulates our mission: to deliver joy and
-                    create lasting impressions with every hamper.
+                    arrange them to create memorable gifts. Our tagline,{" "}
+                    <span className="font-semibold">'Unwrap Happiness,'</span>{" "}
+                    encapsulates our mission: to deliver joy and create lasting
+                    impressions with every hamper.
                   </p>
                 </div>
 
