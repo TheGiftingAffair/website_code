@@ -39,7 +39,7 @@ const AboutUs = () => {
               </span>
             </h1>
 
-            <div className="bg-white/90 text-justify backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-xl font-mont">
+            <div className="bg-white/90 text-sm text-justify backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-xl font-mont">
               <div className="space-y-8">
                 <div>
                   <h2 className="text-2xl font-bold text-primary mb-4 text-headline">
