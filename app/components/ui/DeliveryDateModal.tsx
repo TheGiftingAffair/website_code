@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import blockedDatesConfig from "../../../public/config/blocked-dates.json";
+import { getBlockedDates, isDateBlocked, BlockedDatesConfig } from "@/utils/dateService";
 
 const dateInputStyles = `
   .date-input::-webkit-calendar-picker-indicator {
@@ -45,6 +45,29 @@ const DeliveryDateModal = ({
 }: DeliveryDateModalProps) => {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [showError, setShowError] = useState(false);
+  const [blockedDates, setBlockedDates] = useState<BlockedDatesConfig>({
+    blockedRanges: [],
+    blockedSingleDates: []
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadBlockedDates() {
+      setIsLoading(true);
+      try {
+        const dates = await getBlockedDates();
+        setBlockedDates(dates);
+      } catch (error) {
+        console.error("Failed to load blocked dates:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (isOpen) {
+      loadBlockedDates();
+    }
+  }, [isOpen]);
 
   const getMinDeliveryDate = () => {
     const tomorrow = new Date();
@@ -58,30 +81,9 @@ const DeliveryDateModal = ({
     return maxDate.toISOString().split("T")[0];
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toISOString().split("T")[0];
-  };
-
-  const isDateBlocked = (date: string) => {
-    const formattedDate = formatDate(date);
-
-    // Check single blocked dates
-    if (blockedDatesConfig.blockedSingleDates.includes(formattedDate)) {
-      return true;
-    }
-
-    // Check date ranges
-    return blockedDatesConfig.blockedRanges.some((range) => {
-      const dateToCheck = new Date(date);
-      const rangeStart = new Date(range.start);
-      const rangeEnd = new Date(range.end);
-      return dateToCheck >= rangeStart && dateToCheck <= rangeEnd;
-    });
-  };
-
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = e.target.value;
-    if (isDateBlocked(selectedDate)) {
+    if (isDateBlocked(selectedDate, blockedDates)) {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
       return;
@@ -108,15 +110,22 @@ const DeliveryDateModal = ({
         <h2 className="text-xl font-semibold mb-4">Select Delivery Date</h2>
 
         <div className="relative mb-4">
-          <input
-            type="date"
-            min={getMinDeliveryDate()}
-            max={getMaxDeliveryDate()}
-            value={selectedDate}
-            onChange={handleDateChange}
-            className="w-full p-2 text-sm border rounded date-input pr-10"
-            required
-          />
+          {isLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+              <span className="ml-2">Loading available dates...</span>
+            </div>
+          ) : (
+            <input
+              type="date"
+              min={getMinDeliveryDate()}
+              max={getMaxDeliveryDate()}
+              value={selectedDate}
+              onChange={handleDateChange}
+              className="w-full p-2 text-sm border rounded date-input pr-10"
+              required
+            />
+          )}
           <svg
             className="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
             fill="none"
@@ -148,9 +157,9 @@ const DeliveryDateModal = ({
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!selectedDate}
+            disabled={!selectedDate || isLoading}
             className={`px-4 py-2 rounded ${
-              selectedDate
+              selectedDate && !isLoading
                 ? "bg-bg3 text-white hover:bg-bg4"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}

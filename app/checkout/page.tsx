@@ -8,10 +8,12 @@ import { getProductById } from "@/utils/productService";
 import { getPlaceholderImage } from "@/utils/placeholderService";
 import { validateCoupon, applyCoupon } from "@/utils/couponService";
 import { createOrder, createGuestOrder } from "@/utils/orderService";
+import { getBlockedDates, isDateBlocked } from "@/utils/dateService";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
+import DeliveryDateConfirmationModal from "@/app/components/ui/DeliveryDateConfirmationModal";
 
 interface ShippingDetails {
   email: string;
@@ -85,6 +87,8 @@ const CheckoutPage = () => {
     name: string;
   } | null>(null);
   const [showDateModal, setShowDateModal] = useState(false);
+  const [showDateConfirmationModal, setShowDateConfirmationModal] =
+    useState(false);
 
   const fetchUserData = async () => {
     if (user) {
@@ -204,33 +208,34 @@ const CheckoutPage = () => {
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // First validate all fields
+    const isEmailValid = validateField("email", shippingDetails.email);
+    const isPhoneValid = validateField("phone", shippingDetails.phone);
+    const isPincodeValid = validateField("pincode", shippingDetails.pincode);
+    const isAddressValid = validateField("address", shippingDetails.address);
+
+    if (!isEmailValid || !isPhoneValid || !isPincodeValid || !isAddressValid) {
+      return;
+    }
+
+    if (!deliveryDate) {
+      alert("Please select a delivery date in your cart");
+      return;
+    }
+
+    // Show date confirmation modal instead of proceeding directly
+    setShowDateConfirmationModal(true);
+  };
+
+  // New function to handle the actual form submission after date confirmation
+  const handleSubmitOrderAfterConfirmation = async () => {
+    setShowDateConfirmationModal(false);
     setIsSubmitting(true);
 
     try {
-      // Validate all fields
-      const isEmailValid = validateField("email", shippingDetails.email);
-      const isPhoneValid = validateField("phone", shippingDetails.phone);
-      const isPincodeValid = validateField("pincode", shippingDetails.pincode);
-      const isAddressValid = validateField("address", shippingDetails.address);
-
-      if (
-        !isEmailValid ||
-        !isPhoneValid ||
-        !isPincodeValid ||
-        !isAddressValid
-      ) {
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (!deliveryDate) {
-        alert("Please select a delivery date in your cart");
-        setIsSubmitting(false);
-        return;
-      }
-
       const orderData = {
-        userId: user?.uid, // Add userId if user is logged in
+        userId: user?.uid,
         customerType: user ? "registered" : "guest",
         items: items.map((item) => ({
           productId: item.productId,
@@ -281,11 +286,9 @@ const CheckoutPage = () => {
               type: appliedCoupon.type,
               value: appliedCoupon.value,
               discount: appliedCoupon.discount,
-              name: appliedCoupon.name, // Make sure to include the coupon name
+              name: appliedCoupon.name,
             }
           : null,
-        subtotal: subtotal,
-        total: total,
       };
 
       // Create order first and get our order ID
@@ -300,7 +303,7 @@ const CheckoutPage = () => {
       const storageData = JSON.stringify({
         orderData,
         orderId,
-        status: "pending", // Add status to track payment state
+        status: "pending",
       });
       localStorage.setItem("pendingOrderData", storageData);
       sessionStorage.setItem("pendingOrderData", storageData);
@@ -363,8 +366,8 @@ const CheckoutPage = () => {
 
     try {
       // Get product IDs from cart items
-      const productIds = items.map(item => item.productId);
-      
+      const productIds = items.map((item) => item.productId);
+
       const result = await validateCoupon(
         couponCode,
         subtotal,
@@ -851,6 +854,12 @@ const CheckoutPage = () => {
         isOpen={showDateModal}
         onClose={() => setShowDateModal(false)}
         onConfirm={handleDateConfirm}
+      />
+      <DeliveryDateConfirmationModal
+        isOpen={showDateConfirmationModal}
+        onClose={() => setShowDateConfirmationModal(false)}
+        onConfirm={handleSubmitOrderAfterConfirmation}
+        deliveryDate={deliveryDate || ""}
       />
     </div>
   );

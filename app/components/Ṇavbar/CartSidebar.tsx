@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useCart } from "../../../contexts/CartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import blockedDatesConfig from "../../../public/config/blocked-dates.json";
+import { getBlockedDates, isDateBlocked, BlockedDatesConfig } from "@/utils/dateService";
 
 // Update date input styles with better blocked date visualization
 const dateInputStyles = `
@@ -103,6 +103,29 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
     setDeliveryDate,
   } = useCart();
   const router = useRouter();
+  const [blockedDates, setBlockedDates] = useState<BlockedDatesConfig>({
+    blockedRanges: [],
+    blockedSingleDates: []
+  });
+  const [isLoadingDates, setIsLoadingDates] = useState(false);
+
+  useEffect(() => {
+    async function loadBlockedDates() {
+      if (!isOpen) return;
+      
+      setIsLoadingDates(true);
+      try {
+        const dates = await getBlockedDates();
+        setBlockedDates(dates);
+      } catch (error) {
+        console.error("Failed to load blocked dates:", error);
+      } finally {
+        setIsLoadingDates(false);
+      }
+    }
+
+    loadBlockedDates();
+  }, [isOpen]);
 
   const getMinDeliveryDate = () => {
     const tomorrow = new Date();
@@ -117,30 +140,9 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
     return maxDate.toISOString().split("T")[0];
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toISOString().split("T")[0];
-  };
-
-  const isDateBlocked = (date: string) => {
-    const formattedDate = formatDate(date);
-
-    // Check single blocked dates
-    if (blockedDatesConfig.blockedSingleDates.includes(formattedDate)) {
-      return true;
-    }
-
-    // Check date ranges
-    return blockedDatesConfig.blockedRanges.some((range) => {
-      const dateToCheck = new Date(date);
-      const rangeStart = new Date(range.start);
-      const rangeEnd = new Date(range.end);
-      return dateToCheck >= rangeStart && dateToCheck <= rangeEnd;
-    });
-  };
-
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = e.target.value;
-    if (isDateBlocked(selectedDate)) {
+    if (isDateBlocked(selectedDate, blockedDates)) {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000); // Hide after 3 seconds
       return;
@@ -152,7 +154,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
     const input = e.target;
     const dates = input.querySelectorAll("option");
     dates.forEach((date) => {
-      if (isDateBlocked(date.value)) {
+      if (isDateBlocked(date.value, blockedDates)) {
         date.classList.add("blocked-date");
       }
     });
@@ -297,24 +299,31 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
               Select Delivery Date:
             </label>
             <div className="relative">
-              <input
-                type="date"
-                min={getMinDeliveryDate()}
-                max={getMaxDeliveryDate()}
-                value={deliveryDate || ""}
-                onChange={handleDateChange}
-                onFocus={handleDateFocus}
-                className="w-full p-2 text-sm border rounded date-input pr-10"
-                required
-                onKeyDown={(e) => e.preventDefault()}
-                style={{
-                  position: "relative",
-                  color:
-                    deliveryDate && isDateBlocked(deliveryDate)
-                      ? "red"
-                      : "inherit",
-                }}
-              />
+              {isLoadingDates ? (
+                <div className="w-full p-2 text-sm border rounded flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"></div>
+                  <span>Loading dates...</span>
+                </div>
+              ) : (
+                <input
+                  type="date"
+                  min={getMinDeliveryDate()}
+                  max={getMaxDeliveryDate()}
+                  value={deliveryDate || ""}
+                  onChange={handleDateChange}
+                  onFocus={handleDateFocus}
+                  className="w-full p-2 text-sm border rounded date-input pr-10"
+                  required
+                  onKeyDown={(e) => e.preventDefault()}
+                  style={{
+                    position: "relative",
+                    color:
+                      deliveryDate && isDateBlocked(deliveryDate, blockedDates)
+                        ? "red"
+                        : "inherit",
+                  }}
+                />
+              )}
               <svg
                 className="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
                 fill="none"
@@ -368,7 +377,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                 )}
                 <div
                   className="flex items-center rounded-md mt-2"
-                  onClick={(e) => e.stopPropagation()} // Add this line
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <button
                     onClick={(e) => {
