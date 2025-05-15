@@ -62,12 +62,14 @@ const Navbar = () => {
     const currentPath = window.location.pathname;
     const [path, hash] = href.split("#");
 
-    if (currentPath === "/products") {
-      window.location.hash = hash;
-    } else {
-      sessionStorage.setItem("scrollTarget", `#${hash}`);
-      window.location.href = `${path}`;
-    }
+    // if (currentPath === "/products") {
+    //   window.location.hash = hash;
+    // } else {
+    //   sessionStorage.setItem("scrollTarget", `#${hash}`);
+    //   window.location.href = `${path}`;
+    // }
+    sessionStorage.setItem("scrollTarget", `#${hash}`);
+    window.location.href = `${path}`;
   };
 
   const priceRanges = [

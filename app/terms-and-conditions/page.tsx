@@ -13,12 +13,12 @@ const TermsAndConditions = () => {
             <h1 className="text-3xl font-bold text-headline">
               Terms and Conditions
             </h1>
-            <Link href="/" className="text-bg4 hover:text-bg3">
+            <Link href="/" className="text-bg4 hidden md:block hover:text-bg3">
               Back to Home
             </Link>
           </div>
 
-          <div className="prose max-w-none">
+          <div className="prose max-w-none text-justify text-sm">
             <h2 className="text-xl font-semibold mb-4 text-headline">
               1. Introduction
             </h2>

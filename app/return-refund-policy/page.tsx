@@ -10,16 +10,18 @@ const ReturnRefundPolicy = () => {
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Returns, Refunds, and Cancellations
+            <h1 className="text-3xl font-bold text-headline">
+              Returns, Refunds and Cancellations
             </h1>
-            <Link href="/" className="text-bg4 hover:text-bg3">
+            <Link href="/" className="text-bg4 hidden md:block hover:text-bg3">
               Back to Home
             </Link>
           </div>
 
-          <div className="prose max-w-none">
-            <h3 className="text-lg font-medium mb-2">Return Policy:</h3>
+          <div className="prose max-w-none text-justify text-sm">
+            <h3 className="text-lg font-medium mb-2 text-headline">
+              Return Policy:
+            </h3>
             <p className="mb-4">
               Your purchase is final and non-refundable. Subject to the other
               Term and Conditions, no product or service may be refundable.
@@ -46,7 +48,9 @@ const ReturnRefundPolicy = () => {
               back to us without first requesting a return will not be accepted.
             </p>
 
-            <h3 className="text-lg font-medium mb-2">Refund Policy:</h3>
+            <h3 className="text-lg font-medium mb-2 text-headline">
+              Refund Policy:
+            </h3>
             <p className="mb-2">
               We are not responsible and do not guarantee refund for cases
               where:
@@ -67,7 +71,9 @@ const ReturnRefundPolicy = () => {
               </li>
             </ul>
 
-            <h3 className="text-lg font-medium mb-2">Cancellations:</h3>
+            <h3 className="text-lg font-medium mb-2 text-headline">
+              Cancellations:
+            </h3>
             <p className="mb-4">
               Orders can be cancelled up to 48 hours before the scheduled
               delivery date. Please contact customer support as soon as possible
