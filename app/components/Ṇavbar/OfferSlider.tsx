@@ -1,5 +1,13 @@
 "use client";
-import couponsData from "../../../public/data/coupons.json";
+import { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+
+interface Coupon {
+  Active: boolean;
+  public: boolean;
+  description: string;
+}
 
 const offers = [
   "🎉 Free Delivery on all Orders!",
@@ -7,19 +15,41 @@ const offers = [
   "⚡ Limited Time: Bulk Orders at Special Prices",
 ];
 
-const activeCoupons = couponsData
-  .filter((coupon) => coupon.Active && coupon.public)
-  .map((coupon) => `🏷️ ${coupon.name}: ${coupon.description}`);
-
-// Logic for different display scenarios
-const displayMessages =
-  activeCoupons.length === 0
-    ? offers
-    : activeCoupons.length === 1
-    ? [...offers, ...activeCoupons]
-    : activeCoupons;
-
 const OfferSlider = () => {
+  const [displayMessages, setDisplayMessages] = useState<string[]>(offers);
+
+  useEffect(() => {
+    // Fetch and filter coupons from Firestore
+    const fetchCoupons = async () => {
+      try {
+        const couponsCollection = collection(db, "coupons");
+        const querySnapshot = await getDocs(couponsCollection);
+        const activeCoupons = querySnapshot.docs
+          .filter(doc => {
+            const data = doc.data() as Coupon;
+            return data.Active && data.public;
+          })
+          .map(doc => `🏷️ ${doc.id}: ${doc.data().description}`);
+
+        console.log("Filtered coupons for slider:", activeCoupons);
+        
+        // Apply the same logic for different display scenarios
+        if (activeCoupons.length === 0) {
+          setDisplayMessages(offers);
+        } else if (activeCoupons.length === 1) {
+          setDisplayMessages([...offers, ...activeCoupons]);
+        } else {
+          setDisplayMessages(activeCoupons);
+        }
+      } catch (error) {
+        console.error("Error fetching coupons from Firestore:", error);
+        setDisplayMessages(offers); // Fallback to default offers on error
+      }
+    };
+
+    fetchCoupons();
+  }, []);
+
   return (
     <>
       <style jsx>{`

@@ -10,7 +10,7 @@
     "type": "Flat",
     "usersused": ["pranay.rajvanshi@gmail.com"],
     "product": "hampers",
-    "public": false,
+    "public": true,
     "description": "Flat $10 off on any hamper order above $1."
   },
   {
@@ -38,7 +38,7 @@
     "type": "percentage",
     "usersused": [],
     "product": "gift hampers",
-    "public": false,
+    "public": true,
     "description": "Save 5% on gift hampers above $50."
   },
   {
