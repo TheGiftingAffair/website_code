@@ -235,7 +235,7 @@ export default function Hero() {
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full text-xs md:text-md 2xl:text-2xl border border-bg1 px-8 py-3 2xl:py-5 font-bold transition-all hover:scale-105"
+            className="rounded-full 2xl:text-2xl border border-bg1 px-8 py-3 2xl:py-5 font-bold transition-all hover:scale-105"
           >
             Personalized Hampers
           </a>
@@ -249,7 +249,7 @@ export default function Hero() {
                 coupons.length > 0 ? "opacity-100" : "opacity-0"
               }`}
             >
-              <p className="text-bg1 font-bold text-xl mb-1">
+              <p className="text-bg1 font-bold text-md md:text-xl mb-1">
                 Use code: {coupons[currentCoupon]?.name}
               </p>
               <p className="text-white text-sm">
