@@ -25,14 +25,19 @@ const OfferSlider = () => {
         const couponsCollection = collection(db, "coupons");
         const querySnapshot = await getDocs(couponsCollection);
         const activeCoupons = querySnapshot.docs
-          .filter(doc => {
+          .filter((doc) => {
             const data = doc.data() as Coupon;
             return data.Active && data.public;
           })
-          .map(doc => `🏷️ ${doc.id}: ${doc.data().description}`);
+          .map(
+            (doc) =>
+              `🏷️ ${doc.id} ${doc.data().description && ":"} ${
+                doc.data().description
+              }`
+          );
 
         console.log("Filtered coupons for slider:", activeCoupons);
-        
+
         // Apply the same logic for different display scenarios
         if (activeCoupons.length === 0) {
           setDisplayMessages(offers);
