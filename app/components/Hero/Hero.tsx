@@ -130,15 +130,18 @@ export default function Hero() {
         const couponsCollection = collection(db, "coupons");
         const querySnapshot = await getDocs(couponsCollection);
         const activeCoupons = querySnapshot.docs
-          .filter(doc => {
+          .filter((doc) => {
             const data = doc.data() as Coupon;
             return data.Active && data.public;
           })
-          .map(doc => ({
-            id: doc.id,
-            name: doc.id, // Use document ID as the name
-            ...doc.data()
-          } as Coupon));
+          .map(
+            (doc) =>
+              ({
+                id: doc.id,
+                name: doc.id, // Use document ID as the name
+                ...doc.data(),
+              } as Coupon)
+          );
 
         console.log("Filtered coupons:", activeCoupons);
         setCoupons(activeCoupons);
@@ -232,7 +235,7 @@ export default function Hero() {
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full 2xl:text-2xl border border-bg1 px-8 py-3 2xl:py-5 font-bold transition-all hover:scale-105"
+            className="rounded-full text-xs md:text-md 2xl:text-2xl border border-bg1 px-8 py-3 2xl:py-5 font-bold transition-all hover:scale-105"
           >
             Personalized Hampers
           </a>
