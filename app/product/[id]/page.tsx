@@ -23,11 +23,12 @@ import {
   IoChevronBackOutline,
   IoChevronForwardOutline,
   IoInformationCircleOutline,
-  IoShieldCheckmark, // Add this import
-  IoTimeOutline, // Add this import
+  IoShieldCheckmark,
+  IoTimeOutline,
 } from "react-icons/io5";
 import { CachedImage } from "@/components/CachedImage";
 import AgeVerificationModal from "@/app/components/ui/AgeVerificationModal";
+import { getBlockedDates } from "@/utils/dateService";
 
 interface Product {
   id: string;
@@ -40,12 +41,12 @@ interface Product {
   image: string;
   category: string[];
   occasion: string[];
-  carousel: string[]; // Add this new property for multiple images
-  visibility: boolean; // Add this new property
+  carousel: string[];
+  visibility: boolean;
 }
 
-const DRAG_SENSITIVITY = 1.5; // Increased for smoother dragging
-const DRAG_BOUNDS_PADDING = 100; // Padding to prevent image from being dragged too far
+const DRAG_SENSITIVITY = 1.5;
+const DRAG_BOUNDS_PADDING = 100;
 
 export default function ProductPage({
   params,
@@ -62,9 +63,9 @@ export default function ProductPage({
   const [showDateModal, setShowDateModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const maxZoom = 4; // Maximum zoom level
-  const minZoom = 1; // Minimum zoom level
-  const zoomStep = 0.25; // Smaller increments for smoother zooming
+  const maxZoom = 4;
+  const minZoom = 1;
+  const zoomStep = 0.25;
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
@@ -112,7 +113,6 @@ export default function ProductPage({
     }
   };
 
-  // Add this function to check if adding quantity would exceed limit
   const wouldExceedLimit = () => {
     const currentTotal = getTotalQuantity();
     return currentTotal + quantity > 25;
@@ -126,7 +126,6 @@ export default function ProductPage({
 
         if (docSnap.exists()) {
           const productData = docSnap.data();
-          // Check if product is visible
           if (!productData.visibility) {
             alert("This product is not available!");
             router.push("/products");
@@ -138,7 +137,6 @@ export default function ProductPage({
             ...productData,
           } as Product;
           setProduct(currentProduct);
-          // Fetch similar products after getting the current product
           await fetchSimilarProducts(currentProduct);
         } else {
           alert("Product not found!");
@@ -162,7 +160,7 @@ export default function ProductPage({
       const q = query(
         productsRef,
         where("occasion", "array-contains-any", currentProduct.occasion),
-        where("visibility", "==", true), // Add this condition
+        where("visibility", "==", true),
         limit(4)
       );
       const querySnapshot = await getDocs(q);
@@ -170,17 +168,15 @@ export default function ProductPage({
 
       querySnapshot.forEach((doc) => {
         if (doc.id !== currentProduct.id) {
-          // Exclude current product
           products.push({ id: doc.id, ...doc.data() } as Product);
         }
       });
 
-      // If we don't have enough products, try getting some from the same category
       if (products.length < 3) {
         const categoryQuery = query(
           productsRef,
           where("category", "array-contains-any", currentProduct.category),
-          where("visibility", "==", true), // Add this condition
+          where("visibility", "==", true),
           limit(4)
         );
         const categorySnapshot = await getDocs(categoryQuery);
@@ -208,7 +204,7 @@ export default function ProductPage({
     addToCart({
       id: product.id,
       name: product.name,
-      quantity: quantity, // Pass the quantity state
+      quantity: quantity,
       giftMessage: giftMessage,
       specialRequest: specialRequest,
     });
@@ -220,12 +216,10 @@ export default function ProductPage({
       return;
     }
 
-    // Clear cart first
     clearCart();
 
-    // Add current item
     addToCart({
-      productId: product.id, // Add productId
+      productId: product.id,
       id: product.id,
       name: product.name,
       price: product.price,
@@ -235,20 +229,16 @@ export default function ProductPage({
       specialRequest,
     });
 
-    // Redirect to checkout
-    router.replace("/checkout"); // Use replace instead of push
+    router.replace("/checkout");
   };
 
   const handleDateConfirm = (date: string) => {
-    // Set delivery date
     setDeliveryDate(date);
 
-    // Clear existing cart items
     clearCart();
 
-    // Add only the current item
     addToCart({
-      productId: product.id, // Add productId
+      productId: product.id,
       id: product.id,
       name: product.name,
       price: product.price,
@@ -258,9 +248,8 @@ export default function ProductPage({
       specialRequest,
     });
 
-    // Close modal and redirect
     setShowDateModal(false);
-    router.replace("/checkout"); // Use replace instead of push
+    router.replace("/checkout");
   };
 
   const nextImage = () => {
@@ -312,7 +301,6 @@ export default function ProductPage({
         const maxY =
           (rect.height * zoomLevel - rect.height) / 2 + DRAG_BOUNDS_PADDING;
 
-        // Calculate new position with improved sensitivity
         const newX = Math.min(Math.max(moveX, -maxX), maxX);
         const newY = Math.min(Math.max(moveY, -maxY), maxY);
 
@@ -328,13 +316,11 @@ export default function ProductPage({
     setIsDragging(false);
   };
 
-  // Reset position and zoom when changing images
   useEffect(() => {
     setZoomLevel(1);
     setImagePosition({ x: 0, y: 0 });
   }, [currentImageIndex]);
 
-  // Add these new interfaces and types
   interface TouchPoints {
     touches: { clientX: number; clientY: number }[];
   }
@@ -344,13 +330,11 @@ export default function ProductPage({
     currentScale: number;
   };
 
-  // Add these new states in the component
   const [pinchState, setPinchState] = useState<PinchState | null>(null);
   const [touchZoomMode, setTouchZoomMode] = useState(false);
   const imageRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Add these new helper functions
   const getDistance = (touches: Touch[]) => {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
@@ -360,13 +344,11 @@ export default function ProductPage({
 
   const [touchCenter, setTouchCenter] = useState({ x: 0, y: 0 });
 
-  // Update these state definitions near the top of the component
   const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
   const [lastTouchPosition, setLastTouchPosition] = useState({ x: 0, y: 0 });
   const [isTwoFingerDrag, setIsTwoFingerDrag] = useState(false);
   const [singleTouchDrag, setSingleTouchDrag] = useState(false);
 
-  // Update handleTouchStart to track touch center
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 2) {
       e.preventDefault();
@@ -394,7 +376,6 @@ export default function ProductPage({
         currentScale: zoomLevel,
       });
     } else if (e.touches.length === 1 && zoomLevel > 1) {
-      // Single-finger touch - handle drag when zoomed in
       setSingleTouchDrag(true);
       setTouchStart({
         x: e.touches[0].clientX,
@@ -407,13 +388,11 @@ export default function ProductPage({
     }
   };
 
-  // Update handleTouchMove to use touch center for zooming
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 2) {
       e.preventDefault();
 
       if (isTwoFingerDrag) {
-        // Handle two-finger drag
         const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
         const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
 
@@ -440,7 +419,6 @@ export default function ProductPage({
         }
       }
 
-      // Handle pinch zoom
       if (pinchState) {
         const distance = getDistance(Array.from(e.touches));
         const newScale = Math.min(
@@ -462,7 +440,6 @@ export default function ProductPage({
         setZoomLevel(newScale);
       }
     } else if (e.touches.length === 1 && singleTouchDrag) {
-      // Single-finger touch - handle drag when zoomed in
       e.preventDefault();
       const deltaX = (e.touches[0].clientX - touchStart.x) * DRAG_SENSITIVITY;
       const deltaY = (e.touches[0].clientY - touchStart.y) * DRAG_SENSITIVITY;
@@ -495,13 +472,11 @@ export default function ProductPage({
   };
 
   const handleImageClick = (e: React.MouseEvent) => {
-    // Don't open modal if clicking navigation buttons
     const target = e.target as HTMLElement;
     if (target.closest("button")) {
       return;
     }
 
-    // Only handle clicks on desktop devices
     if (window.innerWidth > 768 && !isModalOpen) {
       setIsModalOpen(true);
       setZoomLevel(1);
@@ -509,7 +484,6 @@ export default function ProductPage({
     }
   };
 
-  // Add these new zoom functions
   const handleZoomInAtPoint = (x: number, y: number) => {
     if (zoomLevel < maxZoom) {
       const newZoom = Math.min(zoomLevel + zoomStep, maxZoom);
@@ -535,7 +509,6 @@ export default function ProductPage({
     }
   };
 
-  // Update handleDoubleClick to use click position for zoom center
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (zoomLevel > 1) {
@@ -557,7 +530,6 @@ export default function ProductPage({
     }
   };
 
-  // Add this effect to prevent page zoom on mobile
   useEffect(() => {
     const preventDefault = (e: TouchEvent) => {
       if (e.touches.length > 1) {
@@ -572,18 +544,15 @@ export default function ProductPage({
     };
   }, []);
 
-  // Add this new function for handling modal close
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setZoomLevel(1);
     setImagePosition({ x: 0, y: 0 });
   };
 
-  // Add these new functions before the return statement
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
 
-    // Check if it's horizontal scrolling (deltaX) or shift key is pressed
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) {
       if (e.deltaX > 0 || e.deltaY > 0) {
         nextImage();
@@ -593,19 +562,15 @@ export default function ProductPage({
       return;
     }
 
-    // Vertical scrolling for zoom only if not scrolling horizontally
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       if (e.deltaY < 0) {
-        // Scrolling up - zoom in
         handleZoomInAtPoint(0.5, 0.5);
       } else {
-        // Scrolling down - zoom out
         handleZoomOutAtPoint(0.5, 0.5);
       }
     }
   };
 
-  // Update the navigation buttons to stop propagation
   const handlePrevClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     prevImage();
@@ -616,24 +581,20 @@ export default function ProductPage({
     nextImage();
   };
 
-  // Add this useEffect after other useEffects
   useEffect(() => {
     if (isModalOpen) {
-      // Disable scrolling on the body when modal is open
       document.body.style.overflow = "hidden";
     } else {
-      // Re-enable scrolling when modal is closed
       document.body.style.overflow = "unset";
     }
 
     return () => {
-      // Cleanup - re-enable scrolling when component unmounts
       document.body.style.overflow = "unset";
     };
   }, [isModalOpen]);
 
   if (loading) return <LoadingHamper />;
-  if (!product) return null; // Changed this line since redirect is handled in useEffect
+  if (!product) return null;
 
   return (
     <>
@@ -641,7 +602,6 @@ export default function ProductPage({
         <Navbar />
         <div className="max-w-[1536px] mx-auto px-4 py-8 min-h-screen">
           <div className="grid md:grid-cols-2 gap-8 2xl:gap-12">
-            {/* Product Image */}
             <div>
               <div
                 ref={containerRef}
@@ -652,11 +612,10 @@ export default function ProductPage({
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
-                onWheel={handleWheel} // Add this line
+                onWheel={handleWheel}
               >
                 {product.carousel && product.carousel.length > 0 ? (
                   <>
-                    {/* Updated zoom controls */}
                     <div className="absolute left-4 top-4 z-20 md:flex flex-col items-center gap-2 bg-white/90 p-2 rounded-lg shadow-md hidden">
                       <button
                         onClick={handleZoomIn}
@@ -681,7 +640,6 @@ export default function ProductPage({
                       </button>
                     </div>
 
-                    {/* Mobile zoom indicator - Only show when actively zooming */}
                     <div className="absolute top-4 left-0 right-0 z-20 md:hidden">
                       {zoomLevel > 1 && (
                         <div className="mx-auto w-fit bg-black/50 text-white px-3 py-1 rounded-full text-sm">
@@ -722,7 +680,6 @@ export default function ProductPage({
                       </div>
                     </div>
 
-                    {/* Navigation Arrows */}
                     {product.carousel.length > 1 && (
                       <>
                         <button
@@ -740,7 +697,6 @@ export default function ProductPage({
                       </>
                     )}
 
-                    {/* Thumbnail Navigation */}
                     <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
                       {product.carousel.map((_, index) => (
                         <button
@@ -762,7 +718,6 @@ export default function ProductPage({
                 )}
               </div>
 
-              {/* Payment and Delivery Disclaimers */}
               <div className="flex flex-row items-center justify-center gap-4 mt-4">
                 <div className="bg-white shadow-sm py-1 md:py-2 px-2 md:px-4 rounded-full border border-gray-100 flex items-center gap-2">
                   <IoShieldCheckmark className="text-gray-600 text-xl" />
@@ -779,7 +734,6 @@ export default function ProductPage({
               </div>
             </div>
 
-            {/* Product Details */}
             <div className="space-y-4 2xl:space-y-6">
               <div className="flex flex-row items-center">
                 <h1 className="text-4xl 2xl:text-5xl font-alegreya font-bold text-headline">
@@ -799,7 +753,6 @@ export default function ProductPage({
                 ${product.price}
               </p>
 
-              {/* Gift Options */}
               <div className="space-y-3 2xl:space-y-4">
                 <div className="border border-gray-400 p-3 2xl:p-4 rounded-lg">
                   <label className="block text-md 2xl:text-lg font-medium text-gray-700">
@@ -827,7 +780,6 @@ export default function ProductPage({
                 </div>
               </div>
 
-              {/* Quantity and Purchase Options */}
               <div className="space-y-4 2xl:space-y-6 py-4 2xl:py-6">
                 <div className="flex items-center space-x-4">
                   <label className="text-md 2xl:text-lg font-medium text-gray-700">
@@ -892,7 +844,6 @@ export default function ProductPage({
                 )}
               </div>
 
-              {/* Components Section with Disclaimers */}
               <div className="pb-4 2xl:pb-6">
                 {product.components &&
                   product.components.filter(
@@ -920,7 +871,6 @@ export default function ProductPage({
                     </>
                   )}
 
-                {/* Always show these disclaimers regardless of components existence */}
                 {(!product.components ||
                   product.components.filter(
                     (component) => component.trim() !== ""
@@ -951,30 +901,7 @@ export default function ProductPage({
                 </p>
               </div>
 
-              {/* Categories and Occasions */}
               <div className="space-y-4 2xl:space-y-6 pt-4 2xl:pt-6">
-                {/* {product.category &&
-                  product.category.filter((cat) => cat.trim() !== "").length >
-                    0 && (
-                    <div>
-                      <h3 className="text-md 2xl:text-lg font-semibold mb-2">
-                        Categories:
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {product.category
-                          .filter((cat) => cat.trim() !== "")
-                          .map((cat) => (
-                            <span
-                              key={cat}
-                              className="bg-purple-100 font-semibold text-sm 2xl:text-base font-mont text-purple-800 px-4 py-2 rounded-full"
-                            >
-                              {cat}
-                            </span>
-                          ))}
-                      </div>
-                    </div>
-                  )} */}
-
                 {product.occasion &&
                   product.occasion.filter((occ) => occ.trim() !== "").length >
                     0 && (
@@ -1000,7 +927,6 @@ export default function ProductPage({
             </div>
           </div>
         </div>
-        {/* Similar Hampers Section */}
         <div className="py-12 2xl:py-16 bg-gradient-to-l from-bg1/20 to-bg4/5 px-4">
           <h2 className="text-4xl 2xl:text-5xl font-alegreya font-bold text-headline mb-8 text-center">
             You May Also Like
@@ -1036,7 +962,6 @@ export default function ProductPage({
           </div>
         </div>
 
-        {/* Shop More Section */}
         <div className="bg-gradient-to-r from-bg1/20 to-bg4/5 pt-10 pb-10 2xl:py-16 text-center flex items-center flex-col">
           <h2 className="text-3xl 2xl:text-4xl font-alegreya font-bold text-headline mb-6">
             Looking for More Options?
@@ -1069,7 +994,7 @@ export default function ProductPage({
       {isModalOpen && window?.innerWidth > 768 && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4"
-          onWheel={(e) => e.stopPropagation()} // Add this line
+          onWheel={(e) => e.stopPropagation()}
         >
           <div className="relative w-full h-full max-w-4xl max-h-[90vh]">
             <button
@@ -1108,7 +1033,7 @@ export default function ProductPage({
               onMouseLeave={() => {
                 setIsDragging(false);
               }}
-              onWheel={handleWheel} // Add this line
+              onWheel={handleWheel}
             >
               <div
                 style={{
@@ -1129,7 +1054,6 @@ export default function ProductPage({
                 />
               </div>
 
-              {/* Zoom controls in modal */}
               <div
                 className="absolute left-4 top-4 z-20 flex flex-col items-center gap-2 bg-white/90 p-2 rounded-lg shadow-md"
                 onClick={(e) => e.stopPropagation()}
@@ -1137,7 +1061,7 @@ export default function ProductPage({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleZoomInAtPoint(0.5, 0.5); // Center zoom when using buttons
+                    handleZoomInAtPoint(0.5, 0.5);
                   }}
                   className="w-8 h-8 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center shadow-sm"
                 >
@@ -1149,7 +1073,7 @@ export default function ProductPage({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleZoomOutAtPoint(0.5, 0.5); // Center zoom when using buttons
+                    handleZoomOutAtPoint(0.5, 0.5);
                   }}
                   className="w-8 h-8 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center shadow-sm"
                 >

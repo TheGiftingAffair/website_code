@@ -124,17 +124,26 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    // Fetch and filter coupons
+    // Fetch and filter coupons from Firestore
     const fetchCoupons = async () => {
       try {
-        const response = await fetch("/data/coupons.json");
-        const allCoupons = await response.json();
-        const activeCoupons = allCoupons.filter(
-          (coupon: Coupon) => coupon.Active && coupon.public
-        );
+        const couponsCollection = collection(db, "coupons");
+        const querySnapshot = await getDocs(couponsCollection);
+        const activeCoupons = querySnapshot.docs
+          .filter(doc => {
+            const data = doc.data() as Coupon;
+            return data.Active && data.public;
+          })
+          .map(doc => ({
+            id: doc.id,
+            name: doc.id, // Use document ID as the name
+            ...doc.data()
+          } as Coupon));
+
+        console.log("Filtered coupons:", activeCoupons);
         setCoupons(activeCoupons);
       } catch (error) {
-        console.error("Error fetching coupons:", error);
+        console.error("Error fetching coupons from Firestore:", error);
       }
     };
 
