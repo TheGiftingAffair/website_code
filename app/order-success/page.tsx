@@ -35,7 +35,7 @@ const OrderSuccessPage = () => {
       <div className="w-16 h-16 2xl:w-24 2xl:h-24 rounded-full overflow-hidden">
         <Image
           // src="/images/logo.jpg"
-          src="/images/logo4.png"
+          src="/images/logo5.png"
           alt="Logo"
           width={120}
           height={120}
@@ -78,7 +78,6 @@ const OrderSuccessPage = () => {
 
         // Remove the customer email sending code
         // No longer sending confirmation email to customer
-
       } catch (error) {
         console.error("Error:", error);
       } finally {

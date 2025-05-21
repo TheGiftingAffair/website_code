@@ -39,7 +39,7 @@ export default function WhyChooseUs() {
         </div> */}
       <div className="container mx-auto px-4 max-w-7xl relative z-20">
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl 2xl:text-6xl font-bold text-headline mb-2 font-alegreya">
+          <h2 className="text-2xl md:text-5xl 2xl:text-6xl font-bold text-headline mb-2 font-alegreya">
             Why Choose The Gifting Affair?
           </h2>
           <p className="text-base md:text-lg 2xl:text-xl text-bg4 font-mont font-bold px-4">

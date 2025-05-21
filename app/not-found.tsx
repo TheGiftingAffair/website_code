@@ -20,7 +20,7 @@ export default function NotFound() {
     <div className="min-h-screen flex flex-col items-center justify-center">
       <Image
         // src="/images/logo.jpg"
-        src="/images/logo2.png"
+        src="/images/logo5.png"
         alt="The Gifting Affair Logo"
         width={150}
         height={150}

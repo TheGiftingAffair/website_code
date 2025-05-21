@@ -235,7 +235,7 @@ const Navbar = () => {
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-200 ${
           isScrolled ? "shadow-md" : ""
-          // } bg-[#f9f9f9]`}
+          // } bg-[#3b4356]`}
         } bg-blue-950`}
       >
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 2xl:px-16 font-semibold font-mont">
@@ -247,8 +247,8 @@ const Navbar = () => {
             >
               <div className="w-16 h-16 2xl:w-24 2xl:h-24 rounded-full overflow-hidden">
                 <Image
-                  // src="/images/logo.jpg"
-                  src="/images/logo4.png"
+                  src="/images/logo5.png"
+                  // src="/images/logo4.png"
                   alt="Logo"
                   width={120}
                   height={120}

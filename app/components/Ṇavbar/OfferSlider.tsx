@@ -59,7 +59,7 @@ const OfferSlider = () => {
     <>
       <style jsx>{`
         .carousel-track {
-          animation: slide 30s linear infinite;
+          animation: slide 60s linear infinite;
           display: flex;
         }
 
@@ -76,13 +76,13 @@ const OfferSlider = () => {
           animation-play-state: paused;
         }
       `}</style>
-      <div className="bg-bg4 text-white py-3 2xl:py-4 overflow-hidden font-mont text-sm">
+      <div className="bg-bg2/90 text-white py-3 text-sm 2xl:py-4 overflow-hidden font-mont">
         <div className="carousel-container">
           <div className="carousel-track">
             {/* First set of messages */}
             {displayMessages.map((message, index) => (
               <div key={`first-${index}`} className="carousel-item">
-                <p className="text-center font-medium 2xl:text-xl whitespace-nowrap px-8">
+                <p className="text-center font-semibold 2xl:text-lg text-black whitespace-nowrap px-8">
                   {message}
                 </p>
               </div>
@@ -92,7 +92,7 @@ const OfferSlider = () => {
               displayMessages.map((message, index) => (
                 <div key={`set${setNum}-${index}`} className="carousel-item">
                   <p
-                    className={`text-center font-medium 2xl:text-xl whitespace-nowrap px-8 ${
+                    className={`text-center font-semibold 2xl:text-lg text-black whitespace-nowrap px-8 ${
                       setNum === 3 ? "hidden 2xl:visible" : ""
                     }`}
                   >

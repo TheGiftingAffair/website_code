@@ -78,7 +78,7 @@ export default function Testimonials() {
     <section className="w-full py-8 sm:py-12 relative bg-gradient-to-r to-bg3/10 from-bg1/40 overflow-hidden">
       <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-3xl sm:text-5xl 2xl:text-6xl text-headline font-alegreya font-bold mb-2">
+          <h2 className="text-2xl sm:text-5xl 2xl:text-6xl text-headline font-alegreya font-bold mb-2">
             What Our Community Says
           </h2>
           <p className="text-base sm:text-lg 2xl:text-xl font-bold font-mont text-bg4">

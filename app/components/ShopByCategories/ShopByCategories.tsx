@@ -260,7 +260,7 @@ const ShopByCategories = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-red-900/90 hover:bg-red-900 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                  className="bg-white/90 hover:bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
                 >
                   <div className="aspect-[square] overflow-hidden">
                     <img
@@ -269,12 +269,12 @@ const ShopByCategories = () => {
                       className="w-full h-full object-cover transition-transform duration-700 ease-in-out hover:scale-105"
                     />
                   </div>
-                  <div className="p-1.5 px-2 md:p-3 flex flex-row text-[#f9f9f9]">
+                  <div className="p-1.5 px-2 md:p-3 flex flex-row text-headline">
                     <h3 className="text-lg md:text-xl 2xl:text-2xl font-alegreya font-semibold">
                       {hamper.name}
                     </h3>
                     <div className="flex items-center ml-auto">
-                      <span className="text-lg md:text-xl 2xl:text-2xl font-semibold text-[#f9f9f9]">
+                      <span className="text-lg md:text-xl 2xl:text-2xl font-semibold text-headline">
                         ${hamper.price}
                       </span>
                     </div>

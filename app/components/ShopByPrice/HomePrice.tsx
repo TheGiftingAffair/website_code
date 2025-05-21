@@ -109,7 +109,7 @@ const HomePrice = () => {
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
               </div>
-              <h3 className="text-center text-2xl 2xl:text-3xl font-alegreya text-headline font-semibold">
+              <h3 className="text-center text-xl 2xl:text-2xl font-alegreya text-headline font-semibold">
                 {range.label}
               </h3>
             </div>

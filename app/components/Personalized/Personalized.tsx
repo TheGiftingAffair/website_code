@@ -73,7 +73,7 @@ const Personalized = () => {
 
   return (
     <div className="relative w-full overflow-hidden py-4 md:py-8 flex items-center flex-col justify-center bg-gradient-to-r from-bg1/40 to-bg4/10">
-      <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-alegreya text-headline font-bold mb-4 md:mb-6 relative mt-2 md:mt-4 z-10 drop-shadow-lg text-center px-4">
+      <h2 className="text-2xl md:text-5xl 2xl:text-7xl font-alegreya text-headline font-bold mb-4 md:mb-6 relative mt-2 md:mt-4 z-10 drop-shadow-lg text-center px-4">
         Want Personalized Hampers?
       </h2>
       <p className="text-sm md:text-md 2xl:text-  xl text-bg4/95 font-domine font-bold h-12 md:h-16 text-center max-w-2xl 2xl:max-w-3xl px-4 relative z-10 drop-shadow">

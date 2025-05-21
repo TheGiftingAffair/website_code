@@ -75,7 +75,7 @@ const Footer = () => {
           <div className="space-y-0 md:space-y-2 flex flex-col items-center text-center">
             <Link href="/" className="block">
               <Image
-                src="/images/logo4.png"
+                src="/images/logo5.png"
                 alt="The Gifting Affair Logo"
                 width={180}
                 height={180}
@@ -188,7 +188,7 @@ const Footer = () => {
             © {new Date().getFullYear()} The Gifting Affair. All rights
             reserved.
           </p>
-          <p className="italic">
+          {/* <p className="italic">
             Designed & Developed by{" "}
             <a href="https://www.linkedin.com/in/parthratra11" target="_blank">
               Parth Ratra
@@ -200,7 +200,7 @@ const Footer = () => {
             >
               Pranay Rajvanshi
             </a>
-          </p>
+          </p> */}
         </div>
       </div>
     </footer>
