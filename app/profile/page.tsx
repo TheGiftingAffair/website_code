@@ -149,6 +149,7 @@ export default function ProfilePage() {
   };
 
   const getStatusDisplay = (order: any) => {
+    // If order is cancelled
     if (order.orderCancelled) {
       return {
         color: "red",
@@ -156,13 +157,7 @@ export default function ProfilePage() {
       };
     }
 
-    if (!order.paymentStatus?.adminConfirmed) {
-      return {
-        color: "yellow",
-        text: "Payment Pending Verification",
-      };
-    }
-
+    // If order is delivered
     if (order.tracking?.isDelivered) {
       return {
         color: "green",
@@ -170,6 +165,39 @@ export default function ProfilePage() {
       };
     }
 
+    // If both payment and order are confirmed
+    if (
+      // order.paymentStatus?.adminConfirmed &&
+      order.orderStatus?.adminConfirmed &&
+      order.orderStatus?.userConfirmed
+    ) {
+      return {
+        color: "blue",
+        text: "Order Processing",
+      };
+    }
+
+    // If payment is confirmed but order is not yet confirmed by admin
+    if (
+      order.paymentStatus?.adminConfirmed &&
+      order.paymentStatus?.userConfirmed &&
+      !order.orderStatus?.adminConfirmed
+    ) {
+      return {
+        color: "blue",
+        text: "Payment Confirmed, Order Processing",
+      };
+    }
+
+    // If payment is not yet confirmed by admin
+    if (!order.paymentStatus?.adminConfirmed) {
+      return {
+        color: "yellow",
+        text: "Order Confirmation Pending",
+      };
+    }
+
+    // Default status
     return {
       color: "blue",
       text: "Delivery Pending",
