@@ -42,7 +42,7 @@ const AboutUs = () => {
             <div className="bg-white/90 text-sm text-justify backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-xl font-mont">
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-primary mb-4 text-headline">
+                  <h2 className="text-xl font-bold text-primary mb-4 text-headline">
                     Welcome to The Gifting Affair!
                   </h2>
                   <p className="text-gray-700 leading-relaxed">
@@ -55,7 +55,7 @@ const AboutUs = () => {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-primary mb-4 text-headline">
+                  <h2 className="text-xl font-bold text-primary mb-4 text-headline">
                     Our Philosophy
                   </h2>
                   <p className="text-gray-700 leading-relaxed">
@@ -70,7 +70,7 @@ const AboutUs = () => {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-primary mb-4 text-headline">
+                  <h2 className="text-xl font-bold text-primary mb-4 text-headline">
                     Our Hampers
                   </h2>
                   <p className="text-gray-700 leading-relaxed">
@@ -84,7 +84,7 @@ const AboutUs = () => {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-primary mb-4 text-headline">
+                  <h2 className="text-xl font-bold text-primary mb-4 text-headline">
                     Why Choose Us?
                   </h2>
                   <div className="grid md:grid-cols-2 gap-6">
