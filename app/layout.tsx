@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: "The Gifting Affair",
     images: [
       {
-        url: "/images/logo5.jpg",
+        url: "/images/logo6.png",
         width: 1200,
         height: 630,
         alt: "The Gifting Affair Logo",
