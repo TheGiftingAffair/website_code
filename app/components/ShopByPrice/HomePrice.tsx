@@ -20,13 +20,16 @@ interface Hamper {
 const HomePrice = () => {
   const router = useRouter();
   const [rangeImages, setRangeImages] = useState<Record<string, string>>({});
+  const [loadingStatus, setLoadingStatus] = useState<Record<string, string>>(
+    {}
+  );
 
   const priceRanges: {
     id: PriceRange;
     label: string;
     range: [number, number];
   }[] = [
-    { id: "below100", label: "Below $100", range: [0, 99] },
+    { id: "below100", label: "Below $100", range: [0, 100] }, // Changed upper limit from 99 to 100
     { id: "100to150", label: "$100 - $150", range: [100, 150] },
     { id: "150to200", label: "$150 - $200", range: [150, 200] },
     { id: "above200", label: "$200 & Above", range: [200, Infinity] },
@@ -35,27 +38,49 @@ const HomePrice = () => {
   useEffect(() => {
     const fetchPriceRangeImages = async () => {
       const images: Record<string, string> = {};
+      const status: Record<string, string> = {};
       const usedImages = new Set<string>();
 
       for (const { id, range } of priceRanges) {
         try {
-          const q = query(
-            collection(db, "Products"),
-            where("price", ">=", range[0]),
-            ...(range[1] !== Infinity ? [where("price", "<", range[1])] : [])
-          );
+          let q;
+
+          // Special handling for below100 range
+          if (id === "below100") {
+            q = query(
+              collection(db, "Products"),
+              where("price", "<", 100) // Directly use < 100 instead of range
+            );
+            status[id] = "Querying price < 100";
+          } else {
+            q = query(
+              collection(db, "Products"),
+              where("price", ">=", range[0]),
+              ...(range[1] !== Infinity ? [where("price", "<", range[1])] : [])
+            );
+            status[id] = `Querying price ${range[0]}-${
+              range[1] !== Infinity ? range[1] : "∞"
+            }`;
+          }
+
           const querySnapshot = await getDocs(q);
+          status[id] += ` | Found ${querySnapshot.size} products`;
 
           if (!querySnapshot.empty) {
             const rangeHampers = querySnapshot.docs.map(
               (doc) => doc.data() as Hamper
             );
+            status[id] += ` | Products: ${rangeHampers
+              .map((h) => h.name)
+              .join(", ")
+              .substring(0, 30)}...`;
 
             let selectedImage = "/images/temp.jpg";
             for (const hamper of rangeHampers) {
-              if (!usedImages.has(hamper.image)) {
+              if (hamper.image && !usedImages.has(hamper.image)) {
                 selectedImage = hamper.image;
                 usedImages.add(hamper.image);
+                status[id] += ` | Selected image from: ${hamper.name}`;
                 break;
               }
             }
@@ -63,14 +88,21 @@ const HomePrice = () => {
             images[id] = selectedImage;
           } else {
             images[id] = "/images/temp.jpg";
+            status[id] += " | No products found, using default image";
           }
         } catch (error) {
           console.error(`Error fetching image for price range ${id}:`, error);
           images[id] = "/images/temp.jpg";
+          status[id] = `Error: ${
+            error instanceof Error ? error.message : String(error)
+          }`;
         }
       }
 
       setRangeImages(images);
+      setLoadingStatus(status);
+      console.log("Price range images loaded:", images);
+      console.log("Loading status:", status);
     };
 
     fetchPriceRangeImages();
@@ -107,6 +139,10 @@ const HomePrice = () => {
                   src={rangeImages[range.id] || "/images/temp.jpg"}
                   alt={range.label}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  onError={(e) => {
+                    console.log(`Image error for ${range.id}:`, e);
+                    e.currentTarget.src = "/images/temp.jpg";
+                  }}
                 />
               </div>
               <h3 className="text-center text-xl 2xl:text-2xl font-alegreya text-headline font-semibold">
