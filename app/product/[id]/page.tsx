@@ -935,7 +935,7 @@ export default function ProductPage({
             {similarProducts.map((product) => (
               <div
                 key={product.id}
-                className="border rounded-lg bg-red-900/90 hover:bg-red-900 overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                className="border rounded-lg bg-white/90 hover:bg-white overflow-hidden shadow-md hover:shadow-lg transition-shadow"
               >
                 <div
                   className="md:h-72 relative hover:cursor-pointer"
@@ -947,12 +947,12 @@ export default function ProductPage({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-1.5  hover:cursor-pointer px-2 md:p-3 flex flex-row text-[#f9f9f9]">
+                <div className="p-1.5  hover:cursor-pointer px-2 md:p-3 flex flex-row text-headline">
                   <h3 className="text-lg md:text-xl 2xl:text-2xl font-alegreya font-semibold">
                     {product.name}
                   </h3>
                   <div className="flex items-center ml-auto">
-                    <span className="text-lg md:text-xl 2xl:text-2xl font-semibold text-[#f9f9f9]">
+                    <span className="text-lg md:text-xl 2xl:text-2xl font-semibold text-headline">
                       ${product.price}
                     </span>
                   </div>
