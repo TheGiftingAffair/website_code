@@ -109,8 +109,8 @@ const CheckoutPage = () => {
             phone: userData.phoneNumber || "",
           });
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      } catch {
+        // Error handling for user data fetching
       }
     }
   };
@@ -144,8 +144,8 @@ const CheckoutPage = () => {
           })
         );
         setEnrichedItems(enriched);
-      } catch (error) {
-        console.error("Error enriching items:", error);
+      } catch {
+        // Handle error when enriching cart items
         setEnrichedItems(items);
       }
     };
@@ -213,17 +213,12 @@ const CheckoutPage = () => {
       // Instead, use the address as provided to see if it's actually in Singapore
       const fullAddress = address.trim() + (shippingDetails.pincode ? ` ${shippingDetails.pincode}` : '');
       
-      console.log("Validating address:", fullAddress);
-      console.log("Using API key:", config.googleMapsApiKey ? "API key exists" : "API key missing");
-      
       setIsProcessing(true);
       
       const result = await validateSingaporeAddress(
         fullAddress,
         config.googleMapsApiKey
       );
-      
-      console.log("Validation result:", result);
       
       setIsProcessing(false);
       
@@ -255,8 +250,7 @@ const CheckoutPage = () => {
       // Clear any address errors if valid
       setErrors(prev => ({ ...prev, address: "" }));
       return true;
-    } catch (error) {
-      console.error("Error validating address location:", error);
+    } catch {
       setIsProcessing(false);
       return true; // Allow to proceed on API errors - fail open
     }
@@ -430,13 +424,11 @@ const CheckoutPage = () => {
 
         // Redirect to HitPay checkout
         window.location.href = paymentData.url;
-      } catch (error) {
-        console.error("Payment creation failed:", error);
+      } catch {
         toast.error("Failed to initiate payment. Please try again.");
         setIsSubmitting(false);
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch {
       toast.error("Failed to process order. Please try again.");
       setIsSubmitting(false);
     }

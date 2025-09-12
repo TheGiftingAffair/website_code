@@ -61,7 +61,6 @@ export const validateSingaporeAddress = async (
   try {
     // Check if API key is provided
     if (!apiKey) {
-      console.error("Google Maps API key is missing");
       return {
         isValid: false,
         message: "Address validation service is not configured. Please contact support.",
@@ -72,18 +71,13 @@ export const validateSingaporeAddress = async (
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       address
     )}&key=${apiKey}`;
-
-    console.log("Sending request to Google Maps API");
     
     // Make the API request
     const response = await fetch(url);
     const data = await response.json();
     
-    console.log("Google Maps API response status:", data.status);
-    
     // Check if the API returned a valid result
     if (data.status !== "OK") {
-      console.error("Google Maps API error:", data.status, data.error_message);
       return {
         isValid: false,
         message: `Address validation failed: ${data.status}${data.error_message ? ` - ${data.error_message}` : ''}`,
@@ -97,21 +91,15 @@ export const validateSingaporeAddress = async (
       };
     }
 
-    // Log the full response for debugging
-    console.log("Google Maps API results:", JSON.stringify(data.results));
-    
     // Check if the address is in Singapore
     let foundCountry = false;
     let isInSingapore = false;
     
     // Try to find the country in the address components
     for (const result of data.results) {
-      console.log("Checking result:", result.formatted_address);
-      
       for (const component of result.address_components) {
         if (component.types.includes("country")) {
           foundCountry = true;
-          console.log("Found country:", component.long_name, component.short_name);
           
           if (component.short_name === "SG" || 
               component.long_name.toLowerCase() === "singapore") {
@@ -144,8 +132,7 @@ export const validateSingaporeAddress = async (
       isValid: true,
       formattedAddress: data.results[0].formatted_address,
     };
-  } catch (error) {
-    console.error("Address validation error:", error);
+  } catch {
     return {
       isValid: false,
       message: "Error validating address. Please try again.",
