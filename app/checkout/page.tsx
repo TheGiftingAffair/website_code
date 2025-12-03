@@ -9,6 +9,8 @@ import { getPlaceholderImage } from "@/utils/placeholderService";
 import { validateCoupon, applyCoupon } from "@/utils/couponService";
 import { createOrder, createGuestOrder } from "@/utils/orderService";
 import { getBlockedDates, isDateBlocked } from "@/utils/dateService";
+import { validateSingaporeAddress } from "@/utils/addressValidation";
+import { config } from "@/utils/envConfig";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
@@ -77,6 +79,7 @@ const CheckoutPage = () => {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAddressVerified, setIsAddressVerified] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
@@ -106,8 +109,8 @@ const CheckoutPage = () => {
             phone: userData.phoneNumber || "",
           });
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      } catch {
+        // Error handling for user data fetching
       }
     }
   };
@@ -141,8 +144,8 @@ const CheckoutPage = () => {
           })
         );
         setEnrichedItems(enriched);
-      } catch (error) {
-        console.error("Error enriching items:", error);
+      } catch {
+        // Handle error when enriching cart items
         setEnrichedItems(items);
       }
     };
@@ -157,7 +160,7 @@ const CheckoutPage = () => {
     }));
   };
 
-  const validateField = (name: string, value: string) => {
+  const validateField = async (name: string, value: string) => {
     let error = "";
 
     switch (name) {
@@ -193,10 +196,75 @@ const CheckoutPage = () => {
     setErrors((prev) => ({ ...prev, [name]: error }));
     return error === "";
   };
+  
+  // Separate function to validate if address is in Singapore using Google Maps API
+  const validateAddressLocation = async (address: string): Promise<boolean> => {
+    try {
+      // If address is empty, show error
+      if (!address.trim()) {
+        setErrors(prev => ({ 
+          ...prev, 
+          address: "Please enter an address before verifying" 
+        }));
+        return false;
+      }
+
+      // DO NOT automatically append Singapore to the address
+      // Instead, use the address as provided to see if it's actually in Singapore
+      const fullAddress = address.trim() + (shippingDetails.pincode ? ` ${shippingDetails.pincode}` : '');
+      
+      setIsProcessing(true);
+      
+      const result = await validateSingaporeAddress(
+        fullAddress,
+        config.googleMapsApiKey
+      );
+      
+      setIsProcessing(false);
+      
+      if (!result.isValid) {
+        toast.error(result.message || "Address appears to be outside Singapore");
+        setErrors(prev => ({ 
+          ...prev, 
+          address: result.message || "Address appears to be outside Singapore. We only deliver within Singapore." 
+        }));
+        return false;
+      }
+      
+      // If we have a formatted address, update the address field with the Google-formatted version
+      if (result.formattedAddress) {
+        // Only update if substantially different (to avoid unnecessary UI updates)
+        if (result.formattedAddress.length > address.length * 1.2 || 
+            result.formattedAddress.length < address.length * 0.8) {
+          setShippingDetails(prev => ({ 
+            ...prev, 
+            address: result.formattedAddress || prev.address 
+          }));
+        }
+      }
+      
+      // Show success message and mark as verified
+      toast.success("✅ Address verified and confirmed to be in Singapore!");
+      setIsAddressVerified(true);
+      
+      // Clear any address errors if valid
+      setErrors(prev => ({ ...prev, address: "" }));
+      return true;
+    } catch {
+      setIsProcessing(false);
+      return true; // Allow to proceed on API errors - fail open
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setShippingDetails((prev) => ({ ...prev, [name]: value }));
+    
+    // Reset address verification if the address or postal code changes
+    if ((name === "address" || name === "pincode") && isAddressVerified) {
+      setIsAddressVerified(false);
+    }
+    
     if (["email", "phone", "pincode", "address"].includes(name)) {
       const error = validateField(name, value);
       setErrors((prev) => ({
@@ -220,8 +288,23 @@ const CheckoutPage = () => {
     }
 
     if (!deliveryDate) {
-      alert("Please select a delivery date in your cart");
+      toast.error("Please select a delivery date in your cart");
       return;
+    }
+    
+    // Check if address has been verified already
+    if (!isAddressVerified) {
+      // Validate the address is in Singapore using Google Maps API
+      toast.loading("Verifying delivery address is in Singapore...");
+      setIsProcessing(true);
+      const isAddressInSingapore = await validateAddressLocation(shippingDetails.address);
+      setIsProcessing(false);
+      toast.dismiss();
+      
+      if (!isAddressInSingapore) {
+        toast.error("We only deliver within Singapore. Please verify your address before proceeding.");
+        return;
+      }
     }
 
     // Show date confirmation modal instead of proceeding directly
@@ -341,13 +424,11 @@ const CheckoutPage = () => {
 
         // Redirect to HitPay checkout
         window.location.href = paymentData.url;
-      } catch (error) {
-        console.error("Payment creation failed:", error);
+      } catch {
         toast.error("Failed to initiate payment. Please try again.");
         setIsSubmitting(false);
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch {
       toast.error("Failed to process order. Please try again.");
       setIsSubmitting(false);
     }
@@ -507,22 +588,61 @@ const CheckoutPage = () => {
                 />
               </div>
               <div className="relative">
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Block/Unit No., Building Name, Street Address"
-                  value={shippingDetails.address}
-                  onChange={handleInputChange}
-                  className={`w-full p-2 border rounded mt-4 ${
-                    errors.address ? "border-red-500" : ""
-                  }`}
-                  required
-                />
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      name="address"
+                      placeholder="Block/Unit No., Building Name, Street Address"
+                      value={shippingDetails.address}
+                      onChange={handleInputChange}
+                      className={`w-full p-2 border rounded mt-4 ${
+                        errors.address ? "border-red-500" : ""
+                      }`}
+                      required
+                    />
+                    {!errors.address && !isProcessing && (
+                      <div className="flex items-center mt-1 text-sm">
+                        <span className="mr-1 font-medium">Address verification:</span>
+                        {isAddressVerified ? (
+                          <span className="text-green-600 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Verified Singapore Address
+                          </span>
+                        ) : (
+                          <span className="text-yellow-600">Not verified yet</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => validateAddressLocation(shippingDetails.address)}
+                    className="mt-4 px-3 py-2 bg-bg3 text-white rounded hover:bg-bg4 transition-colors whitespace-nowrap"
+                    disabled={!shippingDetails.address || isProcessing}
+                  >
+                    {isProcessing ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-1"></div>
+                        <span>Verifying</span>
+                      </div>
+                    ) : (
+                      "Verify Address"
+                    )}
+                  </button>
+                </div>
                 {errors.address && (
-                  <p className="text-red-500 text-sm mt-1">{errors.address}</p>
+                  <div className="flex items-center mt-1">
+                    <span className="text-red-500 text-sm">{errors.address}</span>
+                  </div>
                 )}
                 <p className="text-gray-500 text-sm mt-1">
-                  Example: #01-01, 123 Smith Street, Singapore
+                  Example: #01-01, 123 Smith Street
+                </p>
+                <p className="text-gray-500 text-sm">
+                  <strong>Note:</strong> We only deliver within Singapore. Please verify your address.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
