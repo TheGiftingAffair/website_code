@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -23,6 +23,7 @@ const ShopByPrice = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
   const [selectedPriceRange, setSelectedPriceRange] =
     useState<PriceRange>("below100");
+  const [sortOption, setSortOption] = useState("default");
 
   const handleCardClick = (productId: string) => {
     window.location.href = `/product/${productId}`;
@@ -145,6 +146,32 @@ const ShopByPrice = () => {
 
   const filteredHampers = hampersData.slice(0, 100);
 
+  // Sort products based on selected option
+  const sortedProducts = useMemo(() => {
+    if (!filteredHampers.length) return filteredHampers;
+
+    const sorted = [...filteredHampers];
+
+    switch (sortOption) {
+      case "name-asc":
+        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+      case "name-desc":
+        return sorted.sort((a, b) => b.name.localeCompare(a.name));
+      case "price-asc":
+        return sorted.sort(
+          (a, b) =>
+            parseFloat(a.price.toString()) - parseFloat(b.price.toString())
+        );
+      case "price-desc":
+        return sorted.sort(
+          (a, b) =>
+            parseFloat(b.price.toString()) - parseFloat(a.price.toString())
+        );
+      default:
+        return sorted;
+    }
+  }, [filteredHampers, sortOption]);
+
   return (
     <section
       id="shop-by-price"
@@ -176,11 +203,35 @@ const ShopByPrice = () => {
             </button>
           ))}
         </div>
+        {/* Filter and Sort Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          {/* Sort Options */}
+          <div className="flex items-center gap-2 ml-auto">
+            <label
+              htmlFor="sort"
+              className="text-xs sm:text-sm font-medium text-gray-700"
+            >
+              Sort:
+            </label>
+            <select
+              id="sort"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="border border-gray-300 rounded-md px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px] sm:min-w-[140px]"
+            >
+              <option value="default">Default</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="price-asc">Price (Low to High)</option>
+              <option value="price-desc">Price (High to Low)</option>
+            </select>
+          </div>
+        </div>
         {/* Hamper Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 gap-4 lg:mt-4 hover:cursor-pointer">
           <AnimatePresence mode="wait">
-            {filteredHampers.length > 0 ? (
-              filteredHampers.map((hamper) => (
+            {sortedProducts.length > 0 ? (
+              sortedProducts.map((hamper) => (
                 <motion.div
                   key={hamper.id}
                   initial={{ opacity: 0, y: 20 }}

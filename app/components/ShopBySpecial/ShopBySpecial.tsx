@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   collection,
@@ -27,6 +27,7 @@ const ShopBySpecial = () => {
   const [hampersData, setHampersData] = useState<Hamper[]>([]);
   const [specialNav, setSpecialNav] = useState("Special");
   const [shouldRender, setShouldRender] = useState(false);
+  const [sortOption, setSortOption] = useState("default");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,13 +97,38 @@ const ShopBySpecial = () => {
     };
   }, [hampersData]); // Add hampersData as dependency to ensure section exists when scrolling
 
+  // Sort products based on selected option
+  const sortedProducts = useMemo(() => {
+    if (!hampersData.length) return hampersData;
+
+    const sorted = [...hampersData];
+
+    switch (sortOption) {
+      case "name-asc":
+        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+      case "name-desc":
+        return sorted.sort((a, b) => b.name.localeCompare(a.name));
+      case "price-asc":
+        return sorted.sort(
+          (a, b) =>
+            parseFloat(a.price.toString()) - parseFloat(b.price.toString())
+        );
+      case "price-desc":
+        return sorted.sort(
+          (a, b) =>
+            parseFloat(b.price.toString()) - parseFloat(a.price.toString())
+        );
+      default:
+        return sorted;
+    }
+  }, [hampersData, sortOption]);
+
   if (!shouldRender) return null;
 
   return (
     <section
       id="shop-by-special"
       className="relative py-8 px-4 md:px-8 bg-gradient-to-l from-bg3/10 to-bg1/40 md:min-h-[calc(100vh-100px)]"
-      // style={{ minHeight: "calc(100vh - 50px)" }}
     >
       <div className="relative z-10 max-w-8xl mx-auto">
         <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-alegreya text-headline font-bold text-center mb-2">
@@ -112,9 +138,34 @@ const ShopBySpecial = () => {
           Explore Our Special Collection
         </p>
 
+        {/* Filter and Sort Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          {/* Sort Options */}
+          <div className="flex items-center gap-2 ml-auto">
+            <label
+              htmlFor="sort"
+              className="text-xs sm:text-sm font-medium text-gray-700"
+            >
+              Sort:
+            </label>
+            <select
+              id="sort"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="border border-gray-300 rounded-md px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px] sm:min-w-[140px]"
+            >
+              <option value="default">Default</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="price-asc">Price (Low to High)</option>
+              <option value="price-desc">Price (High to Low)</option>
+            </select>
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 gap-4 hover:cursor-pointer">
           <AnimatePresence mode="wait">
-            {hampersData.map((hamper) => (
+            {sortedProducts.map((hamper) => (
               <motion.div
                 key={hamper.id}
                 onClick={() => (window.location.href = `/product/${hamper.id}`)}
