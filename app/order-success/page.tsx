@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { getOrderById } from "@/utils/orderService";
 import { getProductById } from "@/utils/productService";
 import { Order } from "@/types/order";
+import { trackMetaPixelEvent } from "@/utils/metaPixel";
 
 interface OrderWithProductDetails extends Order {
   items: Array<{
@@ -48,6 +49,8 @@ const OrderSuccessPage = () => {
     </Link>
   );
 
+  const hasTrackedPurchase = useRef<string | null>(null);
+
   useEffect(() => {
     if (!orderId) {
       router.push("/");
@@ -66,7 +69,7 @@ const OrderSuccessPage = () => {
               ...item,
               productDetails: productDetails || undefined,
             };
-          })
+          }),
         );
 
         const orderWithProducts = {
@@ -87,6 +90,20 @@ const OrderSuccessPage = () => {
 
     fetchOrderAndProducts();
   }, [orderId]);
+
+  useEffect(() => {
+    if (!order?.id) return;
+    if (hasTrackedPurchase.current === order.id) return; // prevent duplicate fire
+    if (typeof window === "undefined") return;
+
+    trackMetaPixelEvent("Purchase", {
+      value: Number(order.total || 0),
+      currency: "SGD",
+      content_type: "product",
+      content_ids: order.items.map((i) => i.productId),
+      num_items: order.items.reduce((sum, i) => sum + (i.quantity || 0), 0),
+    });
+  }, [order]);
 
   if (loading) {
     return (
@@ -228,7 +245,7 @@ const OrderSuccessPage = () => {
                   .reduce(
                     (sum, item) =>
                       sum + (item.price || 0) * (item.quantity || 1),
-                    0
+                    0,
                   )
                   .toFixed(2)}
               </span>

@@ -29,6 +29,7 @@ import {
 import { CachedImage } from "@/components/CachedImage";
 import AgeVerificationModal from "@/app/components/ui/AgeVerificationModal";
 import { getBlockedDates } from "@/utils/dateService";
+import { trackMetaPixelEvent } from "@/utils/metaPixel";
 
 interface Product {
   id: string;
@@ -79,7 +80,7 @@ export default function ProductPage({
   } = useCart();
   const [showAgeVerification, setShowAgeVerification] = useState(false);
   const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -154,6 +155,18 @@ export default function ProductPage({
     fetchProduct();
   }, [unwrappedParams.id, router]);
 
+  useEffect(() => {
+    if (!product) return;
+
+    trackMetaPixelEvent("ViewContent", {
+      content_ids: [product.id],
+      content_name: product.name,
+      content_type: "product",
+      value: product.price,
+      currency: "SGD",
+    });
+  }, [product]);
+
   const fetchSimilarProducts = async (currentProduct: Product) => {
     try {
       const productsRef = collection(db, "Products");
@@ -161,7 +174,7 @@ export default function ProductPage({
         productsRef,
         where("occasion", "array-contains-any", currentProduct.occasion),
         where("visibility", "==", true),
-        limit(4)
+        limit(4),
       );
       const querySnapshot = await getDocs(q);
       const products: Product[] = [];
@@ -177,7 +190,7 @@ export default function ProductPage({
           productsRef,
           where("category", "array-contains-any", currentProduct.category),
           where("visibility", "==", true),
-          limit(4)
+          limit(4),
         );
         const categorySnapshot = await getDocs(categoryQuery);
         categorySnapshot.forEach((doc) => {
@@ -255,7 +268,7 @@ export default function ProductPage({
   const nextImage = () => {
     if (product?.carousel) {
       setCurrentImageIndex((prev) =>
-        prev === product.carousel.length - 1 ? 0 : prev + 1
+        prev === product.carousel.length - 1 ? 0 : prev + 1,
       );
     }
   };
@@ -263,7 +276,7 @@ export default function ProductPage({
   const prevImage = () => {
     if (product?.carousel) {
       setCurrentImageIndex((prev) =>
-        prev === 0 ? product.carousel.length - 1 : prev - 1
+        prev === 0 ? product.carousel.length - 1 : prev - 1,
       );
     }
   };
@@ -338,7 +351,7 @@ export default function ProductPage({
   const getDistance = (touches: Touch[]) => {
     return Math.hypot(
       touches[0].clientX - touches[1].clientX,
-      touches[0].clientY - touches[1].clientY
+      touches[0].clientY - touches[1].clientY,
     );
   };
 
@@ -408,11 +421,11 @@ export default function ProductPage({
 
           const newX = Math.min(
             Math.max(lastTouchPosition.x + deltaX, -maxX),
-            maxX
+            maxX,
           );
           const newY = Math.min(
             Math.max(lastTouchPosition.y + deltaY, -maxY),
-            maxY
+            maxY,
           );
 
           setImagePosition({ x: newX, y: newY });
@@ -424,9 +437,9 @@ export default function ProductPage({
         const newScale = Math.min(
           Math.max(
             (distance / pinchState.initialDistance) * pinchState.currentScale,
-            minZoom
+            minZoom,
           ),
-          maxZoom
+          maxZoom,
         );
 
         if (containerRef.current) {
@@ -453,11 +466,11 @@ export default function ProductPage({
 
         const newX = Math.min(
           Math.max(lastTouchPosition.x + deltaX, -maxX),
-          maxX
+          maxX,
         );
         const newY = Math.min(
           Math.max(lastTouchPosition.y + deltaY, -maxY),
-          maxY
+          maxY,
         );
 
         setImagePosition({ x: newX, y: newY });
@@ -741,7 +754,7 @@ export default function ProductPage({
                 </h1>
                 <div
                   className={`flex justify-center items-center text-sm 2xl:text-base ml-6 px-4 my-1 py-1 rounded-lg ${getStockStatus(
-                    product.stock
+                    product.stock,
                   )}`}
                 >
                   <span className="font-semibold">
@@ -847,7 +860,7 @@ export default function ProductPage({
               <div className="pb-4 2xl:pb-6">
                 {product.components &&
                   product.components.filter(
-                    (component) => component.trim() !== ""
+                    (component) => component.trim() !== "",
                   ).length > 0 && (
                     <>
                       <h2 className="text-2xl 2xl:text-3xl font-sans font-semibold mb-3 pt-3">
@@ -873,7 +886,7 @@ export default function ProductPage({
 
                 {(!product.components ||
                   product.components.filter(
-                    (component) => component.trim() !== ""
+                    (component) => component.trim() !== "",
                   ).length === 0) && (
                   <h2 className="text-2xl 2xl:text-3xl font-sans font-semibold mb-3 pt-3">
                     Includes:
@@ -884,7 +897,7 @@ export default function ProductPage({
                   className={`list-disc list-inside space-y-1 font-mont ${
                     !product.components ||
                     product.components.filter(
-                      (component) => component.trim() !== ""
+                      (component) => component.trim() !== "",
                     ).length === 0
                       ? ""
                       : "hidden"

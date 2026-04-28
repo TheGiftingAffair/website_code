@@ -16,6 +16,7 @@ import Image from "next/image";
 import { toast } from "react-hot-toast";
 import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
 import DeliveryDateConfirmationModal from "@/app/components/ui/DeliveryDateConfirmationModal";
+import { trackMetaPixelEvent } from "@/utils/metaPixel";
 
 interface ShippingDetails {
   email: string;
@@ -141,7 +142,7 @@ const CheckoutPage = () => {
               price: product?.price || 0,
               image: product?.image,
             };
-          })
+          }),
         );
         setEnrichedItems(enriched);
       } catch {
@@ -150,6 +151,23 @@ const CheckoutPage = () => {
       }
     };
     enrichItems();
+  }, [items]);
+
+  useEffect(() => {
+    if (!items.length) return;
+
+    trackMetaPixelEvent("InitiateCheckout", {
+      content_type: "product",
+      content_ids: items.map((item) => item.productId),
+      contents: items.map((item) => ({
+        id: item.productId,
+        quantity: item.quantity,
+        item_price: item.price,
+      })),
+      num_items: items.reduce((sum, item) => sum + item.quantity, 0),
+      value: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      currency: "SGD",
+    });
   }, [items]);
 
   const handleBillingInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,59 +214,67 @@ const CheckoutPage = () => {
     setErrors((prev) => ({ ...prev, [name]: error }));
     return error === "";
   };
-  
+
   // Separate function to validate if address is in Singapore using Google Maps API
   const validateAddressLocation = async (address: string): Promise<boolean> => {
     try {
       // If address is empty, show error
       if (!address.trim()) {
-        setErrors(prev => ({ 
-          ...prev, 
-          address: "Please enter an address before verifying" 
+        setErrors((prev) => ({
+          ...prev,
+          address: "Please enter an address before verifying",
         }));
         return false;
       }
 
       // DO NOT automatically append Singapore to the address
       // Instead, use the address as provided to see if it's actually in Singapore
-      const fullAddress = address.trim() + (shippingDetails.pincode ? ` ${shippingDetails.pincode}` : '');
-      
+      const fullAddress =
+        address.trim() +
+        (shippingDetails.pincode ? ` ${shippingDetails.pincode}` : "");
+
       setIsProcessing(true);
-      
+
       const result = await validateSingaporeAddress(
         fullAddress,
-        config.googleMapsApiKey
+        config.googleMapsApiKey,
       );
-      
+
       setIsProcessing(false);
-      
+
       if (!result.isValid) {
-        toast.error(result.message || "Address appears to be outside Singapore");
-        setErrors(prev => ({ 
-          ...prev, 
-          address: result.message || "Address appears to be outside Singapore. We only deliver within Singapore." 
+        toast.error(
+          result.message || "Address appears to be outside Singapore",
+        );
+        setErrors((prev) => ({
+          ...prev,
+          address:
+            result.message ||
+            "Address appears to be outside Singapore. We only deliver within Singapore.",
         }));
         return false;
       }
-      
+
       // If we have a formatted address, update the address field with the Google-formatted version
       if (result.formattedAddress) {
         // Only update if substantially different (to avoid unnecessary UI updates)
-        if (result.formattedAddress.length > address.length * 1.2 || 
-            result.formattedAddress.length < address.length * 0.8) {
-          setShippingDetails(prev => ({ 
-            ...prev, 
-            address: result.formattedAddress || prev.address 
+        if (
+          result.formattedAddress.length > address.length * 1.2 ||
+          result.formattedAddress.length < address.length * 0.8
+        ) {
+          setShippingDetails((prev) => ({
+            ...prev,
+            address: result.formattedAddress || prev.address,
           }));
         }
       }
-      
+
       // Show success message and mark as verified
       toast.success("✅ Address verified and confirmed to be in Singapore!");
       setIsAddressVerified(true);
-      
+
       // Clear any address errors if valid
-      setErrors(prev => ({ ...prev, address: "" }));
+      setErrors((prev) => ({ ...prev, address: "" }));
       return true;
     } catch {
       setIsProcessing(false);
@@ -259,12 +285,12 @@ const CheckoutPage = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setShippingDetails((prev) => ({ ...prev, [name]: value }));
-    
+
     // Reset address verification if the address or postal code changes
     if ((name === "address" || name === "pincode") && isAddressVerified) {
       setIsAddressVerified(false);
     }
-    
+
     if (["email", "phone", "pincode", "address"].includes(name)) {
       const error = validateField(name, value);
       setErrors((prev) => ({
@@ -291,18 +317,22 @@ const CheckoutPage = () => {
       toast.error("Please select a delivery date in your cart");
       return;
     }
-    
+
     // Check if address has been verified already
     if (!isAddressVerified) {
       // Validate the address is in Singapore using Google Maps API
       toast.loading("Verifying delivery address is in Singapore...");
       setIsProcessing(true);
-      const isAddressInSingapore = await validateAddressLocation(shippingDetails.address);
+      const isAddressInSingapore = await validateAddressLocation(
+        shippingDetails.address,
+      );
       setIsProcessing(false);
       toast.dismiss();
-      
+
       if (!isAddressInSingapore) {
-        toast.error("We only deliver within Singapore. Please verify your address before proceeding.");
+        toast.error(
+          "We only deliver within Singapore. Please verify your address before proceeding.",
+        );
         return;
       }
     }
@@ -453,7 +483,7 @@ const CheckoutPage = () => {
         couponCode,
         subtotal,
         shippingDetails.email || user?.email,
-        productIds // Pass product IDs for product-specific coupon validation
+        productIds, // Pass product IDs for product-specific coupon validation
       );
 
       if (result.isValid && result.couponDetails) {
@@ -492,7 +522,7 @@ const CheckoutPage = () => {
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   const discount = appliedCoupon?.discount || 0;
   const total = subtotal - discount;
@@ -603,23 +633,38 @@ const CheckoutPage = () => {
                     />
                     {!errors.address && !isProcessing && (
                       <div className="flex items-center mt-1 text-sm">
-                        <span className="mr-1 font-medium">Address verification:</span>
+                        <span className="mr-1 font-medium">
+                          Address verification:
+                        </span>
                         {isAddressVerified ? (
                           <span className="text-green-600 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 mr-1"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
                             </svg>
                             Verified Singapore Address
                           </span>
                         ) : (
-                          <span className="text-yellow-600">Not verified yet</span>
+                          <span className="text-yellow-600">
+                            Not verified yet
+                          </span>
                         )}
                       </div>
                     )}
                   </div>
                   <button
                     type="button"
-                    onClick={() => validateAddressLocation(shippingDetails.address)}
+                    onClick={() =>
+                      validateAddressLocation(shippingDetails.address)
+                    }
                     className="mt-4 px-3 py-2 bg-bg3 text-white rounded hover:bg-bg4 transition-colors whitespace-nowrap"
                     disabled={!shippingDetails.address || isProcessing}
                   >
@@ -635,14 +680,17 @@ const CheckoutPage = () => {
                 </div>
                 {errors.address && (
                   <div className="flex items-center mt-1">
-                    <span className="text-red-500 text-sm">{errors.address}</span>
+                    <span className="text-red-500 text-sm">
+                      {errors.address}
+                    </span>
                   </div>
                 )}
                 <p className="text-gray-500 text-sm mt-1">
                   Example: #01-01, 123 Smith Street
                 </p>
                 <p className="text-gray-500 text-sm">
-                  <strong>Note:</strong> We only deliver within Singapore. Please verify your address.
+                  <strong>Note:</strong> We only deliver within Singapore.
+                  Please verify your address.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">

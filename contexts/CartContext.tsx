@@ -8,6 +8,7 @@ import {
   useEffect,
 } from "react";
 import { getProductById } from "@/utils/productService";
+import { trackMetaPixelEvent } from "@/utils/metaPixel";
 
 export interface CartItem {
   id: string;
@@ -76,6 +77,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }) => {
     try {
       const productData = await getProductById(product.id);
+      let shouldTrackAddToCart = false;
       if (!productData) {
         console.error("Product not found");
         return;
@@ -83,13 +85,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       setItems((currentItems) => {
         const existingItem = currentItems.find(
-          (item) => item.productId === product.id
+          (item) => item.productId === product.id,
         );
+        shouldTrackAddToCart = true;
 
         // Calculate new total quantity
         const currentTotal = currentItems.reduce(
           (sum, item) => sum + item.quantity,
-          0
+          0,
         );
         const newQuantity = existingItem
           ? product.quantity + existingItem.quantity
@@ -99,7 +102,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // Check if adding would exceed limit
         if (otherItemsTotal + newQuantity > 25) {
           alert(
-            "Cannot add items. Total cart quantity cannot exceed 25 items."
+            "Cannot add items. Total cart quantity cannot exceed 25 items.",
           );
           return currentItems;
         }
@@ -113,7 +116,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                   giftMessage: product.giftMessage || item.giftMessage,
                   specialRequest: product.specialRequest || item.specialRequest,
                 }
-              : item
+              : item,
           );
         }
 
@@ -138,8 +141,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         new StorageEvent("storage", {
           key: "cartAdded",
           newValue: `${product.name} added to cart`,
-        })
+        }),
       );
+
+      if (shouldTrackAddToCart) {
+        trackMetaPixelEvent("AddToCart", {
+          content_type: "product",
+          content_ids: [product.id],
+          contents: [
+            {
+              id: product.id,
+              quantity: product.quantity,
+              item_price: productData.price,
+            },
+          ],
+          value: productData.price * product.quantity,
+          currency: "SGD",
+        });
+      }
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
@@ -157,26 +176,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setItems((prevItems) => {
         // Calculate total quantity excluding current item
         const currentItem = prevItems.find(
-          (item) => item.productId === productId
+          (item) => item.productId === productId,
         );
         if (!currentItem) return prevItems;
 
         const otherItemsTotal = prevItems.reduce(
           (sum, item) =>
             item.productId !== productId ? sum + item.quantity : sum,
-          0
+          0,
         );
 
         // Check if new quantity would exceed limit
         if (otherItemsTotal + quantity > 25) {
           alert(
-            "Cannot update quantity. Total cart quantity cannot exceed 25 items."
+            "Cannot update quantity. Total cart quantity cannot exceed 25 items.",
           );
           return prevItems;
         }
 
         return prevItems.map((item) =>
-          item.productId === productId ? { ...item, quantity } : item
+          item.productId === productId ? { ...item, quantity } : item,
         );
       });
     } catch (error) {
@@ -187,7 +206,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const removeFromCart = (productId: string) => {
     try {
       setItems((prevItems) =>
-        prevItems.filter((item) => item.productId !== productId)
+        prevItems.filter((item) => item.productId !== productId),
       );
     } catch (error) {
       console.error("Error removing item:", error);
