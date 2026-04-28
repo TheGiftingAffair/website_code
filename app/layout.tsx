@@ -115,6 +115,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import MetaPixelTracker from "@/components/MetaPixelTracker";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://thegiftingaffair.com"),
@@ -275,7 +276,9 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>{children}</CartProvider>
         </AuthProvider>
-        <MetaPixelTracker />
+        <Suspense fallback={null}>
+          <MetaPixelTracker />
+        </Suspense>
         <Toaster position="top-center" />
         <Analytics />
       </body>
