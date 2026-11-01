@@ -31,6 +31,8 @@ import AgeVerificationModal from "@/app/components/ui/AgeVerificationModal";
 import { getBlockedDates } from "@/utils/dateService";
 import { trackMetaPixelEvent } from "@/utils/metaPixel";
 
+import { isDeliveryDateTooSoon } from "@/utils/deliveryDateRules";
+
 interface Product {
   id: string;
   name: string;
@@ -224,7 +226,7 @@ export default function ProductPage({
   };
 
   const handleBuyNow = () => {
-    if (!deliveryDate) {
+    if (!deliveryDate || isDeliveryDateTooSoon(deliveryDate)) {
       setShowDateModal(true);
       return;
     }

@@ -10,6 +10,8 @@ import {
 import { getProductById } from "@/utils/productService";
 import { trackMetaPixelEvent } from "@/utils/metaPixel";
 
+import { isDeliveryDateTooSoon } from "@/utils/deliveryDateRules";
+
 export interface CartItem {
   id: string;
   productId: string;
@@ -49,10 +51,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const [deliveryDate, setDeliveryDate] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem(DELIVERY_DATE_KEY);
+      const saved = localStorage.getItem(DELIVERY_DATE_KEY);
+      return saved && !isDeliveryDateTooSoon(saved) ? saved : null;
     }
     return null;
   });
+
+  useEffect(() => {
+    const recheck = () =>
+      setDeliveryDate((prev) =>
+        prev && isDeliveryDateTooSoon(prev) ? null : prev,
+      );
+    recheck();
+    const id = setInterval(recheck, 60000);
+    window.addEventListener("focus", recheck);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("focus", recheck);
+    };
+  }, []);
 
   // Persist cart items to localStorage whenever they change
   useEffect(() => {

@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getBlockedDates, isDateBlocked, BlockedDatesConfig } from "@/utils/dateService";
+import {
+  getBlockedDates,
+  isDateBlocked,
+  BlockedDatesConfig,
+} from "@/utils/dateService";
+
+import {
+  getMinDeliveryDate,
+  getMaxDeliveryDate,
+  isDeliveryDateTooSoon,
+} from "@/utils/deliveryDateRules";
 
 const dateInputStyles = `
   .date-input::-webkit-calendar-picker-indicator {
@@ -47,7 +57,7 @@ const DeliveryDateModal = ({
   const [showError, setShowError] = useState(false);
   const [blockedDates, setBlockedDates] = useState<BlockedDatesConfig>({
     blockedRanges: [],
-    blockedSingleDates: []
+    blockedSingleDates: [],
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -69,20 +79,28 @@ const DeliveryDateModal = ({
     }
   }, [isOpen]);
 
-  const getMinDeliveryDate = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split("T")[0];
-  };
+  // const getMinDeliveryDate = () => {
+  //   const tomorrow = new Date();
+  //   tomorrow.setDate(tomorrow.getDate() + 1);
+  //   return tomorrow.toISOString().split("T")[0];
+  // };
 
-  const getMaxDeliveryDate = () => {
-    const maxDate = new Date();
-    maxDate.setMonth(maxDate.getMonth() + 3);
-    return maxDate.toISOString().split("T")[0];
-  };
+  // const getMaxDeliveryDate = () => {
+  //   const maxDate = new Date();
+  //   maxDate.setMonth(maxDate.getMonth() + 3);
+  //   return maxDate.toISOString().split("T")[0];
+  // };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = e.target.value;
+
+    if (isDeliveryDateTooSoon(selectedDate)) {
+      setSelectedDate("");
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+      return;
+    }
+
     if (isDateBlocked(selectedDate, blockedDates)) {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
@@ -92,7 +110,7 @@ const DeliveryDateModal = ({
   };
 
   const handleConfirm = () => {
-    if (selectedDate) {
+    if (selectedDate && !isDeliveryDateTooSoon(selectedDate)) {
       onConfirm(selectedDate);
     }
   };

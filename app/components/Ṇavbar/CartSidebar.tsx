@@ -4,7 +4,17 @@ import { useRouter } from "next/navigation";
 import { useCart } from "../../../contexts/CartContext";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { getBlockedDates, isDateBlocked, BlockedDatesConfig } from "@/utils/dateService";
+import {
+  getBlockedDates,
+  isDateBlocked,
+  BlockedDatesConfig,
+} from "@/utils/dateService";
+
+import {
+  getMinDeliveryDate,
+  getMaxDeliveryDate,
+  isDeliveryDateTooSoon,
+} from "@/utils/deliveryDateRules";
 
 // Update date input styles with better blocked date visualization
 const dateInputStyles = `
@@ -105,14 +115,14 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
   const router = useRouter();
   const [blockedDates, setBlockedDates] = useState<BlockedDatesConfig>({
     blockedRanges: [],
-    blockedSingleDates: []
+    blockedSingleDates: [],
   });
   const [isLoadingDates, setIsLoadingDates] = useState(false);
 
   useEffect(() => {
     async function loadBlockedDates() {
       if (!isOpen) return;
-      
+
       setIsLoadingDates(true);
       try {
         const dates = await getBlockedDates();
@@ -127,21 +137,28 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
     loadBlockedDates();
   }, [isOpen]);
 
-  const getMinDeliveryDate = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split("T")[0];
-  };
+  // const getMinDeliveryDate = () => {
+  //   const tomorrow = new Date();
+  //   tomorrow.setDate(tomorrow.getDate() + 1);
+  //   return tomorrow.toISOString().split("T")[0];
+  // };
 
   // Add max date calculation (3 months from now)
-  const getMaxDeliveryDate = () => {
-    const maxDate = new Date();
-    maxDate.setMonth(maxDate.getMonth() + 3);
-    return maxDate.toISOString().split("T")[0];
-  };
+  // const getMaxDeliveryDate = () => {
+  //   const maxDate = new Date();
+  //   maxDate.setMonth(maxDate.getMonth() + 3);
+  //   return maxDate.toISOString().split("T")[0];
+  // };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = e.target.value;
+
+    if (isDeliveryDateTooSoon(selectedDate)) {
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+      return;
+    }
+
     if (isDateBlocked(selectedDate, blockedDates)) {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000); // Hide after 3 seconds
@@ -161,8 +178,10 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
   };
 
   const handleCheckout = () => {
-    if (!deliveryDate) {
-      alert("Please select a delivery date");
+    if (!deliveryDate || isDeliveryDateTooSoon(deliveryDate)) {
+      alert(
+        "Same-day delivery is not available. Please select a delivery date from tomorrow onwards.",
+      );
       return;
     }
     onClose();
@@ -197,7 +216,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
   const canIncreaseQuantity = (currentQuantity: number, itemId: string) => {
     const otherItemsTotal = items.reduce(
       (sum, item) => (item.productId !== itemId ? sum + item.quantity : sum),
-      0
+      0,
     );
     return otherItemsTotal + currentQuantity + 1 <= 25;
   };
@@ -384,7 +403,7 @@ const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                       e.stopPropagation();
                       handleQuantityChange(
                         item.productId,
-                        Math.max(0, item.quantity - 1)
+                        Math.max(0, item.quantity - 1),
                       );
                     }}
                     className="px-3 py-1 border rounded-sm hover:bg-gray-100"

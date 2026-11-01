@@ -18,6 +18,8 @@ import DeliveryDateModal from "@/app/components/ui/DeliveryDateModal";
 import DeliveryDateConfirmationModal from "@/app/components/ui/DeliveryDateConfirmationModal";
 import { trackMetaPixelEvent } from "@/utils/metaPixel";
 
+import { isDeliveryDateTooSoon } from "@/utils/deliveryDateRules";
+
 interface ShippingDetails {
   email: string;
   firstName: string;
@@ -313,8 +315,12 @@ const CheckoutPage = () => {
       return;
     }
 
-    if (!deliveryDate) {
-      toast.error("Please select a delivery date in your cart");
+    if (!deliveryDate || isDeliveryDateTooSoon(deliveryDate)) {
+      setDeliveryDate("");
+      toast.error(
+        "Same-day delivery is not available. Please select a delivery date from tomorrow onwards.",
+      );
+      setShowDateModal(true);
       return;
     }
 
@@ -344,6 +350,16 @@ const CheckoutPage = () => {
   // New function to handle the actual form submission after date confirmation
   const handleSubmitOrderAfterConfirmation = async () => {
     setShowDateConfirmationModal(false);
+
+    if (!deliveryDate || isDeliveryDateTooSoon(deliveryDate)) {
+      setDeliveryDate("");
+      toast.error(
+        "Your delivery date is no longer available. Please choose a new date.",
+      );
+      setShowDateModal(true);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -516,6 +532,11 @@ const CheckoutPage = () => {
   };
 
   const handleDateConfirm = (date: string) => {
+    if (isDeliveryDateTooSoon(date)) {
+      toast.error("Same-day delivery is not available.");
+      return;
+    }
+
     setDeliveryDate(date);
     setShowDateModal(false);
   };
