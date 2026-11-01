@@ -493,13 +493,18 @@ const CheckoutPage = () => {
 
     try {
       // Get product IDs from cart items
-      const productIds = items.map((item) => item.productId);
+      // Send product, price and quantity so the coupon only discounts eligible items
+      const cartItems = items.map((item) => ({
+        productId: item.productId,
+        price: item.price,
+        quantity: item.quantity,
+      }));
 
       const result = await validateCoupon(
         couponCode,
         subtotal,
         shippingDetails.email || user?.email,
-        productIds, // Pass product IDs for product-specific coupon validation
+        cartItems,
       );
 
       if (result.isValid && result.couponDetails) {
